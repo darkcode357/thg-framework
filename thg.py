@@ -1,7 +1,10 @@
 from THG.View.Interpreter.THGInterpreter import ThgInterpreter
 
-
 class THG(ThgInterpreter):
+    """
+    ponto de entrada para iniciar o thg
+
+    """
     def run(self):
         self.cmdloop()
 

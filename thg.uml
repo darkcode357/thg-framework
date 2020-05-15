@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#/home/darkcode/Documents/projetos/thg-framework/thg.py</OriginalElement>
+  <nodes>
+    <node x="2539.5" y="969.0">THG.Controller.Database.Database.Database</node>
+    <node x="1821.0" y="7411.0">THG.View.Interpreter.THGInterpreter.ThgInterpreter</node>
+    <node x="1993.0" y="8334.0">thg.THG</node>
+    <node x="0.0" y="1640.0">cmd2.cmd2.Cmd</node>
+    <node x="1070.5" y="717.0">cmd.Cmd</node>
+    <node x="1961.0" y="0.0">typing.Hashable</node>
+    <node x="1908.5" y="106.0">object</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="cmd.Cmd" target="object">
+      <point x="0.0" y="-436.5" />
+      <point x="1354.5" y="692.0" />
+      <point x="1972.75" y="692.0" />
+      <point x="-64.25" y="280.5" />
+    </edge>
+    <edge source="THG.Controller.Database.Database.Database" target="object">
+      <point x="0.0" y="-184.5" />
+      <point x="2719.5" y="692.0" />
+      <point x="2101.25" y="692.0" />
+      <point x="64.25" y="280.5" />
+    </edge>
+    <edge source="object" target="typing.Hashable">
+      <point x="0.0" y="-280.5" />
+      <point x="0.0" y="28.0" />
+    </edge>
+    <edge source="thg.THG" target="THG.View.Interpreter.THGInterpreter.ThgInterpreter">
+      <point x="0.0" y="-28.0" />
+      <point x="0.0" y="436.5" />
+    </edge>
+    <edge source="THG.View.Interpreter.THGInterpreter.ThgInterpreter" target="THG.Controller.Database.Database.Database">
+      <point x="108.0" y="-436.5" />
+      <point x="2145.0" y="7386.0" />
+      <point x="2719.5" y="7386.0" />
+      <point x="0.0" y="184.5" />
+    </edge>
+    <edge source="cmd2.cmd2.Cmd" target="cmd.Cmd">
+      <point x="0.0" y="-2860.5" />
+      <point x="0.0" y="436.5" />
+    </edge>
+    <edge source="THG.View.Interpreter.THGInterpreter.ThgInterpreter" target="cmd2.cmd2.Cmd">
+      <point x="-108.0" y="-436.5" />
+      <point x="1929.0" y="7386.0" />
+      <point x="1354.5" y="7386.0" />
+      <point x="0.0" y="2860.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.10784780023781214" x="1450.0" y="4195.0" />
+  <SelectedNodes>
+    <node>THG.View.Interpreter.THGInterpreter.ThgInterpreter</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
+
