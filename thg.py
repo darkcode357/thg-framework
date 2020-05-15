@@ -1,4 +1,4 @@
-from lib.THGInterpreter import ThgInterpreter
+from THG.View.Interpreter.THGInterpreter import ThgInterpreter
 
 
 class THG(ThgInterpreter):

@@ -1,7 +1,7 @@
-from lib.exception.Option import OptionRequired
+from THG.Model.BaseXmodeClass.OptionRequired import OptionRequired
 
 
-class ExploitOptions:
+class BaseOptions:
     options = None
 
     def __init__(self):

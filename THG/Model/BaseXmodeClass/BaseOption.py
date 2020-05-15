@@ -1,7 +1,7 @@
-from lib.exception.Option import OptionRequired
+from THG.Model.BaseXmodeClass.OptionRequired import OptionRequired
 
 
-class ExploitOption:
+class BaseOption:
     name = None
     required = False
     description = None

@@ -2,16 +2,16 @@ import argparse
 import time
 import threading
 from queue import Queue
-from lib.cmd2 import Cmd, with_category, with_argparser
+from cmd2 import Cmd, with_category, with_argparser
 from art import text2art, art
 from utils import module
 from pathlib import Path
 from colorama import Fore, Style
 from tabulate import tabulate
 from importlib import import_module, reload
-from lib.Database import Database
-from lib.ExploitOption import ExploitOption
-from lib.exception.Module import ModuleNotUseException
+from THG.Controller.Database.Database import Database
+from THG.Model.BaseXmodeClass.BaseOption import BaseOption
+from THG.Model.BaseXmodeClass.ModuleNotUseException import ModuleNotUseException
 
 
 class ThgInterpreter(Cmd, Database):
@@ -39,8 +39,8 @@ class ThgInterpreter(Cmd, Database):
         """Print THG banner"""
         ascii_text = text2art("THG", "rand")
         self.poutput("\n\n")
-        self.poutput(ascii_text, '\n\n', color=Fore.LIGHTCYAN_EX)
-        self.poutput("{art} THG has {count} modules".format(art=art("inlove"), count=self.get_module_count()), "\n\n", color=Fore.MAGENTA)
+        self.poutput(ascii_text)
+        self.poutput("{art} THG has {count} modules".format(art=art("inlove"), count=self.get_module_count()))
 
     @with_category(CMD_MODULE)
     def do_list(self, args):
@@ -169,14 +169,14 @@ class ThgInterpreter(Cmd, Database):
         if content == "info":
             info = self.module_instance.get_info()
             info_table = []
-            self.poutput("Module info:", "\n\n", color=Fore.CYAN)
+            self.poutput("Module info:")
             for item in info.keys():
                 info_table.append([item + ":", info.get(item)])
-            self.poutput(tabulate(info_table, colalign=("right",), tablefmt="plain"), "\n\n")
+            self.poutput(tabulate(info_table, colalign=("right",), tablefmt="plain"))
 
         if content == "options" or content == "info":
             options = self.module_instance.options.get_options()
-            default_options_instance = ExploitOption()
+            default_options_instance = BaseOption()
             options_table = []
             for option in options:
                 options_table_row = []
@@ -184,35 +184,33 @@ class ThgInterpreter(Cmd, Database):
                     options_table_row.append(getattr(option, field))
                 options_table.append(options_table_row)
 
-            self.poutput("Module options:", "\n\n", color=Fore.CYAN)
+            self.poutput("Module options:")
             self.poutput(
                 tabulate(
                     options_table,
                     headers=default_options_instance.__dict__.keys(),
-                ),
-                "\n\n"
+                )
             )
 
         if content == "missing":
             missing_options = self.module_instance.get_missing_options()
             if len(missing_options) is 0:
-                self.poutput("No option missing!", color=Fore.CYAN)
+                self.poutput("No option missing!")
                 return None
 
-            default_options_instance = ExploitOption()
+            default_options_instance = BaseOption()
             missing_options_table = []
             for option in missing_options:
                 options_table_row = []
                 for field in default_options_instance.__dict__.keys():
                     options_table_row.append(getattr(option, field))
                 missing_options_table.append(options_table_row)
-            self.poutput("Missing Module options:", "\n\n", color=Fore.CYAN)
+            self.poutput("Missing Module options:")
             self.poutput(
                 tabulate(
                     missing_options_table,
                     headers=default_options_instance.__dict__.keys(),
-                ),
-                "\n\n"
+                )
             )
 
     @with_category(CMD_MODULE)
@@ -439,7 +437,7 @@ class ThgInterpreter(Cmd, Database):
     def do_db_rebuild(self, args):
         """Rebuild database for search"""
         self.db_rebuild()
-        self.poutput("Database rebuild done.", color=Fore.GREEN)
+        self.poutput("Database rebuild done.")
 
     @with_category(CMD_MODULE)
     def do_reload(self, args):
@@ -456,8 +454,8 @@ class ThgInterpreter(Cmd, Database):
         self.prompt = self.console_prompt + module_prompt + self.console_prompt_end
 
     def _print_modules(self, modules, title):
-        self.poutput(title, "\n\n", color=Fore.CYAN)
-        self.poutput(tabulate(modules, headers=('module_name', 'check', 'disclosure_date', 'description')), '\n\n')
+        self.poutput(title)
+        self.poutput(tabulate(modules, headers=('module_name', 'check', 'disclosure_date', 'description')))
 
     def _print_item(self, message, color=Fore.YELLOW):
         self.poutput("{style}[+]{style_end} {message}".format(

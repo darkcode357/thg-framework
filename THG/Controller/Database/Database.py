@@ -7,7 +7,7 @@ from importlib import import_module
 
 
 class Database:
-    db_file = '{root_path}/database/thg.db'.format(root_path=ROOT_PATH)
+    db_file = '{root_path}/database/THG.db'.format(root_path=ROOT_PATH)
     connection = None
     cursor = None
     searchable_fields = ['name', 'module_name', 'description', 'author', 'disclosure_date', 'service_name', 'service_version', 'check']

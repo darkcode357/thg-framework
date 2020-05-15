@@ -1,4 +1,4 @@
-class ExploitResult:
+class BaseResult:
     def __init__(self):
         self.status = False
         self.data = {}

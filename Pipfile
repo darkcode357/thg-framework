@@ -15,6 +15,7 @@ tabulate = "==0.8.3"
 requests = "==2.21.0"
 pylint = "*"
 mypy = "*"
+cmd2 = "*"
 
 [requires]
 python_version = "3.8"
