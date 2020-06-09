@@ -1,1 +1,3 @@
 # thg-framework
+
+ferramenta de exploração genérica, voltado para comprovar a prova de conceito entre duas linguagens, python e ruby, para fazer o estudo de caso se o metasploit realmente deveria continuar sendo feito em ruby ou se o núcleo dele veria ser o python,tirando essa parte de conceito entre o modelo de aplicação, o desenvolvimento do thg(the hacker group) e focado de maneira totalmente flexível, quando você clona o projeto, ele pode interagir tanto como biblioteca do python, tanto quanto framework, futuramente esse projeto terá suporte a biblioteca pwntools e suporte a machine learning e deep learning, tendo como base o meu tcc da faculdade uma ferramenta que consegue aprender com attacker hacker e se auto aprimorar
