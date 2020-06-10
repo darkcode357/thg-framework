@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 
 def name_convert(name):
-    if name.find(".py") is not -1:
+    if name.find(".py") != -1:
         module_name = name.replace("modules/", "").replace(".py", "")
         return module_name
     else:

@@ -64,7 +64,7 @@ class ThgInterpreter(Cmd, Database):
         db_conditions = {}
         for condition in search_conditions:
             cd = condition.split("=")
-            if len(cd) is 1:
+            if len(cd) == 1:
                 [module_name] = cd
                 db_conditions['module_name'] = module_name
             else:
@@ -195,7 +195,7 @@ class ThgInterpreter(Cmd, Database):
 
         if content == "missing":
             missing_options = self.module_instance.get_missing_options()
-            if len(missing_options) is 0:
+            if len(missing_options) == 0:
                 self.poutput("No option missing!")
                 return None
 
