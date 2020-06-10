@@ -3,6 +3,7 @@ import time
 import threading
 from queue import Queue
 from cmd2 import Cmd, with_category, with_argparser
+from cmd2.utils import basic_complete
 from art import text2art, art
 from utils import module
 from pathlib import Path
@@ -84,7 +85,7 @@ class ThgInterpreter(Cmd, Database):
             completion_items = ['debug']
             if self.module_instance:
                 completion_items += [option.name for option in self.module_instance.options.get_options()]
-        return self.basic_complete(text, line, begidx, endidx, completion_items)
+        return basic_complete(text, line, begidx, endidx, completion_items)
 
     set_parser = argparse.ArgumentParser()
     set_parser.add_argument("name", help="The name of the field you want to set")
@@ -120,7 +121,7 @@ class ThgInterpreter(Cmd, Database):
             modules = []
         else:
             modules = [local_module[0] for local_module in module.get_local_modules()]
-        return self.basic_complete(text, line, begidx, endidx, modules)
+        return basic_complete(text, line, begidx, endidx, modules)
 
     @with_category(CMD_MODULE)
     def do_use(self, module_name, module_reload=False):
@@ -151,7 +152,7 @@ class ThgInterpreter(Cmd, Database):
             completion_items = []
         else:
             completion_items = ['info', 'options', 'missing']
-        return self.basic_complete(text, line, begidx, endidx, completion_items)
+        return basic_complete(text, line, begidx, endidx, completion_items)
 
     @with_category(CMD_MODULE)
     def do_show(self, content):
