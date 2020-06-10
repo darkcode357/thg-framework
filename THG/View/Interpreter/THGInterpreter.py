@@ -1,10 +1,11 @@
 import argparse
 import time
+import platform
 import threading
 from queue import Queue
 from cmd2 import Cmd, with_category, with_argparser
 from cmd2.utils import basic_complete
-from art import text2art, art
+from art import  art
 from utils import module
 from pathlib import Path
 from colorama import Fore, Style
@@ -38,10 +39,47 @@ class ThgInterpreter(Cmd, Database):
     @with_category(CMD_CORE)
     def do_banner(self, args):
         """Print THG banner"""
-        ascii_text = text2art("THG", "rand")
         self.poutput("\n\n")
-        self.poutput(ascii_text)
-        self.poutput("{art} THG has {count} modules".format(art=art("inlove"), count=self.get_module_count()))
+        self.poutput("""
+{CYAN}==================={GREEN}[ thgconsole V1.0.88-dev ]{GREEN}{CYAN}======================
+
+        {YELLOW}+ -- --=[{RED}THGEF   :{MAGENTA} The Hacker Group Exploitation Framework{RED}{YELLOW} ]=-- -- +
+        {YELLOW}+ -- --=[{RED}Code by :{MAGENTA} Darkcode                               {RED}{YELLOW} ]=-- -- +
+        {YELLOW}+ -- --=[{RED}Codename:{MAGENTA} FlagXpwn                               {RED}{YELLOW} ]=-- -- +
+        {YELLOW}+ -- --=[{RED}Homepage:{MAGENTA} https://darkcode0x00.com.br/category/thg/ {RED}{YELLOW} ]=-- -- +
+        {YELLOW}+ -- --=[{RED}youtube :{MAGENTA} https://www.youtube.com/channel/UC4d_mJv4uhppA-hCdFODWJw{RED}{YELLOW}]=-- -- + 
+
+{CYAN}==================={GREEN}[ thgconsole-info ]{GREEN}{CYAN}=============================
+
+        {YELLOW}+ -- --=[{RED} - exploits        - payloads    {RED}{YELLOW}]=-- -- +
+        {YELLOW}+ -- --=[{RED} - auxiliary       - post        {RED}{YELLOW}]=-- -- +
+        {YELLOW}+ -- --=[{RED} - encoders        - nops        {RED}{YELLOW}]=-- -- +
+        {YELLOW}+ -- --=[{RED} - evasion         - extra       {RED}{YELLOW}]=-- -- +
+        {YELLOW}+ -- --=[{RED}          - total {count}              {RED}{YELLOW}]=-- -- +
+
+{CYAN}==================={GREEN}[ thgconsole-pc ]{GREEN}{CYAN}===============================
+
+        {YELLOW}+ -- --=[{RED}system  =>{MAGENTA} {os}             {RED}{YELLOW}]=-- -- +
+        {YELLOW}+ -- --=[{RED}machine =>{MAGENTA} {machine}            {RED}{YELLOW}]=-- -- +
+
+
+
+{CYAN}==================={GREEN}[ thgconsole-config ]{GREEN}{CYAN}===========================
+        {YELLOW}+ -- --=[{RED}DB_STATUS =>{MAGENTA} on              {RED}{YELLOW}]=-- -- +
+
+
+
+        """.format(count=self.get_module_count(),red=Fore.RED,
+                           CYAN=Fore.CYAN,
+                           GREEN=Fore.GREEN,
+                           RED=Fore.RED,
+                           YELLOW=Fore.YELLOW,
+                           MAGENTA=Fore.MAGENTA,
+                           os=platform.uname()[0],
+                           machine=platform.uname()[4],
+
+
+))
 
     @with_category(CMD_MODULE)
     def do_list(self, args):
