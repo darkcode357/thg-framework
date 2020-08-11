@@ -1,56 +1,56 @@
-# pwntools - kit de ferramentas CTF
-! [logotipo do pwntools] (https://github.com/Gallopsled/pwntools/blob/stable/docs/source/logo.png?raw=true)
+# pwntools - CTF toolkit
+![pwntools logo](https://github.com/Gallopsled/pwntools/blob/stable/docs/source/logo.png?raw=true)
 
-[! [PyPI] (https://img.shields.io/pypi/v/pwntools?style=flat)] (https://pypi.python.org/pypi/pwntools/)
-[! [Docs] (https://readthedocs.org/projects/pwntools/badge/?version=stable)] (https://docs.pwntools.com/)
-[! [Travis] (https://img.shields.io/travis/Gallopsled/pwntools/dev?logo=Travis)] (https://travis-ci.org/Gallopsled/pwntools)
-! [Status do fluxo de trabalho do GitHub (branch)] (https://img.shields.io/github/workflow/status/Gallopsled/pwntools/Continuous%20Integration/dev?logo=GitHub)
-[! [Coveralls] (https://img.shields.io/coveralls/github/Gallopsled/pwntools/dev?logo=coveralls)] (https://coveralls.io/github/Gallopsled/pwntools?branch=dev)
-[! [Licença MIT] (https://img.shields.io/badge/license-MIT-blue.svg?style=flat)] (http://choosealicense.com/licenses/mit/)
-[! [Twitter] (https://img.shields.io/twitter/follow/Pwntools)] (https://twitter.com/pwntools)
+[![PyPI](https://img.shields.io/pypi/v/pwntools?style=flat)](https://pypi.python.org/pypi/pwntools/)
+[![Docs](https://readthedocs.org/projects/pwntools/badge/?version=stable)](https://docs.pwntools.com/)
+[![Travis](https://img.shields.io/travis/Gallopsled/pwntools/dev?logo=Travis)](https://travis-ci.org/Gallopsled/pwntools)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/Gallopsled/pwntools/Continuous%20Integration/dev?logo=GitHub)
+[![Coveralls](https://img.shields.io/coveralls/github/Gallopsled/pwntools/dev?logo=coveralls)](https://coveralls.io/github/Gallopsled/pwntools?branch=dev)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
+[![Twitter](https://img.shields.io/twitter/follow/Pwntools)](https://twitter.com/pwntools)
 
-Pwntools é um framework CTF e uma biblioteca de desenvolvimento de exploits. Escrito em Python, é projetado para prototipagem e desenvolvimento rápidos e tem como objetivo tornar a escrita de exploits o mais simples possível.
+Pwntools is a CTF framework and exploit development library. Written in Python, it is designed for rapid prototyping and development, and intended to make exploit writing as simple as possible.
 
-`` `python
-da importação pwn *
-contexto (arch = 'i386', os = 'linux')
+```python
+from pwn import *
+context(arch = 'i386', os = 'linux')
 
-r = remoto ('exploitme.example.com', 31337)
-# EXPLORAR O CÓDIGO VAI AQUI
-r.send (asm (shellcraft.sh ()))
-r.interactive ()
-`` `
+r = remote('exploitme.example.com', 31337)
+# EXPLOIT CODE GOES HERE
+r.send(asm(shellcraft.sh()))
+r.interactive()
+```
 
-# Documentação
+# Documentation
 
-Nossa documentação está disponível em [docs.pwntools.com] (https://docs.pwntools.com/)
+Our documentation is available at [docs.pwntools.com](https://docs.pwntools.com/)
 
-Uma série de tutoriais também está disponível online (https://github.com/Gallopsled/pwntools-tutorial#readme)
+A series of tutorials is also [available online](https://github.com/Gallopsled/pwntools-tutorial#readme)
 
-Para começar, fornecemos algumas soluções de exemplo para desafios anteriores de CTF em nosso [repositório de write-ups] (https://github.com/Gallopsled/pwntools-write-ups).
+To get you started, we've provided some example solutions for past CTF challenges in our [write-ups repository](https://github.com/Gallopsled/pwntools-write-ups).
 
-# Instalação
+# Installation
 
-O Pwntools tem melhor suporte nas versões LTE do Ubuntu de 64 bits (14.04, 16.04, 18.04 e 20.04). A maioria das funcionalidades deve funcionar em qualquer distribuição do tipo Posix (Debian, Arch, FreeBSD, OSX, etc.). Python> = 2.7 é necessário (Python 3 sugerido como melhor).
+Pwntools is best supported on 64-bit Ubuntu LTE releases (14.04, 16.04, 18.04, and 20.04).  Most functionality should work on any Posix-like distribution (Debian, Arch, FreeBSD, OSX, etc.).  Python >= 2.7 is required (Python 3 suggested as best).
 
-A maior parte da funcionalidade do pwntools é independente e somente Python. Você deve ser capaz de começar a trabalhar rapidamente com
+Most of the functionality of pwntools is self-contained and Python-only.  You should be able to get running quickly with
 
-`` `sh
+```sh
 apt-get update
 apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
 python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade pwntools
-`` `
+```
 
-No entanto, alguns dos recursos (montagem / desmontagem de arquiteturas estrangeiras) requerem dependências não-Python. Para obter mais informações, consulte as [instruções completas de instalação aqui] (https://docs.pwntools.com/en/stable/install.html).
+However, some of the features (assembling/disassembling foreign architectures) require non-Python dependencies.  For more information, see the [complete installation instructions here](https://docs.pwntools.com/en/stable/install.html).
 
 
-# Contribuição
+# Contribution
 
-Veja [CONTRIBUTING.md] (CONTRIBUTING.md)
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-# Contato
-Se você tiver alguma pergunta que não mereça um [relatório de bug] (https://github.com/Gallopsled/pwntools/issues), sinta-se à vontade para nos enviar um ping
-em [`# pwntools` em Freenode] (irc: //irc.freenode.net/pwntools) e pergunte.
-Clique [aqui] (https://kiwiirc.com/client/irc.freenode.net/pwntools) para se conectar.
-Também existe uma [lista de discussão] (https://groups.google.com/forum/#!forum/pwntools-users) para discussão de latência mais alta.
+# Contact
+If you have any questions not worthy of a [bug report](https://github.com/Gallopsled/pwntools/issues), feel free to ping us
+at [`#pwntools` on Freenode](irc://irc.freenode.net/pwntools) and ask away.
+Click [here](https://kiwiirc.com/client/irc.freenode.net/pwntools) to connect.
+There is also a [mailing list](https://groups.google.com/forum/#!forum/pwntools-users) for higher latency discussion.
