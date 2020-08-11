@@ -1,15 +1,15 @@
-# pwntools - CTF toolkit
-![pwntools logo](https://github.com/Gallopsled/pwntools/blob/stable/docs/source/logo.png?raw=true)
+ thg-framework - exploit dev/toolkit
 
-[![PyPI](https://img.shields.io/pypi/v/pwntools?style=flat)](https://pypi.python.org/pypi/pwntools/)
-[![Docs](https://readthedocs.org/projects/pwntools/badge/?version=stable)](https://docs.pwntools.com/)
-[![Travis](https://img.shields.io/travis/Gallopsled/pwntools/dev?logo=Travis)](https://travis-ci.org/Gallopsled/pwntools)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/Gallopsled/pwntools/Continuous%20Integration/dev?logo=GitHub)
-[![Coveralls](https://img.shields.io/coveralls/github/Gallopsled/pwntools/dev?logo=coveralls)](https://coveralls.io/github/Gallopsled/pwntools?branch=dev)
+![thg logo](https://github.com/darkcode357/thg-framework/raw/master/logo.png?raw=true)
+[![PyPI](https://img.shields.io/pypi/v/thg-framework?color=thg-framework&label=thg-framework&logo=thg-framework&logoColor=thg-framework)](https://pypi.python.org/pypi/pwntools/)
+[![Docs](https://readthedocs.org/projects/pwntools/badge/?version=stable)](criar_site_documentação)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
-[![Twitter](https://img.shields.io/twitter/follow/Pwntools)](https://twitter.com/pwntools)
+[![Twitter](https://img.shields.io/twitter/follow/DarkcodeHacking)](http://twitter.com/DarkcodeHacking)
 
-Pwntools is a CTF framework and exploit development library. Written in Python, it is designed for rapid prototyping and development, and intended to make exploit writing as simple as possible.
+O THG é um framework voltado para teste de segurança e jogos de  ctf, porém pode ser usado como uma biblioteca para desenvolvimento de exploits.
+Escrito em Python, é projetado para prototipagem e desenvolvimento rápido e tem como objetivo tornar a escrita de exploit a mais simples possível,
+dando a possibilidade para o explorador/dev ter total controle da ferramenta em tempo de execução, podendo trabalhar tanto como console de exploração tanto como o console
+interativo do python em seu modo dinâmico, dando total flexibilidade na hora da exploração
 
 ```python
 from pwn import *
