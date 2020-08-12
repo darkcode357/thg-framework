@@ -3,8 +3,7 @@ import time
 import platform
 import threading
 from queue import Queue
-from cmd2 import Cmd, with_category, with_argparser
-from cmd2.utils import basic_complete
+from THG.View.Interpreter.cmd2.cmd2 import Cmd, with_category, with_argparser
 from art import  art
 from utils import module
 from pathlib import Path
@@ -19,7 +18,9 @@ from THG.Model.BaseXmodeClass.ModuleNotUseException import ModuleNotUseException
 class ThgInterpreter(Cmd, Database):
     colors = "Always"
 
-    console_prompt = "{COLOR_START}THG{COLOR_END}".format(COLOR_START="\033[4m", COLOR_END="\033[0m")
+    console_prompt = "{COLOR_START}THG{COLOR_END}".format(COLOR_START="\033[4m",
+                                                          COLOR_END="\033[0m"
+                                                          )
     console_prompt_end = " > "
     module_name = None
     module_class = None
@@ -33,11 +34,11 @@ class ThgInterpreter(Cmd, Database):
         super(ThgInterpreter, self).__init__()
         Database.__init__(self)
         self.prompt = self.console_prompt + self.console_prompt_end
-        self.hidden_commands.extend(['alias', 'edit', 'macro', 'py', 'pyscript', 'shell', 'shortcuts', 'load'])
-        self.do_banner(None)
+
+        self.thg_banner(None)
 
     @with_category(CMD_CORE)
-    def do_banner(self, args):
+    def thg_banner(self, args):
         """Print THG banner"""
         self.poutput("\n\n")
         self.poutput("""
@@ -82,13 +83,13 @@ class ThgInterpreter(Cmd, Database):
 ))
 
     @with_category(CMD_MODULE)
-    def do_list(self, args):
+    def thg_list(self, args):
         """List all modules"""
         local_modules = module.get_local_modules()
         self._print_modules(local_modules, "Module List:")
 
     @with_category(CMD_MODULE)
-    def do_search(self, args):
+    def thg_search(self, args):
         """
         Search modules
 
@@ -123,7 +124,7 @@ class ThgInterpreter(Cmd, Database):
             completion_items = ['debug']
             if self.module_instance:
                 completion_items += [option.name for option in self.module_instance.options.get_options()]
-        return basic_complete(text, line, begidx, endidx, completion_items)
+        return self.basic_complete(text, line, begidx, endidx, completion_items)
 
     set_parser = argparse.ArgumentParser()
     set_parser.add_argument("name", help="The name of the field you want to set")
@@ -132,7 +133,7 @@ class ThgInterpreter(Cmd, Database):
 
     @with_argparser(set_parser)
     @with_category(CMD_MODULE)
-    def do_set(self, args):
+    def thg_set(self, args):
         """Set module option value/ set program config"""
         if args.name == 'debug':
             self.debug = args.value
@@ -159,10 +160,10 @@ class ThgInterpreter(Cmd, Database):
             modules = []
         else:
             modules = [local_module[0] for local_module in module.get_local_modules()]
-        return basic_complete(text, line, begidx, endidx, modules)
+        return self.basic_complete(text, line, begidx, endidx, modules)
 
     @with_category(CMD_MODULE)
-    def do_use(self, module_name, module_reload=False):
+    def thg_use(self, module_name, module_reload=False):
         """Chose a module"""
         module_file = module.name_convert(module_name)
         module_type = module_name.split("/")[0]
@@ -179,7 +180,7 @@ class ThgInterpreter(Cmd, Database):
             self.poutput("Module/Exploit not found.")
 
     @with_category(CMD_MODULE)
-    def do_back(self, args):
+    def thg_back(self, args):
         """Clear module that chose"""
         self.module_name = None
         self.module_instance = None
@@ -190,10 +191,10 @@ class ThgInterpreter(Cmd, Database):
             completion_items = []
         else:
             completion_items = ['info', 'options', 'missing']
-        return basic_complete(text, line, begidx, endidx, completion_items)
+        return self.basic_complete(text, line, begidx, endidx, completion_items)
 
     @with_category(CMD_MODULE)
-    def do_show(self, content):
+    def thg_show(self, content):
         """
         Display module information
 
@@ -253,9 +254,9 @@ class ThgInterpreter(Cmd, Database):
             )
 
     @with_category(CMD_MODULE)
-    def do_run(self, args):
+    def thg_run(self, args):
         """alias to exploit"""
-        self.do_exploit(args=args)
+        self.thg_exploit(args=args)
 
     def exploit_thread(self, target, target_type, thread_queue):
         target_field = None
@@ -283,7 +284,7 @@ class ThgInterpreter(Cmd, Database):
         thread_queue.get(1)
 
     @with_category(CMD_MODULE)
-    def do_exploit(self, args):
+    def thg_exploit(self, args):
         """Execute module exploit"""
         if not self.module_instance:
             raise ModuleNotUseException()
@@ -388,7 +389,7 @@ class ThgInterpreter(Cmd, Database):
         thread_queue.get(1)
 
     @with_category(CMD_MODULE)
-    def do_check(self, args):
+    def thg_check(self, args):
         """Execute module check"""
         if not self.module_instance:
             raise ModuleNotUseException()
@@ -473,15 +474,15 @@ class ThgInterpreter(Cmd, Database):
         ))
 
     @with_category(CMD_CORE)
-    def do_db_rebuild(self, args):
+    def thg_db_rebuild(self, args):
         """Rebuild database for search"""
         self.db_rebuild()
         self.poutput("Database rebuild done.")
 
     @with_category(CMD_MODULE)
-    def do_reload(self, args):
+    def thg_reload(self, args):
         """reload the chose module"""
-        self.do_use(self.module_name, module_reload=True)
+        self.thg_use(self.module_name, module_reload=True)
 
     def set_prompt(self, module_type, module_name):
         module_prompt = " {module_type}({color}{module_name}{color_end})".format(
