@@ -14,6 +14,8 @@ interativo do python em seu modo dinâmico, dando total flexibilidade na hora da
 ![THGWORK](arquivos/workthg.jpeg)
 -
 ![THGWORK](arquivos/import_dinamico.jpg)
+-
+![THGWORK](arquivos/loadpwn.jpeg)
 com um diferencia super importante sendo capas de carregar modulos dinamicamente durante a execução do modo interativo 
 do console 
 # Documentação
@@ -35,7 +37,23 @@ apt update
 apt upgrade
 apt install python
 apt install python-pip
-apt install 
+apt install git
+git clone https://github.com/darkcode357/thg-framework
+cd thg-framework
+pip install virtualenv
+virtualenv envthg
+# para bash
+source envthg/bin/activate
+# para fish 
+source envthg/bin/activate.fish
+# para csh
+source envthg/bin/activate.csh
+# para xsh
+source envthg/bin/activate.xsh
+# para ps1
+source envthg/bin/activate.ps1
+pip install -r requirements.txt
+python3 thg.py 
 ```
 
 No entanto, alguns dos recursos (assembling/disassembling foreign architectures) requerem dependências não-Python.
