@@ -66,3 +66,27 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md)
 # CONTATO 
 
 se vc tem alguma duvida/bug referente ao thg, abra uma nota issues no github [bug report](https://github.com/darkcode357/thg-framework/issues)
+
+#NOTAS DE RODAPE
+# command categories
+na versão 2.0 do thg ele terá suporte para todos essas categorias de comando 
+
+    CMD_CORE 
+    CMD_MODULE 
+    Data_format   
+    Encryption_encoding
+    Public_key
+    Arithmetic_Logic
+    Networking
+    Language
+    utils
+    data_time
+    extractors
+    compression
+    hashing
+    codetidy
+    forensics
+    othres
+    multmidia
+    flow
+    control

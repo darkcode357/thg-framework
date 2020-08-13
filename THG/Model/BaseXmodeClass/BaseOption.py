@@ -16,4 +16,3 @@ class BaseOption:
     def validate_option(self):
         if self.required and self.value is None:
             raise OptionRequired(self)
-
