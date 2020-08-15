@@ -29,4 +29,13 @@ def hexdump_file(data):
     print ('{:010X}: {:48}  {:16}'.format(i * 16, h, c))
 
 
+def bcdDigits(chars,num):
+    """converte caracter numerico para bcd digit"""
+    for char in chars:
+        char = ord(char)
+        for val in (char >> num,char & 0xF):
+            if val ==0xF:
+                return
+            print(val)
+
 
