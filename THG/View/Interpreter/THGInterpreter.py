@@ -551,8 +551,10 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
     @with_category(CMD_MODULE)
     def thg_run(self, args):
         """alias to exploit"""
-        self.thg_exploit(args=args)
-
+        try:
+            self.thg_exploit(args=args)
+        except Exception:
+            self.thg_check(args=args)
     def exploit_thread(self, target, target_type, thread_queue):
         target_field = None
         port = None
@@ -710,7 +712,8 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
                 target_field = "HOST"
             elif target_type == "http":
                 target_field = "URL"
-
+            elif target_type =="query":
+                target_field ="QUERY"
             target_filename = self.module_instance.options.get_option(
                 target_field)
 

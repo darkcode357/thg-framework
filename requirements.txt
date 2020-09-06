@@ -26,3 +26,6 @@ unicorn>=1.0.2rc1,<1.0.2rc4
 six>=1.12.0
 contextlib2
 numpy
+requests[socks]
+bs4
+
