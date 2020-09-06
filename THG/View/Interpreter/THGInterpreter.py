@@ -140,7 +140,7 @@ class ThgInterpreter(Cmd, Database):
         self._print_modules(modules, 'Search results:')
         self._print_item("The search is only retrieved from the database")
         self._print_item("search <search term> Search for appropriate module")
-        self._print_item("search osint/auxiliary/exploit")
+        self._print_item("search osint/auxiliary/exploit ")
         self._print_item(
             "If you add/delete some new modules, please execute `db_rebuild` first\n\n")
 
