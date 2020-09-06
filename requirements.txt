@@ -28,4 +28,26 @@ contextlib2
 numpy
 requests[socks]
 bs4
-
+Sphinx
+bumpversion
+check-manifest
+pip-tools
+twine
+watchdog
+wheel
+pyyaml
+cryptography
+docutils
+coverage
+pytest
+# This packages are required to install and run our package.
+lxml
+requests
+html_to_etree
+six
+# This packages are required before running setup (i.e. build commands require
+# to import this packages).
+# This packages are required to run all the tests and perform checks.
+coverage
+flake8
+pytest
