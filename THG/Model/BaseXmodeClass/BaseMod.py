@@ -3,7 +3,7 @@ from THG.Model.BaseXmodeClass.BaseOptions import BaseOptions
 from THG.Model.BaseXmodeClass.BaseResult import BaseResult
 
 
-class BaseExploit:
+class BaseMod:
     """atributos da class voltado para criação de modulos"""
     name = None
     description = None

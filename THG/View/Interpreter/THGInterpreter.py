@@ -440,6 +440,7 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
             try:
                 open(args.value, 'r')
                 self.module_instance.multi_target = True
+
             except IOError as e:
                 self._print_item(e, color=Fore.RED)
                 return False

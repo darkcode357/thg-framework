@@ -1,9 +1,8 @@
 from THG.Model.Xmode.osint.search_engines import Dogpile
-from THG.Model.Xmode.exploit.BaseExploit import BaseExploit
-from THG.Model.BaseXmodeClass.BaseOption import BaseOption
+from THG.Model.BaseXmodeClass.BaseMod import BaseMod
 from colorama import Fore
 
-class Exploit(BaseExploit):
+class Exploit(BaseMod):
     def __init__(self):
         super(Exploit, self).__init__()
         self.update_info({
