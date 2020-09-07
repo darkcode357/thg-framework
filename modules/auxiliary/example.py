@@ -10,7 +10,7 @@
 #
 ###
 
-from THG.Model.BaseXmodeClass.BaseMod import BaseMod ##class base to create all modules
+from THG.Model.BaseXmodeClass.BaseMod import BaseMod,BaseOption ##class base to create all modules
 from colorama import Fore
 class Exploit(BaseMod):
   '''
@@ -30,16 +30,14 @@ herança da class pai
       "service_version": "torch_search 0.1",
       "rank":12
       })
-    self.register_http_target()
+    self.register_options([BaseOption(name="SQL",
+                required=True,
+                description="The SQL statement you want to execute",
+                value="updatexml(0,concat(0xa,user()),0)")])
+
   def check(self):
-    query = self.options.get_option("URL")
-    pages = self.options.get_option("pages")
-    engine = Torch()
-    results = engine.search(query,int(pages))
-    for resultado in results.results():
-      for chave,valor in resultado.items():
-        print("{}[ok]{}{}".format(Fore.GREEN,Fore.GREEN,Fore.RESET),chave,valor,"\n",end=" ")
-      print(" ")
+      sql = self.options.get_option("SQL")
+      print(sql)
 
 
 
