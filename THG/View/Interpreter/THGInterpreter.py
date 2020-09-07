@@ -717,6 +717,8 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
                 target_field = "URL"
             elif target_type =="query":
                 target_field ="QUERY"
+            elif target_type == "crawler":
+                target_type="CRAWLER"
             elif target_type=="url":
                 target_field="URL"
             target_filename = self.module_instance.options.get_option(

@@ -6,7 +6,7 @@
 from THG.Model.BaseXmodeClass.BaseOption import BaseOption
 from THG.Model.BaseXmodeClass.BaseOptions import BaseOptions
 from THG.Model.BaseXmodeClass.BaseResult import BaseResult
-
+from ..Xmode.auxiliary.Web import Url
 
 class BaseMod:
     """class attributes aimed at creating modules
@@ -76,6 +76,20 @@ class BaseMod:
                        value=pages)
         ])
 
+    def register_crawler_target(self,EnableUl=None,StoreDB=None,MaxUriLimit=None,SleepTime=None,TakeTimeout=None,ReadTimeout=None,ThreadNum=None,DontCrawl=None,url=None):
+        self.target_type = "crawler"
+        self.register_options([
+        BaseOption(name='url',required=True,description='target url',value=url),
+        BaseOption(name='EnableUl',required=False,description="Enable maximum number of request per URI",value=EnableUl),
+        BaseOption(name = 'StoreDB', required=False, description="Store requests in database", value=StoreDB),
+        BaseOption(name = 'MaxUriLimit', required=False, description="Number max. request per URI", value=MaxUriLimit),
+        BaseOption(name = 'SleepTime', required=False, description="Sleep time (secs) between requests", value=SleepTime),
+        BaseOption(name = 'TakeTimeout', required=False, description="Timeout for loop ending", value=TakeTimeout),
+        BaseOption(name = 'ReadTimeout', required=False, description="Read timeout (-1 forever)", value=ReadTimeout),
+        BaseOption(name = 'ThreadNum', required=False, description="Threads number", value=ThreadNum),
+        BaseOption(name = 'DontCrawl', required=False, description="Filestypes not to crawl", value=DontCrawl)
+
+        ])
     def register_social_target(self,url="https://www.darkcode0x00.com.br"):
         self.target_type="social"
         """adicionar metodo url  para busca de redes sociais """
