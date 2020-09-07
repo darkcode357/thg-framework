@@ -12,7 +12,6 @@
 
 from THG.Model.BaseXmodeClass.BaseMod import BaseMod ##class base to create all modules
 from colorama import Fore
-
 class Exploit(BaseMod):
   '''
 herança da class pai
