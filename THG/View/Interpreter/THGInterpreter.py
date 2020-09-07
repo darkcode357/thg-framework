@@ -504,7 +504,7 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
             raise ModuleNotUseException()
 
         if content == "info":
-            info = self.module_instance.get_info()
+            info = self.module_instance.get_info
             info_table = []
             self.poutput("Module info:")
             for item in info.keys():

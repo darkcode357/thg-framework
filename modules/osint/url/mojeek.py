@@ -18,17 +18,12 @@ class Exploit(BaseMod):
         })
         self.register_query_target()
 
-
     def check(self):
         query = self.options.get_option("query")
         pages = self.options.get_option("pages")
         engine = Mojeek()
-        results = engine.search(query,int(pages))
+        results = engine.search(query, int(pages))
         for resultado in results.results():
-            for chave,valor in resultado.items():
-                    print("{}[ok]{}{}".format(Fore.GREEN,Fore.GREEN,Fore.RESET),chave,valor,"\n",end=" ")
+            for chave, valor in resultado.items():
+                print("{}[ok]{}{}".format(Fore.GREEN, Fore.GREEN, Fore.RESET), chave, valor, "\n", end=" ")
             print(" ")
-
-
-
-
