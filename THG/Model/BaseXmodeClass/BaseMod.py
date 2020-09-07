@@ -1,10 +1,28 @@
+##
+# This module requires THG: https://darkcode0x00.com/download
+# Current source: https://github.com/darkcode357/thg-framework
+##
+
 from THG.Model.BaseXmodeClass.BaseOption import BaseOption
 from THG.Model.BaseXmodeClass.BaseOptions import BaseOptions
 from THG.Model.BaseXmodeClass.BaseResult import BaseResult
 
 
 class BaseMod:
-    """atributos da class voltado para criação de modulos"""
+    """class attributes aimed at creating modules
+    name = None
+    description = None
+    author = []
+    references = []
+    disclosure_date = None
+    service_name = None
+    service_version = None
+    multi_target = False
+    targets = []
+    target_type = None
+    options = None
+    results = None
+    """
     name = None
     description = None
     author = []
@@ -26,18 +44,23 @@ class BaseMod:
     results = None
 
     def __init__(self):
+        """
+        constructor method accessing class attributes
+        """
         self.multi_target = False
         self.target_type = None
         self.targets = []
         self.options = BaseOptions()
         self.results = BaseResult()
 
+    @property
     def get_info(self):
         """função recebe informações dos modulos"""
         info = {}
         for field_name in self.info_fields:
             info[field_name] = getattr(self, field_name)
         return info
+
 
     def register_query_target(self,query="darkcode",pages=20):
         """adicionar metodo query, para busca de informações"""
@@ -54,6 +77,7 @@ class BaseMod:
         ])
 
     def register_social_target(self,url="https://www.darkcode0x00.com.br"):
+        self.target_type="social"
         """adicionar metodo url  para busca de redes sociais """
         self.target_type = "url"
         self.register_options([

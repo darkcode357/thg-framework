@@ -28,7 +28,7 @@ def get_local_modules():
                     module_name=module_name.replace("/", ".")
                 ))
                 module_instance = module_class.Exploit()
-                module_info = module_instance.get_info()
+                module_info = module_instance.get_info
                 module_info['module_name'] = module_name
                 try:
                     getattr(module_instance, 'check')
