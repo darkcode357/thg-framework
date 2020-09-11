@@ -1,6 +1,6 @@
 #
 # -*- coding: utf-8 -*-
-"""Statement parsing classes for cmd2"""
+"""Statement parsing classes for thgcmd"""
 
 import os
 import re
@@ -47,7 +47,7 @@ class MacroArg:
 
 @attr.s(frozen=True)
 class Macro:
-    """Defines a cmd2 macro"""
+    """Defines a thgcmd macro"""
 
     # Name of the macro
     name = attr.ib(validator=attr.validators.instance_of(str))
@@ -67,7 +67,7 @@ class Statement(str):
     """String subclass with additional attributes to store the results of parsing.
 
     The cmd module in the standard library passes commands around as a
-    string. To retain backwards compatibility, cmd2 does the same. However, we
+    string. To retain backwards compatibility, thgcmd does the same. However, we
     need a place to capture the additional output of the command parsing, so we add
     our own attributes to this subclass.
 
@@ -91,7 +91,7 @@ class Statement(str):
     arg_list - the arguments to the command, excluding output redirection and
                command terminators. Each argument is represented as an element
                in the list. Quoted arguments remain quoted. If you want to
-               remove the quotes, use `cmd2.utils.strip_quotes()` or use
+               remove the quotes, use `thgcmd.utils.strip_quotes()` or use
                `argv[1:]`
 
     command_and_args - join the args and the command together with a space. Output
@@ -119,7 +119,7 @@ class Statement(str):
 
     Tips:
 
-    1. `argparse` is your friend for anything complex. `cmd2` has two decorators
+    1. `argparse` is your friend for anything complex. `thgcmd` has two decorators
        (`with_argparser`, and `with_argparser_and_unknown_args`) which you can use
        to make your command method receive a namespace of parsed arguments, whether
        positional or denoted with switches.

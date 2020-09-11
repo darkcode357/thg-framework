@@ -10,6 +10,6 @@ except DistributionNotFound:
     # package is not installed
     pass
 
-from .cmd2 import Cmd, Statement, EmptyStatement, categorize
-from .cmd2 import with_argument_list, with_argparser, with_argparser_and_unknown_args, with_category
+from .thgcmd import Cmd, Statement, EmptyStatement, categorize
+from .thgcmd import with_argument_list, with_argparser, with_argparser_and_unknown_args, with_category
 from .pyscript_bridge import CommandResult

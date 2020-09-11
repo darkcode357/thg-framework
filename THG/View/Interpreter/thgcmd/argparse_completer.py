@@ -615,7 +615,7 @@ class AutoCompleter(object):
         return completions
 
     def complete_command_help(self, tokens: List[str], text: str, line: str, begidx: int, endidx: int) -> List[str]:
-        """Supports the completion of sub-commands for commands through the cmd2 help command."""
+        """Supports the completion of sub-commands for commands through the thgcmd help command."""
         for idx, token in enumerate(tokens):
             if idx >= self._token_start_index:
                 if self._positional_completers:
@@ -629,7 +629,7 @@ class AutoCompleter(object):
         return []
 
     def format_help(self, tokens: List[str]) -> str:
-        """Supports the completion of sub-commands for commands through the cmd2 help command."""
+        """Supports the completion of sub-commands for commands through the thgcmd help command."""
         for idx, token in enumerate(tokens):
             if idx >= self._token_start_index:
                 if self._positional_completers:
@@ -828,7 +828,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
             # split optionals from positionals
             optionals = []
             positionals = []
-            # Begin cmd2 customization (separates required and optional, applies to all changes in this function)
+            # Begin thgcmd customization (separates required and optional, applies to all changes in this function)
             required_options = []
             for action in actions:
                 if action.option_strings:
@@ -838,7 +838,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                         optionals.append(action)
                 else:
                     positionals.append(action)
-            # End cmd2 customization
+            # End thgcmd customization
 
             # build full usage string
             format = self._format_actions_usage
@@ -849,7 +849,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
             text_width = self._width - self._current_indent
             if len(prefix) + len(usage) > text_width:
 
-                # Begin cmd2 customization
+                # Begin thgcmd customization
 
                 # break usage into wrappable parts
                 part_regexp = r'\(.*?\)+|\[.*?\]+|\S+'
@@ -863,7 +863,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                 assert ' '.join(opt_parts) == opt_usage
                 assert ' '.join(pos_parts) == pos_usage
 
-                # End cmd2 customization
+                # End thgcmd customization
 
                 # helper for wrapping lines
                 # noinspection PyMissingOrEmptyDocstring,PyShadowingNames
@@ -890,7 +890,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                 # if prog is short, follow it with optionals or positionals
                 if len(prefix) + len(prog) <= 0.75 * text_width:
                     indent = ' ' * (len(prefix) + len(prog) + 1)
-                    # Begin cmd2 customization
+                    # Begin thgcmd customization
                     if req_parts:
                         lines = get_lines([prog] + req_parts, indent, prefix)
                         lines.extend(get_lines(opt_parts, indent))
@@ -902,12 +902,12 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                         lines = get_lines([prog] + pos_parts, indent, prefix)
                     else:
                         lines = [prog]
-                    # End cmd2 customization
+                    # End thgcmd customization
 
                 # if prog is long, put it on its own line
                 else:
                     indent = ' ' * len(prefix)
-                    # Begin cmd2 customization
+                    # Begin thgcmd customization
                     parts = req_parts + opt_parts + pos_parts
                     lines = get_lines(parts, indent)
                     if len(lines) > 1:
@@ -915,7 +915,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                         lines.extend(get_lines(req_parts, indent))
                         lines.extend(get_lines(opt_parts, indent))
                         lines.extend(get_lines(pos_parts, indent))
-                    # End cmd2 customization
+                    # End thgcmd customization
                     lines = [prog] + lines
 
                 # join lines into usage
@@ -939,7 +939,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                 parts.extend(action.option_strings)
                 return ', '.join(parts)
 
-            # Begin cmd2 customization (less verbose)
+            # Begin thgcmd customization (less verbose)
             # if the Optional takes a value, format is:
             #    -s, --long ARGS
             else:
@@ -947,16 +947,16 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                 args_string = self._format_args(action, default)
 
                 return ', '.join(action.option_strings) + ' ' + args_string
-            # End cmd2 customization
+            # End thgcmd customization
 
     def _metavar_formatter(self, action, default_metavar) -> Callable:
         if action.metavar is not None:
             result = action.metavar
         elif action.choices is not None:
             choice_strs = [str(choice) for choice in action.choices]
-            # Begin cmd2 customization (added space after comma)
+            # Begin thgcmd customization (added space after comma)
             result = '{%s}' % ', '.join(choice_strs)
-            # End cmd2 customization
+            # End thgcmd customization
         else:
             result = default_metavar
 
@@ -970,7 +970,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
 
     def _format_args(self, action, default_metavar) -> str:
         get_metavar = self._metavar_formatter(action, default_metavar)
-        # Begin cmd2 customization (less verbose)
+        # Begin thgcmd customization (less verbose)
         if isinstance(action, _RangeAction) and \
                 action.nargs_min is not None and action.nargs_max is not None:
             result = '{}{{{}..{}}}'.format('%s' % get_metavar(1), action.nargs_min, action.nargs_max)
@@ -978,7 +978,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
             result = '[%s [...]]' % get_metavar(1)
         elif action.nargs == ONE_OR_MORE:
             result = '%s [...]' % get_metavar(1)
-        # End cmd2 customization
+        # End thgcmd customization
         else:
             result = super()._format_args(action, default_metavar)
         return result
@@ -1000,14 +1000,14 @@ class ACArgumentParser(argparse.ArgumentParser):
 
         self._custom_error_message = ''
 
-    # Begin cmd2 customization
+    # Begin thgcmd customization
     def set_custom_message(self, custom_message: str='') -> None:
         """
         Allows an error message override to the error() function, useful when forcing a
         re-parse of arguments with newly required parameters
         """
         self._custom_error_message = custom_message
-    # End cmd2 customization
+    # End thgcmd customization
 
     def add_subparsers(self, **kwargs):
         """Custom override. Sets a default title if one was not given."""
@@ -1048,7 +1048,7 @@ class ACArgumentParser(argparse.ArgumentParser):
         # description
         formatter.add_text(self.description)
 
-        # Begin cmd2 customization (separate required and optional arguments)
+        # Begin thgcmd customization (separate required and optional arguments)
 
         # positionals, optionals and user-defined groups
         for action_group in self._action_groups:
@@ -1079,7 +1079,7 @@ class ACArgumentParser(argparse.ArgumentParser):
                 formatter.add_arguments(action_group._group_actions)
                 formatter.end_section()
 
-        # End cmd2 customization
+        # End thgcmd customization
 
         # epilog
         formatter.add_text(self.epilog)
