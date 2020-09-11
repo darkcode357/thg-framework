@@ -3,7 +3,7 @@ import time
 import platform
 import threading
 from queue import Queue
-from THG.View.Interpreter.cmd2.cmd2 import Cmd, with_category, with_argparser
+from THG.View.Interpreter.thgcmd.thgcmd import Cmd, with_category, with_argparser
 import base64
 import binascii
 import numpy
@@ -30,6 +30,15 @@ class ThgInterpreter(Cmd, Database):
     console_prompt = "{COLOR_START}THG{COLOR_END}".format(COLOR_START=Fore.BLUE,
                                                           COLOR_END=Fore.YELLOW
                                                           )
+    doc_header = 'THG COMMAND HELP'
+    doc_leader = ''
+    intro = None
+    lastcmd = ''
+    misc_header = 'Miscellaneous help topics:'
+    nohelp = '*** No help on %s'
+    prompt = '(THG)'
+    ruler = '='
+    undoc_header = 'Undocumented commands:'
     console_prompt_end = " > "
     module_name = None
     module_class = None

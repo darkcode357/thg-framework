@@ -47,7 +47,7 @@ class CommandResult(namedtuple_with_defaults('CommandResult', ['stdout', 'stderr
 def _exec_cmd(cmd2_app, command: str, echo: bool) -> CommandResult:
     """
     Helper to encapsulate executing a command and capturing the results
-    :param cmd2_app: cmd2 app that will run the command
+    :param cmd2_app: thgcmd app that will run the command
     :param command: command line being run
     :param echo: if True, output will be echoed to stdout/stderr while the command runs
     :return: result of the command
@@ -149,7 +149,7 @@ class ArgparseFunctor:
                         # Check if this argument consumes a range of values
                         if isinstance(action, _RangeAction) and action.nargs_min is not None \
                                 and action.nargs_max is not None:
-                            # this is a cmd2 ranged action.
+                            # this is a thgcmd ranged action.
 
                             if pos_remain >= action.nargs_min:
                                 # Do we meet the minimum count?
@@ -204,7 +204,7 @@ class ArgparseFunctor:
             raise AttributeError("'{}' object has no command called '{}'".format(self._cmd2_app.__class__.__name__,
                                                                                  self._command_name))
 
-        # reconstruct the cmd2 command from the python call
+        # reconstruct the thgcmd command from the python call
         command = self._command_name
 
         def process_argument(action, value):

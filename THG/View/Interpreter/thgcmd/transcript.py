@@ -7,7 +7,7 @@ we need a mechanism to run each command in the transcript as
 a unit test, comparing the expected output to the actual output.
 
 This file contains the classess necessary to make that work. These
-classes are used in cmd2.py::run_transcript_tests()
+classes are used in thgcmd.py::run_transcript_tests()
 """
 import re
 import glob
