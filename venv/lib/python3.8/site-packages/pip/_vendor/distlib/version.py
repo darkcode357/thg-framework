@@ -581,10 +581,7 @@ def _legacy_key(s):
         for p in _VERSION_PART.split(s.lower()):
             p = _VERSION_REPLACE.get(p, p)
             if p:
-                if '0' <= p[:1] <= '9':
-                    p = p.zfill(8)
-                else:
-                    p = '*' + p
+                p = p.zfill(8) if '0' <= p[:1] <= '9' else '*' + p
                 result.append(p)
         result.append('*final')
         return result
@@ -607,13 +604,8 @@ class LegacyVersion(Version):
 
     @property
     def is_prerelease(self):
-        result = False
-        for x in self._parts:
-            if (isinstance(x, string_types) and x.startswith('*') and
-                x < '*final'):
-                result = True
-                break
-        return result
+        return any((isinstance(x, string_types) and x.startswith('*') and
+                x < '*final') for x in self._parts)
 
 
 class LegacyMatcher(Matcher):
@@ -658,7 +650,7 @@ def _semantic_key(s):
             parts = s[1:].split('.')
             # We can't compare ints and strings on Python 3, so fudge it
             # by zero-filling numeric values so simulate a numeric comparison
-            result = tuple([p.zfill(8) if p.isdigit() else p for p in parts])
+            result = tuple(p.zfill(8) if p.isdigit() else p for p in parts)
         return result
 
     m = is_semver(s)
@@ -713,11 +705,7 @@ class VersionScheme(object):
         return self.is_valid_matcher('dummy_name (%s)' % s)
 
     def suggest(self, s):
-        if self.suggester is None:
-            result = None
-        else:
-            result = self.suggester(s)
-        return result
+        return None if self.suggester is None else self.suggester(s)
 
 _SCHEMES = {
     'normalized': VersionScheme(_normalized_key, NormalizedMatcher,

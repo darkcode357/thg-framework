@@ -50,16 +50,16 @@ class CharSetGroupProber(CharSetProber):
     def charset_name(self):
         if not self._best_guess_prober:
             self.get_confidence()
-            if not self._best_guess_prober:
-                return None
+        if not self._best_guess_prober:
+            return None
         return self._best_guess_prober.charset_name
 
     @property
     def language(self):
         if not self._best_guess_prober:
             self.get_confidence()
-            if not self._best_guess_prober:
-                return None
+        if not self._best_guess_prober:
+            return None
         return self._best_guess_prober.language
 
     def feed(self, byte_str):

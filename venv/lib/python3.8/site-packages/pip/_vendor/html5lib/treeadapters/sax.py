@@ -4,10 +4,11 @@ from xml.sax.xmlreader import AttributesNSImpl
 
 from ..constants import adjustForeignAttributes, unadjustForeignAttributes
 
-prefix_mapping = {}
-for prefix, localName, namespace in adjustForeignAttributes.values():
-    if prefix is not None:
-        prefix_mapping[prefix] = namespace
+prefix_mapping = {
+    prefix: namespace
+    for prefix, localName, namespace in adjustForeignAttributes.values()
+    if prefix is not None
+}
 
 
 def to_sax(walker, handler):
@@ -40,9 +41,7 @@ def to_sax(walker, handler):
                                  token["name"])
         elif type in ("Characters", "SpaceCharacters"):
             handler.characters(token["data"])
-        elif type == "Comment":
-            pass
-        else:
+        elif type != "Comment":
             assert False, "Unknown token type"
 
     for prefix, namespace in prefix_mapping.items():

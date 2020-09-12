@@ -173,10 +173,7 @@ TOEXEC  = 0o001           # execute/search by other
 #---------------------------------------------------------
 # initialization
 #---------------------------------------------------------
-if os.name in ("nt", "ce"):
-    ENCODING = "utf-8"
-else:
-    ENCODING = sys.getfilesystemencoding()
+ENCODING = "utf-8" if os.name in ("nt", "ce") else sys.getfilesystemencoding()
 
 #---------------------------------------------------------
 # Some useful functions
@@ -234,7 +231,7 @@ def itn(n, digits=8, format=DEFAULT_FORMAT):
             n = struct.unpack("L", struct.pack("l", n))[0]
 
         s = bytearray()
-        for i in range(digits - 1):
+        for _ in range(digits - 1):
             s.insert(0, n & 0o377)
             n >>= 8
         s.insert(0, 0o200)
@@ -269,7 +266,7 @@ def copyfileobj(src, dst, length=None):
 
     BUFSIZE = 16 * 1024
     blocks, remainder = divmod(length, BUFSIZE)
-    for b in range(blocks):
+    for _ in range(blocks):
         buf = src.read(BUFSIZE)
         if len(buf) < BUFSIZE:
             raise IOError("end of file reached")
@@ -555,7 +552,7 @@ class _Stream(object):
         """
         if pos - self.pos >= 0:
             blocks, remainder = divmod(pos - self.pos, self.bufsize)
-            for i in range(blocks):
+            for _ in range(blocks):
                 self.read(self.bufsize)
             self.read(remainder)
         else:
@@ -1155,11 +1152,12 @@ class TarInfo(object):
         """
         name = name.encode(encoding, errors) + NUL
 
-        info = {}
-        info["name"] = "././@LongLink"
-        info["type"] = type
-        info["size"] = len(name)
-        info["magic"] = GNU_MAGIC
+        info = {
+            "name": "././@LongLink",
+            "type": type,
+            "size": len(name),
+            "magic": GNU_MAGIC,
+        }
 
         # create extended header + name blocks.
         return cls._create_header(info, USTAR_FORMAT, encoding, errors) + \
@@ -1206,11 +1204,12 @@ class TarInfo(object):
 
         # We use a hardcoded "././@PaxHeader" name like star does
         # instead of the one that POSIX recommends.
-        info = {}
-        info["name"] = "././@PaxHeader"
-        info["type"] = type
-        info["size"] = len(records)
-        info["magic"] = POSIX_MAGIC
+        info = {
+            "name": "././@PaxHeader",
+            "type": type,
+            "size": len(records),
+            "magic": POSIX_MAGIC,
+        }
 
         # Create pax header + record blocks.
         return cls._create_header(info, USTAR_FORMAT, "ascii", "replace") + \
@@ -1258,7 +1257,7 @@ class TarInfo(object):
         if obj.type == GNUTYPE_SPARSE:
             pos = 386
             structs = []
-            for i in range(4):
+            for _ in range(4):
                 try:
                     offset = nti(buf[pos:pos + 12])
                     numbytes = nti(buf[pos + 12:pos + 24])
@@ -1363,7 +1362,7 @@ class TarInfo(object):
         while isextended:
             buf = tarfile.fileobj.read(BLOCKSIZE)
             pos = 0
-            for i in range(21):
+            for _ in range(21):
                 try:
                     offset = nti(buf[pos:pos + 12])
                     numbytes = nti(buf[pos + 12:pos + 24])
@@ -1408,11 +1407,7 @@ class TarInfo(object):
         # The only other value that is currently allowed by the standard is
         # "ISO-IR 10646 2000 UTF-8" in other words UTF-8.
         hdrcharset = pax_headers.get("hdrcharset")
-        if hdrcharset == "BINARY":
-            encoding = tarfile.encoding
-        else:
-            encoding = "utf8"
-
+        encoding = tarfile.encoding if hdrcharset == "BINARY" else "utf8"
         # Parse pax header information. A record looks like that:
         # "%d %s=%s\n" % (length, keyword, value). length is the size
         # of the complete record including the length field itself and
@@ -1488,9 +1483,11 @@ class TarInfo(object):
         offsets = []
         for match in re.finditer(br"\d+ GNU.sparse.offset=(\d+)\n", buf):
             offsets.append(int(match.group(1)))
-        numbytes = []
-        for match in re.finditer(br"\d+ GNU.sparse.numbytes=(\d+)\n", buf):
-            numbytes.append(int(match.group(1)))
+        numbytes = [
+            int(match.group(1))
+            for match in re.finditer(br"\d+ GNU.sparse.numbytes=(\d+)\n", buf)
+        ]
+
         next.sparse = list(zip(offsets, numbytes))
 
     def _proc_gnusparse_01(self, next, pax_headers):
@@ -1522,9 +1519,7 @@ class TarInfo(object):
         for keyword, value in pax_headers.items():
             if keyword == "GNU.sparse.name":
                 setattr(self, "path", value)
-            elif keyword == "GNU.sparse.size":
-                setattr(self, "size", int(value))
-            elif keyword == "GNU.sparse.realsize":
+            elif keyword in ["GNU.sparse.size", "GNU.sparse.realsize"]:
                 setattr(self, "size", int(value))
             elif keyword in PAX_FIELDS:
                 if keyword in PAX_NUMBER_FIELDS:
@@ -1982,10 +1977,7 @@ class TarFile(object):
         tarinfo.mode = stmd
         tarinfo.uid = statres.st_uid
         tarinfo.gid = statres.st_gid
-        if type == REGTYPE:
-            tarinfo.size = statres.st_size
-        else:
-            tarinfo.size = 0
+        tarinfo.size = statres.st_size if type == REGTYPE else 0
         tarinfo.mtime = statres.st_mtime
         tarinfo.type = type
         tarinfo.linkname = linkname
@@ -2000,10 +1992,13 @@ class TarFile(object):
             except KeyError:
                 pass
 
-        if type in (CHRTYPE, BLKTYPE):
-            if hasattr(os, "major") and hasattr(os, "minor"):
-                tarinfo.devmajor = os.major(statres.st_rdev)
-                tarinfo.devminor = os.minor(statres.st_rdev)
+        if (
+            type in (CHRTYPE, BLKTYPE)
+            and hasattr(os, "major")
+            and hasattr(os, "minor")
+        ):
+            tarinfo.devmajor = os.major(statres.st_rdev)
+            tarinfo.devminor = os.minor(statres.st_rdev)
         return tarinfo
 
     def list(self, verbose=True):
@@ -2170,11 +2165,7 @@ class TarFile(object):
         """
         self._check("r")
 
-        if isinstance(member, str):
-            tarinfo = self.getmember(member)
-        else:
-            tarinfo = member
-
+        tarinfo = self.getmember(member) if isinstance(member, str) else member
         # Prepare the link target for makelink().
         if tarinfo.islnk():
             tarinfo._link_target = os.path.join(path, tarinfo.linkname)
@@ -2207,11 +2198,7 @@ class TarFile(object):
         """
         self._check("r")
 
-        if isinstance(member, str):
-            tarinfo = self.getmember(member)
-        else:
-            tarinfo = member
-
+        tarinfo = self.getmember(member) if isinstance(member, str) else member
         if tarinfo.isreg():
             return self.fileobject(self, tarinfo)
 
@@ -2332,11 +2319,7 @@ class TarFile(object):
             raise ExtractError("special devices not supported by system")
 
         mode = tarinfo.mode
-        if tarinfo.isblk():
-            mode |= stat.S_IFBLK
-        else:
-            mode |= stat.S_IFCHR
-
+        mode |= stat.S_IFBLK if tarinfo.isblk() else stat.S_IFCHR
         os.mknod(targetpath, mode,
                  os.makedev(tarinfo.devmajor, tarinfo.devminor))
 
@@ -2475,11 +2458,7 @@ class TarFile(object):
             name = os.path.normpath(name)
 
         for member in reversed(members):
-            if normalize:
-                member_name = os.path.normpath(member.name)
-            else:
-                member_name = member.name
-
+            member_name = os.path.normpath(member.name) if normalize else member.name
             if name == member_name:
                 return member
 
