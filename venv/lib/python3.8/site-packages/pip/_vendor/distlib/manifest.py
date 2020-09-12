@@ -351,7 +351,7 @@ class Manifest(object):
                 assert prefix_re.startswith(start) and prefix_re.endswith(end)
                 prefix_re = prefix_re[len(start): len(prefix_re) - len(end)]
             sep = os.sep
-            if os.sep == '\\':
+            if sep == '\\':
                 sep = r'\\'
             if _PYTHON_VERSION <= (3, 2):
                 pattern_re = '^' + base + sep.join((prefix_re,
@@ -384,7 +384,7 @@ class Manifest(object):
         # any OS.  So change all non-escaped dots in the RE to match any
         # character except the special characters (currently: just os.sep).
         sep = os.sep
-        if os.sep == '\\':
+        if sep == '\\':
             # we're using a regex to manipulate a regex, so we need
             # to escape the backslash twice
             sep = r'\\\\'

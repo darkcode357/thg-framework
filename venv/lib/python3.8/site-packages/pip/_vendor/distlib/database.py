@@ -170,10 +170,10 @@ class DistributionPath(object):
                 else:
                     self._cache_egg.add(dist)
 
-            if gen_dist:
-                self._cache.generated = True
-            if gen_egg:
-                self._cache_egg.generated = True
+        if gen_dist:
+            self._cache.generated = True
+        if gen_egg:
+            self._cache_egg.generated = True
 
     @classmethod
     def distinfo_dirname(cls, name, version):
@@ -207,17 +207,13 @@ class DistributionPath(object):
                 :class:`EggInfoDistribution` instances
         """
         if not self._cache_enabled:
-            for dist in self._yield_distributions():
-                yield dist
+            yield from self._yield_distributions()
         else:
             self._generate_cache()
 
-            for dist in self._cache.path.values():
-                yield dist
-
+            yield from self._cache.path.values()
             if self._include_egg:
-                for dist in self._cache_egg.path.values():
-                    yield dist
+                yield from self._cache_egg.path.values()
 
     def get_distribution(self, name):
         """
@@ -310,8 +306,7 @@ class DistributionPath(object):
                     if name in d:
                         yield d[name]
                 else:
-                    for v in d.values():
-                        yield v
+                    yield from d.values()
 
 
 class Distribution(object):
@@ -442,10 +437,7 @@ class Distribution(object):
         """
         Return a textual representation of this instance,
         """
-        if self.source_url:
-            suffix = ' [%s]' % self.source_url
-        else:
-            suffix = ''
+        suffix = ' [%s]' % self.source_url if self.source_url else ''
         return '<Distribution %s (%s)%s>' % (self.name, self.version, suffix)
 
     def __eq__(self, other):
@@ -667,8 +659,7 @@ class InstalledDistribution(BaseInstalledDistribution):
 
         :returns: iterator of (path, hash, size)
         """
-        for result in self._get_records():
-            yield result
+        yield from self._get_records()
 
     def write_installed_files(self, paths, prefix, dry_run=False):
         """
@@ -729,11 +720,7 @@ class InstalledDistribution(BaseInstalledDistribution):
                 if size and actual_size != size:
                     mismatches.append((path, 'size', size, actual_size))
                 elif hash_value:
-                    if '=' in hash_value:
-                        hasher = hash_value.split('=', 1)[0]
-                    else:
-                        hasher = None
-
+                    hasher = hash_value.split('=', 1)[0] if '=' in hash_value else None
                     with open(path, 'rb') as f:
                         actual_hash = self.get_hash(f.read(), hasher)
                         if actual_hash != hash_value:
@@ -783,7 +770,7 @@ class InstalledDistribution(BaseInstalledDistribution):
         lines = []
         for key in ('prefix', 'lib', 'headers', 'scripts', 'data'):
             path = paths[key]
-            if os.path.isdir(paths[key]):
+            if os.path.isdir(path):
                 lines.append('%s=%s' % (key,  path))
         for ns in paths.get('namespace', ()):
             lines.append('namespace=%s' % ns)
@@ -1167,12 +1154,12 @@ class DependencyGraph(object):
             if len(adjs) == 0 and not skip_disconnected:
                 disconnected.append(dist)
             for other, label in adjs:
-                if not label is None:
+                if label is not None:
                     f.write('"%s" -> "%s" [label="%s"]\n' %
                             (dist.name, other.name, label))
                 else:
                     f.write('"%s" -> "%s"\n' % (dist.name, other.name))
-        if not skip_disconnected and len(disconnected) > 0:
+        if not skip_disconnected and disconnected:
             f.write('subgraph disconnected {\n')
             f.write('label = "Disconnected"\n')
             f.write('bgcolor = red\n')
@@ -1216,9 +1203,7 @@ class DependencyGraph(object):
 
     def __repr__(self):
         """Representation of the graph"""
-        output = []
-        for dist, adjs in self.adjacency_list.items():
-            output.append(self.repr_node(dist))
+        output = [self.repr_node(dist) for dist, adjs in self.adjacency_list.items()]
         return '\n'.join(output)
 
 

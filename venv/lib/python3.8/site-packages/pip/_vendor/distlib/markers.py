@@ -66,7 +66,7 @@ class Evaluator(object):
                 raise NotImplementedError('op not implemented: %s' % op)
             elhs = expr['lhs']
             erhs = expr['rhs']
-            if _is_literal(expr['lhs']) and _is_literal(expr['rhs']):
+            if _is_literal(elhs) and _is_literal(erhs):
                 raise SyntaxError('invalid comparison: %s %s %s' % (elhs, op, erhs))
 
             lhs = self.evaluate(elhs, context)
