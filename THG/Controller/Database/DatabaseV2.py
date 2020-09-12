@@ -17,7 +17,7 @@ class ApIkeys(Base):
     __tablename__ = 'api_keys'
     id = Column(Integer, primary_key=True)
     token = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
     def __repr__(self):
@@ -32,34 +32,40 @@ class AsyncCallbacks(Base):
     listener_uri = Column(String)
     target_host = Column(String)
     target_port = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class AutomaticExploitationMatchResults(Base):
+    __tablename__ ='AutomaticExploitationMatchResults'
+    id = Column(Integer, primary_key=True)
     match_id = Column(Integer)
     trun_id = Column(Integer)
     state = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["match_id"], name: "index_automatic_exploitation_match_results_on_match_id"
     # t.index ["run_id"], name: "index_automatic_exploitation_match_results_on_run_id"
 
 
 class AutomaticExploitationMatchSets(Base):
+    __tablename__ ='AutomaticExploitationMatchSets'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(String)
     user_id = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["user_id"], name: "index_automatic_exploitation_match_sets_on_user_id"
     # t.index ["workspace_id"], name: "index_automatic_exploitation_match_sets_on_workspace_id"
 
 
 class AutomaticExploitationMatches(Base):
+    __tablename__ = 'AutomaticExploitationMatches'
+    id = Column(Integer, primary_key=True)
     module_detail_id = Column(Integer)
     state = Column(String)
     nexpose_data_vulnerability_definition_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     match_set_id = Column(Integer)
     matchable_type = Column(String)
@@ -70,6 +76,8 @@ class AutomaticExploitationMatches(Base):
 
 
 class AutomaticExploitationRuns(Base):
+    __tablename__ = 'AutomaticExploitationRuns'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     user_id = Column(Integer)
     match_set_id = Column(Integer)
@@ -81,27 +89,35 @@ class AutomaticExploitationRuns(Base):
 
 
 class Clients(Base):
+    __tablename__ = 'Clients'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     ua_string = Column(String)
     ua_name = Column(String)
     ua_ver = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class CredentialCoresTasks(Base):
+    __tablename__ = 'CredentialCoresTasks'
+    id = Column(Integer, primary_key=True)
     core_id = Column(Integer)
     task_id = Column(Integer)
 
 
 class CredentialLoginsTasks(Base):
+    __tablename__ = 'CredentialLoginsTasks'
+    id = Column(Integer, primary_key=True)
     login_id = Column(Integer)
     task_id = Column(Integer)
 
 
 class Creds(Base):
+    __tablename__ = 'Creds'
+    id = Column(Integer, primary_key=True)
     service_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     service_id = Column(String)
     passwpassw = Column(String)
@@ -114,9 +130,11 @@ class Creds(Base):
 
 
 class Events(Base):
+    __tablename__ = 'Events'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     host_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     name = Column(String)
     updated_at = Column(DateTime)
     critical = Column(Boolean, unique=False, default=True)
@@ -126,6 +144,8 @@ class Events(Base):
 
 
 class ExploitAttempts(Base):
+    __tablename__ = 'ExploitAttempts'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     service_id = Column(Integer)
     vuln_id = Column(Integer)
@@ -142,16 +162,20 @@ class ExploitAttempts(Base):
 
 
 class ExploitedHosts(Base):
+    __tablename__ = 'ExploitedHosts'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     service_id = Column(Integer)
     session_uuid = Column(String)
     name = Column(String)
     payload = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class HostDetails(Base):
+    __tablename__ = 'HostDetails'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     nx_console_id = Column(Integer)
     nx_device_id = Column(Integer)
@@ -163,7 +187,9 @@ class HostDetails(Base):
 
 
 class Hosts(Base):
-    created_at = Column(DateTime, default=datetime.utcnow)
+    __tablename__ = 'Hosts'
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     address = Column(String)
     mac = Column(String)
     comm = Column(String)
@@ -198,12 +224,16 @@ class Hosts(Base):
 
 
 class HostsTags(Base):
+    __tablename__ = 'HostsTags'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     tag_id = Column(Integer)
 
 
 class Listeners(Base):
-    created_at = Column(DateTime, default=datetime.utcnow)
+    __tablename__ = 'Listeners'
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     workspace_id = Column(Integer)
     task_id = Column(Integer)
@@ -217,13 +247,15 @@ class Listeners(Base):
 
 
 class Loots(Base):
+    __tablename__ = 'Loots'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     host_id = Column(Integer)
     service_id = Column(Integer)
     ltype = Column(String)
     path = Column(String)
     data = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     content_type = Column(String)
     name = Column(String)
@@ -233,7 +265,9 @@ class Loots(Base):
 
 
 class Macros(Base):
-    created_at = Column(DateTime, default=datetime.utcnow)
+    __tablename__ = 'Macros'
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     owner = Column(String)
     name = Column(String)
@@ -243,13 +277,15 @@ class Macros(Base):
 
 
 class THGCredentialCores(Base):
+    __tablename__ = 'THGCredentialCores'
+    id = Column(Integer, primary_key=True)
     origin_type = Column(String)
     origin_id = Column(Integer)
     private_id = Column(Integer)
     public_id = Column(Integer)
     realm_id = Column(Integer)
     workspace_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     logins_count = Column(Integer)
     # t.index ["origin_type", "origin_id"], name: "index_THG_credential_cores_on_origin_type_and_origin_id"
@@ -266,58 +302,72 @@ class THGCredentialCores(Base):
 
 
 class THGCredentialLogins(Base):
+    __tablename__ = 'THGCredentialLogins'
+    id = Column(Integer, primary_key=True)
     core_id = Column(Integer)
     service_id = Column(Integer)
     access_level = Column(String)
     status = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["core_id", "service_id"], name: "index_THG_credential_logins_on_core_id_and_service_id", unique: true
     # t.index ["service_id", "core_id"], name: "index_THG_credential_logins_on_service_id_and_core_id", unique: true
 
 
 class THGCredentialOriginCrackedPasswords(Base):
+    __tablename__ = 'THGCredentialOriginCrackedPasswords'
+    id = Column(Integer, primary_key=True)
     THG_credential_core_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["THG_credential_core_id"], name:originating_credential_cores
 
 
 class THGCredentialOriginImports(Base):
+    __tablename__ = 'THGCredentialOriginImports'
+    id = Column(Integer, primary_key=True)
     filename = Column(String)
     task_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["task_id"], name: "index_THG_credential_origin_imports_on_task_id"
 
 
 class THGCredentialOriginManuals(Base):
+    __tablename__ = 'THGCredentialOriginManuals'
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["user_id"], name: "index_THG_credential_origin_manuals_on_user_id"
 
 
 class THGCredentialOriginServices(Base):
+    __tablename__ = 'THGCredentialOriginServices'
+    id = Column(Integer, primary_key=True)
     service_id = Column(Integer)
     module_full_name = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["service_id", "module_full_name"], name: "unique_THG_credential_origin_services", unique: true
 
 
 class THGCredentialOriginSessions(Base):
+    __tablename__ = 'THGCredentialOriginSessions'
+    id = Column(Integer, primary_key=True)
     post_reference_name = Column(String)
     session_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["session_id", "post_reference_name"], name: "unique_THG_credential_origin_sessions", unique: true
 
 
 class THGCredentialPrivates(Base):
+    __tablename__ = 'THGCredentialPrivates'
+    id = Column(Integer, primary_key=True)
     type = Column(String)
     data = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     jtr_format = Column(String)
     # t.index "type, decode(md5(data), 'hex'::text)", name: "index_THG_credential_privates_on_type_and_data_sshkey", unique: true, where: "((type)::text = 'THG::Credential::SSHKey'::text)"
@@ -325,40 +375,52 @@ class THGCredentialPrivates(Base):
 
 
 class THGCredentialPublics(Base):
+    __tablename__ = 'THGCredentialPublics'
+    id = Column(Integer, primary_key=True)
     username = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     type = Column(String)
     # t.index ["username"], name: "index_THG_credential_publics_on_username", unique: true
 
 
 class THGCredentialRealms(Base):
+    __tablename__ = 'THGCredentialRealms'
+    id = Column(Integer, primary_key=True)
     key = Column(String)
     value = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["key", "value"], name: "index_THG_credential_realms_on_key_and_value", unique: true
 
 
 class ModRefs(Base):
+    __tablename__ = 'ModRefs'
+    id = Column(Integer, primary_key=True)
     module = Column(String)
     mtype = Column(String)
     ref = Column(String)
 
 
 class ModuleActions(Base):
+    __tablename__ = 'ModuleActions'
+    id = Column(Integer, primary_key=True)
     detail_id = Column(Integer)
     name = Column(String)
     # t.index ["detail_id"], name: "index_module_actions_on_detail_id"
 
 
 class ModuleArchs(Base):
+    __tablename__ = 'ModuleArchs'
+    id = Column(Integer, primary_key=True)
     detail_id = Column(Integer)
     name = Column(String)
     # t.index ["detail_id"], name: "index_module_archs_on_detail_id"
 
 
 class ModuleAuthors(Base):
+    __tablename__ = 'ModuleAuthors'
+    id = Column(Integer, primary_key=True)
     detail_id = Column(Integer)
     name = Column(String)
     email = Column(String)
@@ -366,6 +428,8 @@ class ModuleAuthors(Base):
 
 
 class ModuleDetails(Base):
+    __tablename__ = 'ModuleDetails'
+    id = Column(Integer, primary_key=True)
     mtime = Column(DateTime)
     file = Column(String)
     mtype = Column(String)
@@ -388,24 +452,32 @@ class ModuleDetails(Base):
 
 
 class ModuleMixins(Base):
+    __tablename__ = 'ModuleMixins'
+    id = Column(Integer, primary_key=True)
     detail_id = Column(Integer)
     name = Column(String)
     # t.index ["detail_id"], name: "index_module_mixins_on_detail_id"
 
 
 class ModulePlatforms(Base):
+    __tablename__ = 'ModulePlatforms'
+    id = Column(Integer, primary_key=True)
     detail_id = Column(Integer)
     name = Column(String)
     # t.index ["detail_id"], name: "index_module_platforms_on_detail_id"
 
 
 class ModuleRefs(Base):
+    __tablename__ = 'ModuleRefs'
+    id = Column(Integer, primary_key=True)
     name = Column(String)
     # t.index ["detail_id"], name: "index_module_refs_on_detail_id"
     # t.index ["name"], name: "index_module_refs_on_name"
 
 
 class ModuleRuns(Base):
+    __tablename__ = 'ModuleRuns'
+    id = Column(Integer, primary_key=True)
     attempted_at = Column(DateTime, default=datetime.datetime.utcnow)
     fail_detail = Column(String)
     fail_reason = Column(String)
@@ -418,13 +490,15 @@ class ModuleRuns(Base):
     trackable_type = Column(String)
     user_id = Column(Integer)
     username = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     # t.index ["session_id"], name: "index_module_runs_on_session_id"
     # t.index ["user_id"], name: "index_module_runs_on_user_id"
 
 
 class ModuleTargets(Base):
+    __tablename__ = 'ModuleTargets'
+    id = Column(Integer, primary_key=True)
     detail_id = Column(Integer)
     index = Column(Integer)
     name = Column(String)
@@ -432,7 +506,9 @@ class ModuleTargets(Base):
 
 
 class NexposeConsoles(Base):
-    created_at = Column(DateTime, default=datetime.utcnow)
+    __tablename__ = 'NexposeConsoles'
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     enabled = Column(Boolean, unique=False, default=True)
     owner = Column(String)
@@ -448,7 +524,9 @@ class NexposeConsoles(Base):
 
 
 class Notes(Base):
-    created_at = Column(DateTime, default=datetime.utcnow)
+    __tablename__ = 'Notes'
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     ntype = Column(String)
     workspace_id = Column(Integer)
     service_id = Column(Integer)
@@ -463,6 +541,8 @@ class Notes(Base):
 
 
 class Payloads(Base):
+    __tablename__ = 'Payloads'
+    id = Column(Integer, primary_key=True)
     name = Column(String)
     uuid = Column(String)
     uuid_mask = Column(Integer)
@@ -475,12 +555,14 @@ class Payloads(Base):
     raw_payload_hash = Column(String)
     build_status = Column(String)
     build_opts = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class Profiles(Base):
-    created_at = Column(DateTime, default=datetime.utcnow)
+    __tablename__ = 'Profiles'
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     active = Column(Boolean, unique=False, default=True)
     name = Column(String)
@@ -489,29 +571,35 @@ class Profiles(Base):
 
 
 class Refs(Base):
+    __tablename__ = 'Refs'
+    id = Column(Integer, primary_key=True)
     ref_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     name = Column(String)
     updated_at = Column(DateTime)
     # t.index ["name"], name: "index_refs_on_name"
 
 
 class ReportTemplates(Base):
+    __tablename__ = 'ReportTemplates'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     created_by = Column(String)
     path = Column(String)
     name = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class Reports(Base):
+    __tablename__ = 'Reports'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     created_by = Column(String)
     rtype = Column(String)
     path = Column(String)
     options = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     downloaded_at = Column(DateTime)
     task_id = Column(Integer)
@@ -519,14 +607,18 @@ class Reports(Base):
 
 
 class Routes(Base):
+    __tablename__ = 'Routes'
+    id = Column(Integer, primary_key=True)
     session_id = Column(Integer)
     subnet = Column(String)
     netmask = Column(String)
 
 
 class Services(Base):
+    __tablename__ = 'Services'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     port = Column(Integer)
     proto = Column(String)
     state = Column(String)
@@ -541,16 +633,20 @@ class Services(Base):
 
 
 class SessionEvents(Base):
+    __tablename__ = 'SessionEvents'
+    id = Column(Integer, primary_key=True)
     session_id = Column(Integer)
     etype = Column(String)
     command = Column(String)
     output = Column(String)
     remote_path = Column(String)
     local_path = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
 
 
 class Sessions(Base):
+    __tablename__ = 'Sessions'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     stype = Column(String)
     via_exploit = Column(String)
@@ -569,45 +665,58 @@ class Sessions(Base):
 
 
 class Tags(Base):
+    __tablename__ = 'Tags'
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
     name = Column(String)
     desc = Column(String)
     report_summary = Column(Boolean, unique=False, default=True)
     report_detail = Column(Boolean, unique=False, default=True)
     critical = Column(Boolean, unique=False, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class TaskCreds(Base):
+    __tablename__ = 'TaskCreds'
+    id = Column(Integer, primary_key=True)
     task_id = Column(Integer)
     cred_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class TaskHosts(Base):
+    __tablename__ = 'TaskHosts'
+    id = Column(Integer, primary_key=True)
     task_id = Column(Integer)
     host_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class TaskServices(Base):
+    __tablename__ = 'TaskServices'
+    id = Column(Integer, primary_key=True)
     task_id = Column(Integer)
     service_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class TaskSessions(Base):
+    __tablename__ = 'TaskSessions'
+    id = Column(Integer, primary_key=True)
+
     task_id = Column(Integer)
     session_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class Tasks(Base):
+    __tablename__ = 'Tasks'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     created_by = Column(String)
     module = Column(String)
@@ -618,7 +727,7 @@ class Tasks(Base):
     progress = Column(Integer)
     options = Column(String)
     error = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     result = Column(String)
     module_uuid = Column(String)
@@ -626,11 +735,13 @@ class Tasks(Base):
 
 
 class Users(Base):
+    __tablename__ = 'Users'
+    id = Column(Integer, primary_key=True)
     username = Column(String)
     crypted_password = Column(String)
     password_salt = Column(String)
     persistence_token = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     fullname = Column(String)
     email = Column(String)
@@ -641,6 +752,8 @@ class Users(Base):
 
 
 class VulnAttempts(Base):
+    __tablename__ = 'VulnAttempts'
+    id = Column(Integer, primary_key=True)
     vuln_id = Column(Integer)
     attempted_at = Column(DateTime, default=datetime.datetime.utcnow)
     exploited = Column(Boolean, unique=False, default=True)
@@ -653,6 +766,8 @@ class VulnAttempts(Base):
 
 
 class VulnDetails(Base):
+    __tablename__ = 'VulnDetails'
+    id = Column(Integer, primary_key=True)
     vuln_id = Column(Integer)
     cvss_score = Column(Float)
     cvss_vector = Column(String)
@@ -678,9 +793,11 @@ class VulnDetails(Base):
 
 
 class Vulns(Base):
+    __tablename__ = 'Vulns'
+    id = Column(Integer, primary_key=True)
     host_id = Column(Integer)
     service_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     name = Column(String)
     updated_at = Column(DateTime)
     info = Column(String)
@@ -694,13 +811,17 @@ class Vulns(Base):
 
 
 class VulnsRefs(Base):
+    __tablename__ = 'VulnsRefs'
+    id = Column(Integer, primary_key=True)
     ref_id = Column(Integer)
     vuln_id = Column(Integer)
 
 
 class WebForms(Base):
+    __tablename__ = 'WebForms'
+    id = Column(Integer, primary_key=True)
     web_site_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     path = Column(String)
     method = Column(String)
@@ -710,8 +831,10 @@ class WebForms(Base):
 
 
 class WebPages(Base):
+    __tablename__ = 'WebPages'
+    id = Column(Integer, primary_key=True)
     web_site_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     path = Column(String)
     query = Column(String)
@@ -729,8 +852,10 @@ class WebPages(Base):
 
 
 class WebSites(Base):
+    __tablename__ = 'WebSites'
+    id = Column(Integer, primary_key=True)
     service_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     vhost = Column(String)
     comments = Column(String)
@@ -741,8 +866,10 @@ class WebSites(Base):
 
 
 class WebVulns(Base):
+    __tablename__ = 'WebVulns'
+    id = Column(Integer, primary_key=True)
     web_site_id = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
 
     updated_at = Column(DateTime)
     path = Column(String)
@@ -766,6 +893,8 @@ class WebVulns(Base):
 
 
 class WmapRequests(Base):
+    __tablename__ = 'WmapRequests'
+    id = Column(Integer, primary_key=True)
     host = Column(String)
     address = Column(String)
     port = Column(Integer)
@@ -778,21 +907,25 @@ class WmapRequests(Base):
     respcode = Column(String)
     resphead = Column(String)
     response = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class WmapTargets(Base):
+    __tablename__ = 'WmapTargets'
+    id = Column(Integer, primary_key=True)
     host = Column(String)
     address = Column(String)
     port = Column(Integer)
     ssl = Column(Integer)
     selected = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
 
 
 class WorkspaceMembers(Base):
+    __tablename__ = 'WorkspaceMembers'
+    id = Column(Integer, primary_key=True)
     workspace_id = Column(Integer)
     user_id = Column(Integer)
 
@@ -801,11 +934,15 @@ class Workspaces(Base):
     '''
     class r
     '''
+    __tablename__ = 'Workspaces'
+    id = Column(Integer, primary_key=True)
     name = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime)
     boundary = Column(String)
     description = Column(String)
     owner_id = Column(Integer)
     limit_to_network = Column(Boolean, unique=False, default=True)
     import_fingerprint = Column(Boolean, unique=False, default=True)
+
+#Base.metadata.create_all(engine)

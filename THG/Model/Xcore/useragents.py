@@ -1,3 +1,7 @@
+##
+# This module requires THG: https://darkcode0x00.com/download
+# Current source: https://github.com/darkcode357/thg-framework
+##
 """
 Database of >22,000 user agent strings
 """
