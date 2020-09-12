@@ -445,8 +445,6 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
             except IndexError:
                 print("digite a sintaxe correta\nncode idna string encoding\n ou use o comando help")
 
-        else:
-            pass
         try:
             pass
 
@@ -473,7 +471,7 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
             except IOError as e:
                 self._print_item(e, color=Fore.RED)
                 return False
-        elif not args.file and args.name in ["HOST", "URL"]:
+        elif args.name in ["HOST", "URL"]:
             self.module_instance.multi_target = False
             self.module_instance.targets = None
 
@@ -541,7 +539,7 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
             self.poutput(
                 tabulate(info_table, colalign=("right",), tablefmt="plain"))
 
-        if content == "options" or content == "info":
+        if content in ["options", "info"]:
             options = self.module_instance.options.get_options()
             default_options_instance = BaseOption()
             options_table = []
@@ -592,11 +590,11 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
         target_field = None
         port = None
 
-        if target_type == "tcp":
+        if target_type == "http":
+            target_field = "URL"
+        elif target_type == "tcp":
             [target, port] = module.parse_ip_port(target)
             target_field = "HOST"
-        elif target_type == "http":
-            target_field = "URL"
         exp = self.module_class.Exploit()
         exp.options.set_option(target_field, target)
         exp.options.set_option(
@@ -701,11 +699,11 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
         target_field = None
         port = None
 
-        if target_type == "tcp":
+        if target_type == "http":
+            target_field = "URL"
+        elif target_type == "tcp":
             [target, port] = module.parse_ip_port(target)
             target_field = "HOST"
-        elif target_type == "http":
-            target_field = "URL"
         exp = self.module_class.Exploit()
         exp.options.set_option(target_field, target)
         exp.options.set_option(
