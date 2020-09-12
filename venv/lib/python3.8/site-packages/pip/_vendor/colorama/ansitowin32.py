@@ -42,9 +42,12 @@ class StreamWrapper(object):
 
     def isatty(self):
         stream = self.__wrapped
-        if 'PYCHARM_HOSTED' in os.environ:
-            if stream is not None and (stream is sys.__stdout__ or stream is sys.__stderr__):
-                return True
+        if (
+            'PYCHARM_HOSTED' in os.environ
+            and stream is not None
+            and (stream is sys.__stdout__ or stream is sys.__stderr__)
+        ):
+            return True
         try:
             stream_isatty = stream.isatty
         except AttributeError:
@@ -210,7 +213,7 @@ class AnsiToWin32(object):
                 params = params + (1,)
         else:
             params = tuple(int(p) for p in paramstring.split(';') if len(p) != 0)
-            if len(params) == 0:
+            if not params:
                 # defaults:
                 if command in 'JKm':
                     params = (0,)

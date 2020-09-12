@@ -58,10 +58,7 @@ class ResourceCache(Cache):
             dirname = os.path.dirname(result)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
-            if not os.path.exists(result):
-                stale = True
-            else:
-                stale = self.is_stale(resource, path)
+            stale = True if not os.path.exists(result) else self.is_stale(resource, path)
             if stale:
                 # write the bytes of the resource to the cache location
                 with open(result, 'wb') as f:
@@ -195,10 +192,7 @@ class ResourceFinder(object):
                 if resource.is_container:
                     rname = resource.name
                     for name in resource.resources:
-                        if not rname:
-                            new_name = name
-                        else:
-                            new_name = '/'.join([rname, name])
+                        new_name = name if not rname else '/'.join([rname, name])
                         child = self.find(new_name)
                         if child.is_container:
                             todo.append(child)

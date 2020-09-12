@@ -75,13 +75,13 @@ class FormatControl(object):
     def get_allowed_formats(self, canonical_name):
         # type: (str) -> FrozenSet[str]
         result = {"binary", "source"}
-        if canonical_name in self.only_binary:
+        if (
+            canonical_name in self.only_binary
+            or canonical_name not in self.no_binary
+            and ':all:' in self.only_binary
+        ):
             result.discard('source')
-        elif canonical_name in self.no_binary:
-            result.discard('binary')
-        elif ':all:' in self.only_binary:
-            result.discard('source')
-        elif ':all:' in self.no_binary:
+        elif canonical_name in self.no_binary or ':all:' in self.no_binary:
             result.discard('binary')
         return frozenset(result)
 

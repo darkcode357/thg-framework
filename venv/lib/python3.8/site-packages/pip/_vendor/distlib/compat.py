@@ -623,10 +623,7 @@ except ImportError:  # pragma: no cover
             assert path.endswith('.py')
             if debug_override is None:
                 debug_override = __debug__
-            if debug_override:
-                suffix = 'c'
-            else:
-                suffix = 'o'
+            suffix = 'c' if debug_override else 'o'
             return path + suffix
 
 try:
@@ -944,11 +941,13 @@ except ImportError: # pragma: no cover
     def pop(self, key, default=None):
         value = dict.pop(self, key, default)
         result = self.configurator.convert(value)
-        if value is not result:
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-                result.key = key
+        if value is not result and type(result) in (
+            ConvertingDict,
+            ConvertingList,
+            ConvertingTuple,
+        ):
+            result.parent = self
+            result.key = key
         return result
 
     class ConvertingList(list):
@@ -968,10 +967,12 @@ except ImportError: # pragma: no cover
         def pop(self, idx=-1):
             value = list.pop(self, idx)
             result = self.configurator.convert(value)
-            if value is not result:
-                if type(result) in (ConvertingDict, ConvertingList,
-                                    ConvertingTuple):
-                    result.parent = self
+            if value is not result and type(result) in (
+                ConvertingDict,
+                ConvertingList,
+                ConvertingTuple,
+            ):
+                result.parent = self
             return result
 
     class ConvertingTuple(tuple):
@@ -979,11 +980,13 @@ except ImportError: # pragma: no cover
         def __getitem__(self, key):
             value = tuple.__getitem__(self, key)
             result = self.configurator.convert(value)
-            if value is not result:
-                if type(result) in (ConvertingDict, ConvertingList,
-                                    ConvertingTuple):
-                    result.parent = self
-                    result.key = key
+            if value is not result and type(result) in (
+                ConvertingDict,
+                ConvertingList,
+                ConvertingTuple,
+            ):
+                result.parent = self
+                result.key = key
             return result
 
     class BaseConfigurator(object):

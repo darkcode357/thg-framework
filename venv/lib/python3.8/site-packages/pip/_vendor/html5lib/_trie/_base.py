@@ -19,11 +19,7 @@ class Trie(Mapping):
         return {x for x in keys if x.startswith(prefix)}
 
     def has_keys_with_prefix(self, prefix):
-        for key in self.keys():
-            if key.startswith(prefix):
-                return True
-
-        return False
+        return any(key.startswith(prefix) for key in self.keys())
 
     def longest_prefix(self, prefix):
         if prefix in self:
