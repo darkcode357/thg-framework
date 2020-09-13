@@ -1,3 +1,8 @@
+##
+# This module requires THG: https://darkcode0x00.com/download
+# Current source: https://github.com/darkcode357/thg-framework
+##
+
 class OptString:
     def __init__(self,string):
         self.string = string
