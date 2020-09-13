@@ -50,7 +50,8 @@ html_to_etree
 coverage
 flake8~=3.8.3
 pytest
-
+netifaces
+helpers
 argparse~=1.4.0
 typing~=3.7.4.3
 ipython~=7.17.0
