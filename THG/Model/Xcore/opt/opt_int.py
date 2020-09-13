@@ -14,5 +14,5 @@ class OptInt:
             return "is not int"
 
 
-check_init = OptInt(1).check_init()
-print(check_init)
+#check_init = OptInt(1).check_init()
+#print(check_init)
