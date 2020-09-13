@@ -18,3 +18,4 @@ class OptFloat:
             return self.value
         except:
             return "Erro no valor"  # todo mudar para o processo de class do not set
+
