@@ -44,9 +44,9 @@ from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Type, Un
 import colorama
 from colorama import Fore
 
-from . import constants
-from . import plugin
-from . import utils
+from THG.View.Interpreter.thgcmd import constants
+from THG.View.Interpreter.thgcmd import plugin
+from THG.View.Interpreter.thgcmd import utils
 from .argparse_completer import AutoCompleter, ACArgumentParser, ACTION_ARG_CHOICES
 from .clipboard import can_clip, get_paste_buffer, write_to_paste_buffer
 from .parsing import StatementParser, Statement, Macro, MacroArg
