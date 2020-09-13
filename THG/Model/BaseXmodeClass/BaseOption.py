@@ -14,7 +14,7 @@ class BaseOption:
     description = None
     value = None
 
-    def __init__(self, name=None, required=False, description=None, value=None,rank=None):
+    def __init__(self, name=None, required=False, description=None, value=None):
         '''
         :param name:
         :param required:
