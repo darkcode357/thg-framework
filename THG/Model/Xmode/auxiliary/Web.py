@@ -90,4 +90,4 @@ class Url:
         return str(status)+":"+http_status_code[status]
 
 
-print(Url('https://darkcode0x00.com.br').check_url_open()[:3])
+#print(Url('https://darkcode0x00.com.br').check_url_open()[:3])
