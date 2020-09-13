@@ -16,3 +16,4 @@ class OptInt:
 
 #check_init = OptInt(1).check_init()
 #print(check_init)
+
