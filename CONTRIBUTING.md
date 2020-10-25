@@ -28,9 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
 
-The Metasploit Framework is provided under the 3-clause BSD license above.
+The thg Framework is provided under the 3-clause BSD license above.
 
 The copyright on this package is held by darkcode0x00, Inc.
 
-This license does not apply to several components within the Metasploit
+This license does not apply to several components within the thg
 Framework source tree.  For more details see the LICENSE file.
