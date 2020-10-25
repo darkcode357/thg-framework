@@ -47,7 +47,6 @@ html_to_etree
 # This packages are required before running setup (i.e. build commands require
 # to import this packages).
 # This packages are required to run all the tests and perform checks.
-coverage
 flake8~=3.8.3
 pytest
 netifaces
