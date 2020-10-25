@@ -1,5 +1,5 @@
 """
-The Metasploit Rex library is provided under the 3-clause BSD license.
+The thg Xcode library is provided under the 3-clause BSD license.
 Copyright (c) 2020-2030, THG/Darkcode0x00, Inc.
 All rights reserved.
 Redistribution and use in source and binary forms, with or without modification,

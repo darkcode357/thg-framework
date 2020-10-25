@@ -48,7 +48,6 @@ html_to_etree
 # to import this packages).
 # This packages are required to run all the tests and perform checks.
 flake8~=3.8.3
-pytest
 netifaces
 helpers
 argparse~=1.4.0
