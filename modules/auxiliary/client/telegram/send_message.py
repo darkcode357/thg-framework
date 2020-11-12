@@ -1,11 +1,11 @@
 ##
-# This module requires THG: https://darkcode0x00.com/download
+# This module requires lib: https://darkcode0x00.com/download
 # Current source: https://github.com/darkcode357/thg-framework
 ##
-from THG.Model.BaseXmodeClass.BaseMod import BaseMod,BaseOption
+from lib.thg.core.BaseXmodeClass.BaseMod import BaseMod
+from lib.thg.core.BaseXmodeClass.BaseOption import BaseOption
 import requests
-from THG.Model.Xmode.auxiliary.Web import Url
-
+from lib.thg.core.auxiliary.Web import Url
 class Exploit(BaseMod):
   def __init__(self):
     super(Exploit, self).__init__()

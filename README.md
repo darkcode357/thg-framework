@@ -68,3 +68,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md)
 se vc tem alguma duvida/bug referente ao thg, abra uma nota issues no github [bug report](https://github.com/darkcode357/thg-framework/issues)
 
 #NOTAS DE RODAPE
+1- Django

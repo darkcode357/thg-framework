@@ -1,19 +1,6 @@
-from THG.View.Interpreter.THGInterpreter import ThgInterpreter
-from THG.View.Interpreter.thgcmd.thgcmd import with_argparser
+from lib.thg.core.Interpreter.THGInterpreter import ThgInterpreter
 
 import argparse
-
-
-
-class THG(ThgInterpreter):
-    """
-    ponto de entrada para iniciar o thg
-
-    """
-
-    def run(self):
-        self.cmdloop()
-
 
 
 def main(argv=None):
@@ -68,14 +55,22 @@ def main(argv=None):
     restGroup.add_argument('--password', nargs=1,
                            help='Start the RESTful API with the specified password instead of pulling from thg.db')
 
+    command_help = 'optional command to run, if no command given, enter an interactive shell'
+    parser.add_argument('command', nargs='?',
+                        help=command_help)
+    arg_help = 'optional arguments for command'
+    parser.add_argument('command_args', nargs=argparse.REMAINDER,
+                        help=arg_help)
+
+
     args = parser.parse_args()
 
-    thgcli = THG()
+    thgcli = ThgInterpreter()
 
     sys_exit_code = 0
     if args.command:
         # we have a command, run it and then exit
-        c.onecmd_plus_hooks('{} {}'.format(args.command, ' '.join(args.command_args)))
+        thgcli.onecmd_plus_hooks('{} {}'.format(args.command, ' '.join(args.command_args)))
     else:
         # we have no command, drop into interactive mode
         sys_exit_code = thgcli.cmdloop()

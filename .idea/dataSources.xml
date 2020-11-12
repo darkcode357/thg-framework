@@ -13,5 +13,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/THG/Controller/Database/teste_thg</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="lib" uuid="944f9ffb-a8de-43ec-a364-da0eb87948b7">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/database/lib.db</jdbc-url>
+    </data-source>
   </component>
 </project>

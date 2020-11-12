@@ -1,5 +1,5 @@
 from unittest import TestCase
-from THG.View.Interpreter.THGInterpreter import ThgInterpreter
+from lib.thg.core.Interpreter import ThgInterpreter
 class thg_encodeTestCase(TestCase):
     def test_thg_encode(self):
 
