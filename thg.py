@@ -5,6 +5,43 @@ import argparse
 
 def main(argv=None):
     """Run when invoked from the operating system shell"""
+
+    thgcli = ThgInterpreter()
+
+    parser = argparse.ArgumentParser()
+
+    generalGroup = parser.add_argument_group('General Options')
+    generalGroup.add_argument('--debug', nargs='?', const='1',
+                              help='Debug level for output (default of 1, 2 for msg display).')
+    console = parser.add_argument_group('Console options')
+    console.add_argument('-a', '--ask', nargs='?', const='1', help='Ask before exiting thg or accept "exit -y"')
+    console.add_argument('-H', '--history-file FILE', action='store_true',
+                         help='Save command history to the specified file')
+    console.add_argument('-L', '--real-readline', action='store_true',
+                         help='Use the system Readline library instead of RbReadline')
+    console.add_argument('-O', '--output FILE', action='store_true', help='Output to the specified file')
+    console.add_argument('-p', '--plugin PLUGIN', action='store_true', help=' Load a plugin on startup')
+    console.add_argument('-q', '--quiet', action='store_true', help='Do not print the banner on startup')
+    console.add_argument('-r', '--resource FILE', action='store_true',
+                         help='Execute the specified resource file (- for stdin)')
+    console.add_argument('-x', '--execute-command COMMAND', action='store_true',
+                         help='Execute the specified console commands (use ; for multiples)')
+    generalGroup.add_argument('-v', '--version', action='store_true', help='Display current Empire version.')
+    DataBase = parser.add_argument_group('Database options')
+    DataBase.add_argument('-M', '--migration-path', nargs='?', const='1',
+                          help='Specify a directory containing additional DB migrations')
+    DataBase.add_argument('-n', '--no-database', nargs='?', const='1', help='Disable database support')
+    DataBase.add_argument('-y', '--yaml', nargs='?', const='1',
+                          help='Specify a YAML file containing database settings')
+
+    framework_op = parser.add_argument_group('Framework options')
+    framework_op.add_argument('-c File', nargs='?', const='1', help='Load the specified configuration file')
+
+    module_op = parser.add_argument_group('Module options')
+    module_op.add_argument('--defer-module-loads', nargs='?', const='1',
+                          help='Defer module loading unless explicitly asked')
+    module_op.add_argument('-m', '--module-path DIRECTORY', nargs='?', const='1', help='Load an additional module path')
+
     parser = argparse.ArgumentParser()
 
     generalGroup = parser.add_argument_group('General Options')
@@ -62,6 +99,8 @@ def main(argv=None):
     parser.add_argument('command_args', nargs=argparse.REMAINDER,
                         help=arg_help)
 
+    args = parser.parse_args()
+
 
     args = parser.parse_args()
 
@@ -80,6 +119,8 @@ def main(argv=None):
 
 if __name__ == '__main__':
     import sys
+
+    sys.exit(main())
     sys.exit(main())
 
 

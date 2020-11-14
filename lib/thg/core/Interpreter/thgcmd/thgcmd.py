@@ -53,7 +53,7 @@ from .parsing import StatementParser, Statement, Macro, MacroArg
 
 # Set up readline
 from .rl_utils import rl_type, RlType, rl_get_point, rl_set_prompt, vt100_support, rl_make_safe_prompt
-
+from colorama import Fore
 CMD_CORE = "Core Command"
 
 if rl_type == RlType.NONE:  # pragma: no cover
@@ -2643,11 +2643,16 @@ class Cmd(cmd.Cmd):
         if len(cmds_cats) == 0:
             # No categories found, fall back to standard behavior
             self.poutput("{}\n".format(str(self.doc_leader)))
-            self._print_topics(self.doc_header, cmds_doc, verbose)
+            self._print_topics(Fore.RED+self.doc_header+Fore.RED+Fore.RESET, cmds_doc, verbose)
         else:
             # Categories found, Organize all commands by category
-            self.poutput('{}\n'.format(str(self.doc_leader)))
-            self.poutput('{}\n\n'.format(str(self.doc_header)))
+            #self.poutput('{}\n'.format(str(self.doc_leader)))
+            count_len = len(self.doc_header)+2
+
+            self.poutput('#'*count_len)
+            self.poutput('#{COLOR_START}{DOC}{COLOR_END}#'.format(COLOR_START=Fore.BLUE,DOC=self.doc_header, COLOR_END=Fore.YELLOW))
+            self.poutput('#' * count_len)
+            self.poutput("\n")
             for category in sorted(cmds_cats.keys()):
                 self._print_topics(category, cmds_cats[category], verbose)
             self._print_topics('Other', cmds_doc, verbose)

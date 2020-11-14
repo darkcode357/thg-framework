@@ -1,0 +1,7 @@
+FILENAME="server"
+openssl genrsa -des3 -passout pass:x1234 -out "$FILENAME.pass.key" 2048
+openssl rsa -passin pass:x1234 -in "$FILENAME.pass.key" -out "$FILENAME.key"
+rm -f "$FILENAME.pass.key
+openssl req -new -key "$FILENAME.key" -out "$FILENAME.csr"
+openssl x509 -req -sha256 -days 365 -in "$FILENAME.csr" -signkey "$FILENAME.key" -out "$FILENAME.crt
+çççççççççç
