@@ -1,6 +1,6 @@
 thg-framework - exploit dev/toolkit
 
-#version 1.2
+# version 1.2
 
 ![thg logo](https://github.com/darkcode357/thg-framework/blob/master/arquivos/logo.png?raw=true)
 [![PyPI](https://img.shields.io/pypi/v/thg-framework?color=thg-framework&label=thg-framework&logo=thg-framework&logoColor=thg-framework)](https://pypi.python.org/pypi/pwntools/)
