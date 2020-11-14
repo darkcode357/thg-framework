@@ -1,34 +1,67 @@
-#libs imports
-import time
-import base64
-import idna
-import numpy
-import quopri
 import argparse
-import binascii
+import time
+from lib.thg.core.Interpreter.Submenu import AddSubmenu
 import platform
 import threading
-import unicodedata
 from queue import Queue
-from pathlib import Path
-from utils import module
-from tabulate import tabulate
-from urllib.parse import quote
-from colorama import Fore, Style
-from importlib import import_module, reload
-from utils.base62 import decode as decode62
-#thg libs
 from lib.thg.core.Interpreter.thgcmd.thgcmd import Cmd, with_category, with_argparser
+import base64
+import binascii
+import numpy
+import idna
+import quopri
+from utils import module
+from pathlib import Path
+from colorama import Fore, Style
+from tabulate import tabulate
+from lib.thg.core.constants import *
+from importlib import import_module, reload
 from lib.thg.base.Database.Database import Database
 from lib.thg.core.BaseXmodeClass.BaseOption import BaseOption
 from lib.thg.core_import import ModuleNotUseException
 from utils.utils import *
-
-
+import unicodedata
+from urllib.parse import quote
+from utils.base62 import decode as decode62
+# menus da aplicação
+##GERENCIAODR DE MENUS Decorator
+##MENUS CLASS
+from lib.thg.core.Interpreter.submenu.PPC import PPCLevel
+from lib.thg.core.Interpreter.submenu.Forensics import ForensicLevel
+from lib.thg.core.Interpreter.submenu.Miscellaneous import MiscellaneousLevel
+from lib.thg.core.Interpreter.submenu.WebHacking import WebHackingLevel
+from lib.thg.core.Interpreter.submenu.Reversing import ReversingLevel
+from lib.thg.core.Interpreter.submenu.Networking import NetworkingLevel
+from lib.thg.core.Interpreter.submenu.Crypto import CryptoLevel
+from lib.thg.core.Interpreter.submenu.Exploitation import ExploitationLevel
+@AddSubmenu(PPCLevel(),
+            command='PPC',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(ForensicLevel(),
+            command='Forensic',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(WebHackingLevel(),
+            command='WebHacking',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(MiscellaneousLevel(),
+            command='Miscellaneous',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(ReversingLevel(),
+            command='Reversing',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(NetworkingLevel(),
+            command='Networking',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(CryptoLevel(),
+            command='Crypto',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
+@AddSubmenu(ExploitationLevel(),
+            command='ExploitationLevel',
+            shared_attributes=dict(second_level_attr='second_level_attr', top_level_attr='top_level_attr'))
 class ThgInterpreter(Cmd, Database):
     colors = "Always"
 
-    console_prompt = "{COLOR_START}lib{COLOR_END}".format(COLOR_START=Fore.BLUE,
+    console_prompt = "{COLOR_START}THG{COLOR_END}".format(COLOR_START=Fore.BLUE,
                                                           COLOR_END=Fore.YELLOW
                                                           )
     doc_header = 'lib COMMAND HELP'
@@ -40,82 +73,28 @@ class ThgInterpreter(Cmd, Database):
     prompt = '(lib)'
     ruler = '='
     undoc_header = 'Undocumented commands:'
-    console_prompt_end = " > "
+    console_prompt_end = ">"
     module_name = None
     module_class = None
     module_instance = None
     __version__ = 1.0
     # command categories
-    CMD_CORE = "Core Command"
-    CMD_MODULE = "Module Command"
-    Data_format = "Data-format"
-    Encryption_encoding = "Encryption_encoding"
-    Public_key = "Public_key"
-    Arithmetic_Logic = "Arithmetic_Logic"
-    Networking = "Networking"
-    Language = "Language"
-    utils = "utils"
-    data_time = "data_time"
-    extractors = "extractors"
-    compression = "compression"
-    hashing = "hashing"
-    codetidy = "codetidy"
-    forensics = "forensics"
-    multmidia = "multmidia"
-    othres = "othres"
-    flow = "flow"
-    control = "control"
+
 
     ########################
     def __init__(self):
         super(ThgInterpreter, self).__init__()
         Database.__init__(self)
         self.prompt = self.console_prompt + self.console_prompt_end
-
+        self.top_level_attr = None
+        self.second_level_attr = 987654321
         self.thg_banner(None)
 
     @with_category(CMD_CORE)
     def thg_banner(self, args):
         """Print lib banner"""
         self.poutput("\n\n")
-        self.poutput("""
-{CYAN}==================={GREEN}[ thgconsole {version}-dev ]{GREEN}{CYAN}======================
-
-        {YELLOW}+ -- --=[{RED}THGEF   :{MAGENTA} The Hacker Group Exploitation Framework{RED}{YELLOW} ]=-- -- +
-        {YELLOW}+ -- --=[{RED}Code by :{MAGENTA} Darkcode                               {RED}{YELLOW} ]=-- -- +
-        {YELLOW}+ -- --=[{RED}Codename:{MAGENTA} FlagXpwn                               {RED}{YELLOW} ]=-- -- +
-        {YELLOW}+ -- --=[{RED}Homepage:{MAGENTA} https://darkcode0x00.com.br/category/thg/ {RED}{YELLOW} ]=-- -- +
-        {YELLOW}+ -- --=[{RED}youtube :{MAGENTA} https://www.youtube.com/channel/UC4d_mJv4uhppA-hCdFODWJw{RED}{YELLOW}]=-- -- + 
-
-{CYAN}==================={GREEN}[ thgconsole-info ]{GREEN}{CYAN}=============================
-
-        {YELLOW}+ -- --=[{RED} - exploits        - payloads    {RED}{YELLOW}]=-- -- +
-        {YELLOW}+ -- --=[{RED} - auxiliary       - post        {RED}{YELLOW}]=-- -- +
-        {YELLOW}+ -- --=[{RED} - encoders        - nops        {RED}{YELLOW}]=-- -- +
-        {YELLOW}+ -- --=[{RED} - evasion         - extra       {RED}{YELLOW}]=-- -- +
-        {YELLOW}+ -- --=[{RED}          - total {count}              {RED}{YELLOW}]=-- -- +
-
-{CYAN}==================={GREEN}[ thgconsole-pc ]{GREEN}{CYAN}===============================
-
-        {YELLOW}+ -- --=[{RED}system  =>{MAGENTA} {os}             {RED}{YELLOW}]=-- -- +
-        {YELLOW}+ -- --=[{RED}machine =>{MAGENTA} {machine}            {RED}{YELLOW}]=-- -- +
-
-
-
-{CYAN}==================={GREEN}[ thgconsole-config ]{GREEN}{CYAN}===========================
-        {YELLOW}+ -- --=[{RED}DB_STATUS =>{MAGENTA} on              {RED}{YELLOW}]=-- -- +
-
-
-
-        """.format(count=self.get_module_count(), red=Fore.RED,
-                   CYAN=Fore.CYAN,
-                   GREEN=Fore.GREEN,
-                   RED=Fore.RED,
-                   YELLOW=Fore.YELLOW,
-                   MAGENTA=Fore.MAGENTA,
-                   os=platform.uname()[0],
-                   machine=platform.uname()[4],
-                   version=self.__version__))
+        self.poutput(menu)
 
     @with_category(CMD_MODULE)
     def thg_list(self, args):
