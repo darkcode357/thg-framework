@@ -800,8 +800,10 @@ encode unicode_normalize str encoding['NFC', 'NFKC', 'NFD','NFKD']\n""".format(Y
     @with_category(CMD_CORE)
     def thg_db_rebuild(self, args):
         """Rebuild database for search"""
-        self.db_rebuild()
-        self.poutput("Database rebuild done.")
+        check = args.split(" ")
+        for condition in check:
+            self.db_rebuild(debug=condition)
+        self.poutput("Database rebuild done.\nuse db_rebuild debug ")
 
     @with_category(CMD_MODULE)
     def thg_reload(self, args):

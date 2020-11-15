@@ -4,7 +4,7 @@ from fnmatch import fnmatchcase
 from utils.files import ROOT_PATH
 from utils.module import name_convert
 from importlib import import_module
-
+from colorama import Fore
 
 class Database:
     db_file = '{root_path}/database/lib.db'.format(root_path=ROOT_PATH)
@@ -62,10 +62,11 @@ class Database:
                  info.get('service_version'), info.get('check'))
             )
 
-    def db_rebuild(self):
+    def db_rebuild(self,debug):
         self.delete_table()
         self.create_table()
-
+        erro = []
+        success=[]
         for directory_name, directories, filenames in os.walk('modules/'):
             for filename in filenames:
                 if filename not in ['__init__.py']\
@@ -73,11 +74,12 @@ class Database:
                         and fnmatchcase(filename, "*.py"):
                     full_name = "{directory}/{filename}".format(directory=directory_name, filename=filename)
                     module_name = name_convert(full_name)
-                    module_class = import_module("modules.{module_name}".format(
-                        module_name=module_name.replace("/", ".")
-                    ))
+                    try:
+                        module_class = import_module("modules.{module_name}".format(module_name=module_name.replace("/", ".")))
+                        success.append(module_name)
+                    except SyntaxError:
+                        erro.append(module_name)
                     module_instance = module_class.Exploit()
-                    print(module_instance)
                     module_info = module_instance.get_info
                     module_info['module_name'] = module_name
                     try:
@@ -86,7 +88,11 @@ class Database:
                     except AttributeError:
                         module_info['check'] = 'False'
                     self.insert_module(module_info)
-
+        if debug =="debug":
+            for mod_erro in erro:
+                print('modules not inset in database: {red}{mod}{ye}'.format(red=Fore.RED,mod=mod_erro,ye=Fore.YELLOW))
+            for mod_sucess in success:
+                print('modules insert success in database: {red}{mod}{ye}'.format(red=Fore.CYAN,mod=mod_sucess,ye=Fore.YELLOW))
     def get_modules(self):
         sql = "select `module_name`, `check`, `disclosure_date`, `description` from modules;"
         rs = self.cursor.execute(sql)
