@@ -1,1 +1,1 @@
- Msf::Platform = Msf::Module::Platform
+Msf::Platform = Msf::Module::Platform
