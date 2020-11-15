@@ -19,15 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a401ea27-2895-468d-b8ac-d4dd50a87a7f" name="Default Changelist" comment="[base metasploit][init]">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="a401ea27-2895-468d-b8ac-d4dd50a87a7f" name="Default Changelist" comment="[db][db_rebuild][check module insert ou not]">
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/lib.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/lib.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/thg/base/Database/Database.py" beforeDir="false" afterPath="$PROJECT_DIR$/lib/thg/base/Database/Database.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/thg/core/Interpreter/THGInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/lib/thg/core/Interpreter/THGInterpreter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/exploits/android/adb/adb_server_exec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/modules/exploits/android/adb/adb_server_exec.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/exploits/android/browser/samsung_knox_smdm_url.rb" beforeDir="false" afterPath="$PROJECT_DIR$/modules/exploits/android/browser/samsung_knox_smdm_url.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/exploits/multi/ssh/sshexec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/modules/exploits/multi/ssh/sshexec.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/module.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/module.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +55,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/lib" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -134,7 +133,7 @@
       <option name="presentableId" value="Default" />
       <updated>1605320227106</updated>
       <workItem from="1605320229217" duration="5039000" />
-      <workItem from="1605414650217" duration="10357000" />
+      <workItem from="1605414650217" duration="12529000" />
     </task>
     <task id="LOCAL-00001" summary="thg version 1.2">
       <created>1605320756880</created>
@@ -178,7 +177,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605420627797</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="[db][db_rebuild][check module insert ou not]">
+      <created>1605463487434</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1605463487434</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -201,9 +207,14 @@
     <MESSAGE value="[thg version 1.2][formatando os imports]" />
     <MESSAGE value="[thg version 1.2][VERSION]" />
     <MESSAGE value="[base metasploit][init]" />
-    <option name="LAST_COMMIT_MESSAGE" value="[base metasploit][init]" />
+    <MESSAGE value="[db][db_rebuild][check module insert ou not]" />
+    <option name="LAST_COMMIT_MESSAGE" value="[db][db_rebuild][check module insert ou not]" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="150" y="398" width="1609" height="308" key="#SQL_Dialects" timestamp="1605464170932">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="150" y="398" width="1609" height="308" key="#SQL_Dialects/0.27.1920.1053/0.27.1920.1053@0.27.1920.1053" timestamp="1605464170932" />
     <state x="593" y="349" width="724" height="406" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1605323962090">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -236,10 +247,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="584" y="306" width="742" height="493" key="MultipleFileMergeDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1605323632589" />
-    <state x="554" y="288" width="802" height="529" key="Vcs.Push.Dialog.v2" timestamp="1605420724621">
+    <state x="554" y="288" width="802" height="529" key="Vcs.Push.Dialog.v2" timestamp="1605463493548">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="554" y="288" width="802" height="529" key="Vcs.Push.Dialog.v2/0.27.1920.1053/0.27.1920.1053@0.27.1920.1053" timestamp="1605420724621" />
+    <state x="554" y="288" width="802" height="529" key="Vcs.Push.Dialog.v2/0.27.1920.1053/0.27.1920.1053@0.27.1920.1053" timestamp="1605463493548" />
     <state x="554" y="288" width="802" height="529" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1605323974801" />
     <state x="569" y="161" width="772" height="782" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1605321246759">
       <screen x="0" y="27" width="1920" height="1053" />

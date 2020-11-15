@@ -24,9 +24,12 @@ def get_local_modules():
                     and fnmatchcase(filename, "*.py"):
                 full_name = "{directory}/{filename}".format(directory=directory_name, filename=filename)
                 module_name = name_convert(full_name)
-                module_class = import_module("modules.{module_name}".format(
-                    module_name=module_name.replace("/", ".")
-                ))
+                try:
+                    module_class = import_module("modules.{module_name}".format(
+                        module_name=module_name.replace("/", ".")
+                    ))
+                except SyntaxError:
+                    pass
                 module_instance = module_class.Exploit()
                 module_info = module_instance.get_info
                 module_info['module_name'] = module_name

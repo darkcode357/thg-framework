@@ -62,7 +62,7 @@ class ThgInterpreter(Cmd, Database):
     colors = "Always"
 
     console_prompt = "{COLOR_START}THG{COLOR_END}".format(COLOR_START=Fore.BLUE,
-                                                          COLOR_END=Fore.YELLOW
+                                                          COLOR_END=Fore.RESET
                                                           )
     doc_header = 'lib COMMAND HELP'
     doc_leader = ''
@@ -88,7 +88,6 @@ class ThgInterpreter(Cmd, Database):
         self.prompt = self.console_prompt + self.console_prompt_end
         self.top_level_attr = None
         self.second_level_attr = 987654321
-        self.thg_banner(None)
 
     @with_category(CMD_CORE)
     def thg_banner(self, args):
