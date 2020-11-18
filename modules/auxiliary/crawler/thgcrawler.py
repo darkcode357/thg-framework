@@ -22,8 +22,10 @@
 #
 # class base
 from lib.thg.core.BaseXmodeClass.BaseMod import BaseMod
+
 # class aux
 from lib.thg.core.auxiliary.Web import Url
+
 # imports extra
 from time import sleep
 import requests
@@ -31,27 +33,28 @@ from bs4 import BeautifulSoup
 
 
 class Exploit(BaseMod):
-
     def __init__(self):
         super(Exploit, self).__init__()
-        self.update_info({
-            "name": "thgcrawler",
-            "description": "custon crawler for website",
-            "author": ["Rebellion"],
-            "references": [
-                "crawler web",
-            ],
-            "disclosure_date": "2020, 9, 6",
-            "service_name": "thgcrawler",
-            "service_version": "thgcrawler 0.1",
-        })
+        self.update_info(
+            {
+                "name": "thgcrawler",
+                "description": "custon crawler for website",
+                "author": ["Rebellion"],
+                "references": [
+                    "crawler web",
+                ],
+                "disclosure_date": "2020, 9, 6",
+                "service_name": "thgcrawler",
+                "service_version": "thgcrawler 0.1",
+            }
+        )
         ##
         #
         # atributos de class
         #
         ##
         self.register_crawler_target()
-        self.options.set_option('SleepTime', 0.5)
+        self.options.set_option("SleepTime", 0.5)
 
     def check(self):
         url = self.options.get_option("url")
@@ -59,7 +62,7 @@ class Exploit(BaseMod):
             pass
         else:
             print("url invalida")
-            print('url=> http://|https://|https://www|http://www')
+            print("url=> http://|https://|https://www|http://www")
 
     def exploit(self):
 
@@ -67,38 +70,46 @@ class Exploit(BaseMod):
         url = self.options.get_option("url")
         sleeptime = self.options.get_option("SleepTime")
 
-        print(f'Target:{url}')
+        print(f"Target:{url}")
         sleep(sleeptime)
         try:
             request = requests.session()
             request.keep_alive = False
             response = request.get(url=url).text
-            soup = BeautifulSoup(response, 'html.parser')
-            for link in soup.find_all('a'):
-                if link.has_attr('href'):
-                    if link['href'].startswith('http://') or link['href'].startswith('https://'):
+            soup = BeautifulSoup(response, "html.parser")
+            for link in soup.find_all("a"):
+                if link.has_attr("href"):
+                    if link["href"].startswith("http://") or link["href"].startswith(
+                        "https://"
+                    ):
                         pass
-                    elif link['href'].startswith('/'):
-                        link = url + str(link['href'])
+                    elif link["href"].startswith("/"):
+                        link = url + str(link["href"])
                     else:
-                        link = url + '/' + str(link['href'])
+                        link = url + "/" + str(link["href"])
                     if link not in results:
-                        print(f'[+] Found link: {link}')
+                        print(f"[+] Found link: {link}")
                         results.append(link)
             for item in results:
                 response = requests.get(item).text
-                soup = BeautifulSoup(response, 'html.parser')
-                for link in soup.find_all('a'):
-                    if link.has_attr('href'):
-                        if link['href'].startswith('http://') or link['href'].startswith('https://'):
+                soup = BeautifulSoup(response, "html.parser")
+                for link in soup.find_all("a"):
+                    if link.has_attr("href"):
+                        if link["href"].startswith("http://") or link[
+                            "href"
+                        ].startswith("https://"):
                             pass
-                        elif link['href'].startswith('/'):
-                            link = url + str(link['href'])
+                        elif link["href"].startswith("/"):
+                            link = url + str(link["href"])
                         else:
-                            link = url + '/' + str(link['href'])
+                            link = url + "/" + str(link["href"])
                         if link not in results:
-                            print(f'[+] Found link: {link}')
+                            print(f"[+] Found link: {link}")
                             results.append(link)
         except requests.exceptions as e:
-            self.results.failure(error_message="Host {host}:{port}: {error}".format(host=host, port=port, error=e))
+            self.results.failure(
+                error_message="Host {host}:{port}: {error}".format(
+                    host=host, port=port, error=e
+                )
+            )
         return self.results

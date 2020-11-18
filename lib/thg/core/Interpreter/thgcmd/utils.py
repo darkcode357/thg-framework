@@ -19,7 +19,7 @@ def strip_ansi(text: str) -> str:
     :param text: string which may contain ANSI escape codes
     :return: the same string with any ANSI escape codes removed
     """
-    return constants.ANSI_ESCAPE_RE.sub('', text)
+    return constants.ANSI_ESCAPE_RE.sub("", text)
 
 
 def ansi_safe_wcswidth(text: str) -> int:
@@ -43,7 +43,7 @@ def is_quoted(arg: str) -> bool:
 
 def quote_string_if_needed(arg: str) -> str:
     """ Quotes a string if it contains spaces and isn't already quoted """
-    if is_quoted(arg) or ' ' not in arg:
+    if is_quoted(arg) or " " not in arg:
         return arg
 
     if '"' in arg:
@@ -55,7 +55,7 @@ def quote_string_if_needed(arg: str) -> str:
 
 
 def strip_quotes(arg: str) -> str:
-    """ Strip outer quotes from a string.
+    """Strip outer quotes from a string.
 
      Applies to both single and double quotes.
 
@@ -67,8 +67,11 @@ def strip_quotes(arg: str) -> str:
     return arg
 
 
-def namedtuple_with_defaults(typename: str, field_names: Union[str, List[str]],
-                             default_values: collections.Iterable=()):
+def namedtuple_with_defaults(
+    typename: str,
+    field_names: Union[str, List[str]],
+    default_values: collections.Iterable = (),
+):
     """
     Convenience function for defining a namedtuple with default values
 
@@ -114,9 +117,9 @@ def cast(current: Any, new: str) -> Any:
             pass
         try:
             new = new.lower()
-            if (new == 'on') or (new[0] in ('y', 't')):
+            if (new == "on") or (new[0] in ("y", "t")):
                 return True
-            if (new == 'off') or (new[0] in ('n', 'f')):
+            if (new == "off") or (new[0] in ("n", "f")):
                 return False
         except AttributeError:
             pass
@@ -125,7 +128,11 @@ def cast(current: Any, new: str) -> Any:
             return typ(new)
         except (ValueError, TypeError):
             pass
-    print("Problem setting parameter (now {}) to {}; incorrect type?".format(current, orig_new))
+    print(
+        "Problem setting parameter (now {}) to {}; incorrect type?".format(
+            current, orig_new
+        )
+    )
     return current
 
 
@@ -139,8 +146,11 @@ def which(editor: str) -> Optional[str]:
     :return: a full path or None
     """
     import subprocess
+
     try:
-        editor_path = subprocess.check_output(['which', editor], stderr=subprocess.STDOUT).strip()
+        editor_path = subprocess.check_output(
+            ["which", editor], stderr=subprocess.STDOUT
+        ).strip()
         editor_path = editor_path.decode()
     except subprocess.CalledProcessError:
         editor_path = None
@@ -160,7 +170,7 @@ def is_text_file(file_path: str) -> bool:
 
     # Check if the file is ASCII
     try:
-        with codecs.open(expanded_path, encoding='ascii', errors='strict') as f:
+        with codecs.open(expanded_path, encoding="ascii", errors="strict") as f:
             # Make sure the file has at least one line of text
             # noinspection PyUnusedLocal
             if sum(1 for line in f) > 0:
@@ -170,7 +180,7 @@ def is_text_file(file_path: str) -> bool:
     except UnicodeDecodeError:
         # The file is not ASCII. Check if it is UTF-8.
         try:
-            with codecs.open(expanded_path, encoding='utf-8', errors='strict') as f:
+            with codecs.open(expanded_path, encoding="utf-8", errors="strict") as f:
                 # Make sure the file has at least one line of text
                 # noinspection PyUnusedLocal
                 if sum(1 for line in f) > 0:
@@ -203,7 +213,7 @@ def norm_fold(astr: str) -> str:
     :param astr: input unicode string
     :return: a normalized and case-folded version of the input string
     """
-    return unicodedata.normalize('NFC', astr).casefold()
+    return unicodedata.normalize("NFC", astr).casefold()
 
 
 def alphabetical_sort(list_to_sort: Iterable[str]) -> List[str]:
@@ -241,7 +251,10 @@ def natural_keys(input_str: str) -> List[Union[int, str]]:
     :param input_str: string to convert
     :return: list of strings and integers
     """
-    return [try_int_or_force_to_lower_case(substr) for substr in re.split(r'(\d+)', input_str)]
+    return [
+        try_int_or_force_to_lower_case(substr)
+        for substr in re.split(r"(\d+)", input_str)
+    ]
 
 
 def natural_sort(list_to_sort: Iterable[str]) -> List[str]:
@@ -265,11 +278,18 @@ class StdSim(object):
 
     Stores contents in internal buffer and optionally echos to the inner stream it is simulating.
     """
+
     class ByteBuf(object):
         """Inner class which stores an actual bytes buffer and does the actual output if echo is enabled."""
-        def __init__(self, inner_stream, echo: bool = False,
-                     encoding: str='utf-8', errors: str='replace') -> None:
-            self.byte_buf = b''
+
+        def __init__(
+            self,
+            inner_stream,
+            echo: bool = False,
+            encoding: str = "utf-8",
+            errors: str = "replace",
+        ) -> None:
+            self.byte_buf = b""
             self.inner_stream = inner_stream
             self.echo = echo
             self.encoding = encoding
@@ -278,13 +298,20 @@ class StdSim(object):
         def write(self, b: bytes) -> None:
             """Add bytes to internal bytes buffer and if echo is True, echo contents to inner stream."""
             if not isinstance(b, bytes):
-                raise TypeError('a bytes-like object is required, not {}'.format(type(b)))
+                raise TypeError(
+                    "a bytes-like object is required, not {}".format(type(b))
+                )
             self.byte_buf += b
             if self.echo:
                 self.inner_stream.buffer.write(b)
 
-    def __init__(self, inner_stream, echo: bool = False,
-                 encoding: str='utf-8', errors: str='replace') -> None:
+    def __init__(
+        self,
+        inner_stream,
+        echo: bool = False,
+        encoding: str = "utf-8",
+        errors: str = "replace",
+    ) -> None:
         """
         Initializer
         :param inner_stream: the emulated stream
@@ -301,7 +328,7 @@ class StdSim(object):
     def write(self, s: str) -> None:
         """Add str to internal bytes buffer and if echo is True, echo contents to inner stream"""
         if not isinstance(s, str):
-            raise TypeError('write() argument must be str, not {}'.format(type(s)))
+            raise TypeError("write() argument must be str, not {}".format(type(s)))
         self.buffer.byte_buf += s.encode(encoding=self.encoding, errors=self.errors)
         if self.echo:
             self.inner_stream.write(s)
@@ -328,7 +355,7 @@ class StdSim(object):
 
     def clear(self) -> None:
         """Clear the internal contents"""
-        self.buffer.byte_buf = b''
+        self.buffer.byte_buf = b""
 
     def __getattr__(self, item: str):
         if item in self.__dict__:

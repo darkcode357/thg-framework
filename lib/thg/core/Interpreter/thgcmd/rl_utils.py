@@ -20,6 +20,7 @@ except ImportError:
 
 class RlType(Enum):
     """Readline library types we recognize"""
+
     GNU = 1
     PYREADLINE = 2
     NONE = 3
@@ -32,7 +33,7 @@ rl_type = RlType.NONE
 vt100_support = False
 
 # The order of this check matters since importing pyreadline will also show readline in the modules list
-if 'pyreadline' in sys.modules:
+if "pyreadline" in sys.modules:
     rl_type = RlType.PYREADLINE
 
     from ctypes import byref
@@ -61,7 +62,9 @@ if 'pyreadline' in sys.modules:
             if (cur_mode.value & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0:
                 retVal = True
 
-            elif readline.rl.console.SetConsoleMode(handle, cur_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING):
+            elif readline.rl.console.SetConsoleMode(
+                handle, cur_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING
+            ):
                 # Restore the original mode when we exit
                 atexit.register(readline.rl.console.SetConsoleMode, handle, cur_mode)
                 retVal = True
@@ -71,8 +74,12 @@ if 'pyreadline' in sys.modules:
         # Enable VT100 sequences for stdout and stderr
         STD_OUT_HANDLE = -11
         STD_ERROR_HANDLE = -12
-        vt100_stdout_support = enable_win_vt100(readline.rl.console.GetStdHandle(STD_OUT_HANDLE))
-        vt100_stderr_support = enable_win_vt100(readline.rl.console.GetStdHandle(STD_ERROR_HANDLE))
+        vt100_stdout_support = enable_win_vt100(
+            readline.rl.console.GetStdHandle(STD_OUT_HANDLE)
+        )
+        vt100_stderr_support = enable_win_vt100(
+            readline.rl.console.GetStdHandle(STD_ERROR_HANDLE)
+        )
         vt100_support = vt100_stdout_support and vt100_stderr_support
 
     ############################################################################################################
@@ -80,14 +87,14 @@ if 'pyreadline' in sys.modules:
     ############################################################################################################
     # readline.redisplay()
     try:
-        getattr(readline, 'redisplay')
+        getattr(readline, "redisplay")
     except AttributeError:
         # noinspection PyProtectedMember
         readline.redisplay = readline.rl.mode._update_line
 
     # readline.remove_history_item()
     try:
-        getattr(readline, 'remove_history_item')
+        getattr(readline, "remove_history_item")
     except AttributeError:
         # noinspection PyProtectedMember
         def pyreadline_remove_history_item(pos: int) -> None:
@@ -99,7 +106,7 @@ if 'pyreadline' in sys.modules:
             saved_cursor = readline.rl.mode._history.history_cursor
 
             # Delete the history item
-            del(readline.rl.mode._history.history[pos])
+            del readline.rl.mode._history.history[pos]
 
             # Update the cursor if needed
             if saved_cursor > pos:
@@ -107,13 +114,14 @@ if 'pyreadline' in sys.modules:
 
         readline.remove_history_item = pyreadline_remove_history_item
 
-elif 'gnureadline' in sys.modules or 'readline' in sys.modules:
+elif "gnureadline" in sys.modules or "readline" in sys.modules:
     # We don't support libedit
-    if 'libedit' not in readline.__doc__:
+    if "libedit" not in readline.__doc__:
         rl_type = RlType.GNU
 
         # Load the readline lib so we can access members of it
         import ctypes
+
         readline_lib = ctypes.CDLL(readline.__file__)
 
         # Check if we are running in a terminal
@@ -168,7 +176,7 @@ def rl_set_prompt(prompt: str) -> None:  # pragma: no cover
     safe_prompt = rl_make_safe_prompt(prompt)
 
     if rl_type == RlType.GNU:
-        encoded_prompt = bytes(safe_prompt, encoding='utf-8')
+        encoded_prompt = bytes(safe_prompt, encoding="utf-8")
         readline_lib.rl_set_prompt(encoded_prompt)
 
     elif rl_type == RlType.PYREADLINE:

@@ -23,7 +23,7 @@ do console
 para voce entender bem como o thg  funciona, recomendo seguir essas list a de recomendações, onde iremos aborar os principais passoa passo para 
 voce ter um bom intendimento de como as coisas funcioano
 
-1=>Nossa documentação está disponível em [https://darkcode0x00.com.br/thg](http://darkcode0x00.com.br/thg)
+1=>Nossa documentação está disponível em [https://darkcode0x00.com.br/thg](http://t/thg)
 
 2=>Uma série de tutoriais também está disponível online [tutorial de como usar o thg](https://github.com/darkcode357/thg-tutorial#readme)
 

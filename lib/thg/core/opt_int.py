@@ -3,6 +3,7 @@
 # Current source: https://github.com/darkcode357/thg-framework
 ##
 
+
 class OptInt:
     def __init__(self, checkinit):
         self.checkinit = checkinit
@@ -14,6 +15,5 @@ class OptInt:
             return "is not int"
 
 
-#check_init = OptInt(1).check_init()
-#print(check_init)
-
+# check_init = OptInt(1).check_init()
+# print(check_init)

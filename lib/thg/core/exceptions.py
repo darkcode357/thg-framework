@@ -1,13 +1,13 @@
-
-
 ###
 #
 # This exception is raised when something failed to use mode.
 #
 ###
 class ModuleNotUseException(Exception):
-  def __str__(self):
-    return "Please use a module"
+    def __str__(self):
+        return "Please use a module"
+
+
 ###
 #
 # Mixin that should be included in all exceptions that can be raised from the
@@ -24,6 +24,7 @@ class ModuleNotUseException(Exception):
 # can be obtained through the options attribute.
 #
 ###
+
 
 class OptionValidateError(Exception):
     def __str__(self):
@@ -46,6 +47,7 @@ class ValidationError(Exception):
 # handled internally by the ModuleManager.
 #
 ###
+
 
 class ModuleCacheInvalidated(Exception):
     def __str__(self):
@@ -214,7 +216,7 @@ class IncompatiblePayloadError(Exception):
 class NoCompatiblePayloadError(Exception):
     def __str__(self):
         #:todo
-        return 'NoCompatiblePayloadError'
+        return "NoCompatiblePayloadError"
 
 
 ##
@@ -252,6 +254,7 @@ class NoNopsSucceededError(Exception):
 #
 ##
 
+
 class PluginLoadError(Exception):
     def __str__(self):
         #:todo
@@ -268,6 +271,7 @@ class PayloadItemSizeError(Exception):
     def __str__(self):
         #:todo
         return "Option value: #{item.slice(0..30)} is too big (Current length: #{item.length}, Maximum length: #{max_size})."
+
 
 # attr_reader :item # The content of the payload option (for example a URL)
 # attr_reader :max_size # The maximum allowed size of the payload option

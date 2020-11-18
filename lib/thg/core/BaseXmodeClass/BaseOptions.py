@@ -5,6 +5,7 @@ class BaseOptions:
     """
     class base para opções de metodos
     """
+
     options = None
 
     def __init__(self):
@@ -39,12 +40,12 @@ class BaseOptions:
         return None
 
     def set_option(self, name, value):
-        '''
+        """
 
         :param name: nome da option
         :param value: valor da option
         :return:
-        '''
+        """
         for idx, option in enumerate(self.options):
             if option.name == name:
                 option.value = value

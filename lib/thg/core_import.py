@@ -9,8 +9,9 @@
 #
 ###
 # import
-from lib.thg.core import  constants
+from lib.thg.core import constants
 from lib.thg.core.author import Author
+
 # The framework-core depends on Thgcoreutils
 
 
@@ -22,9 +23,8 @@ Darkcode0x00 = "darkocde0x00"
 
 # Framework context and core classes
 
-#exceptions
+# exceptions
 from lib.thg.core.exceptions import *
-
 
 
 # Wrappers
@@ -35,5 +35,3 @@ from lib.thg.core.exceptions import *
 
 
 # Drivers
-
-

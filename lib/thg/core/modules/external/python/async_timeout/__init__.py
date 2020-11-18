@@ -5,7 +5,7 @@
 import asyncio
 
 
-__version__ = '2.0.0'
+__version__ = "2.0.0"
 
 
 class timeout:
@@ -22,6 +22,7 @@ class timeout:
     timeout - value in seconds or None to disable timeout logic
     loop - asyncio compatible event loop
     """
+
     def __init__(self, timeout, *, loop=None):
         self._timeout = timeout
         if loop is None:
@@ -65,16 +66,16 @@ class timeout:
 
         self._task = current_task(self._loop)
         if self._task is None:
-            raise RuntimeError('Timeout context manager should be used '
-                               'inside a task')
+            raise RuntimeError(
+                "Timeout context manager should be used " "inside a task"
+            )
 
         if self._timeout <= 0:
             self._loop.call_soon(self._cancel_task)
             return self
 
         self._cancel_at = self._loop.time() + self._timeout
-        self._cancel_handler = self._loop.call_at(
-            self._cancel_at, self._cancel_task)
+        self._cancel_handler = self._loop.call_at(self._cancel_at, self._cancel_task)
         return self
 
     def _do_exit(self, exc_type):
@@ -95,7 +96,7 @@ class timeout:
 def current_task(loop):
     task = asyncio.Task.current_task(loop=loop)
     if task is None:
-        if hasattr(loop, 'current_task'):
+        if hasattr(loop, "current_task"):
             task = loop.current_task()
 
     return task

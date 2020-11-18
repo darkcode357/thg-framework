@@ -4,7 +4,7 @@
 ##
 import ipaddress
 
-'''
+"""
 Class A
 Network Bits	Subnet Mask	Number of Subnets	Number of Hosts
 /8	255.0.0.0	0	16777214
@@ -74,7 +74,7 @@ CIDR Block	Supernet Mask	Number of Class C Addresses	Number of Hosts
 /21	255.255.248.0	8	2048
 /22	255.255.252.0	4	1024
 /23	255.255.254.0	2	512
-'''
+"""
 
 
 class OptAddressRanger:
@@ -95,5 +95,6 @@ class OptAddressRanger:
         except IndexError:
             return "is not ip range"
 
-#check = OptAddressRanger("255.255.255.240/28").check_is_iprange()
-#print(check)
+
+# check = OptAddressRanger("255.255.255.240/28").check_is_iprange()
+# print(check)

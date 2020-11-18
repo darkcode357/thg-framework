@@ -4,7 +4,7 @@
 # or something entirely unrelated.
 #
 ###
-Kn = {'darkcode0x00': ['Luiz Corrêa', 'darkcode0x00@darkcode0x00.com.br']}
+Kn = {"darkcode0x00": ["Luiz Corrêa", "darkcode0x00@darkcode0x00.com.br"]}
 
 
 class Author:
@@ -26,7 +26,3 @@ class Author:
         for nome, real_name_mail in Kn.items():
             if self.name == nome:
                 return real_name_mail[1]
-
-
-
-

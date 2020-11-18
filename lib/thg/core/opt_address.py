@@ -9,6 +9,7 @@ class CheckOptAddress:
     """
     class check opt is valid address!
     """
+
     def __init__(self, address):
         """
         :param address -> str :
@@ -29,4 +30,3 @@ class CheckOptAddress:
             False or True
         """
         return is_ipv6(self.address)
-

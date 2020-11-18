@@ -4,6 +4,7 @@
 """This simply imports certain things for backwards compatibility."""
 
 from pkg_resources import get_distribution, DistributionNotFound
+
 try:
     __version__ = get_distribution(__name__).version
 except DistributionNotFound:
@@ -11,5 +12,10 @@ except DistributionNotFound:
     pass
 
 from .thgcmd import Cmd, Statement, EmptyStatement, categorize
-from .thgcmd import with_argument_list, with_argparser, with_argparser_and_unknown_args, with_category
+from .thgcmd import (
+    with_argument_list,
+    with_argparser,
+    with_argparser_and_unknown_args,
+    with_category,
+)
 from .pyscript_bridge import CommandResult

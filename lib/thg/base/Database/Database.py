@@ -8,11 +8,19 @@ from colorama import Fore
 
 
 class Database:
-    db_file = '{root_path}/database/lib.db'.format(root_path=ROOT_PATH)
+    db_file = "{root_path}/database/lib.db".format(root_path=ROOT_PATH)
     connection = None
     cursor = None
-    searchable_fields = ['name', 'module_name', 'description', 'author', 'disclosure_date', 'service_name',
-                         'service_version', 'check']
+    searchable_fields = [
+        "name",
+        "module_name",
+        "description",
+        "author",
+        "disclosure_date",
+        "service_name",
+        "service_version",
+        "check",
+    ]
 
     def __init__(self):
         self.connection = sqlite3.connect(self.db_file)
@@ -21,10 +29,10 @@ class Database:
         self.create_table()
 
         if self.get_module_count() == 0:
-            self.db_rebuild()
+            self.db_rebuild(debug=False)
 
     def get_module_count(self):
-        sql = 'select count(*) from modules;'
+        sql = "select count(*) from modules;"
         rs = self.cursor.execute(sql)
         (count,) = rs.fetchone()
         return count
@@ -43,7 +51,7 @@ class Database:
             '"service_version" TEXT,'
             '"check" TEXT,'
             'PRIMARY KEY("id")'
-            ');'
+            ");"
         )
         self.cursor.execute(init_table_sql)
 
@@ -59,9 +67,17 @@ class Database:
                 (name, module_name, description, author, 'references', disclosure_date, service_name,"
                 "service_version, 'check') \
                 values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (info.get('name'), info.get('module_name'), info.get('description'), '|'.join(info.get('author')),
-                 '|'.join(info.get('references')), info.get('disclosure_date'), info.get('service_name'),
-                 info.get('service_version'), info.get('check'))
+                (
+                    info.get("name"),
+                    info.get("module_name"),
+                    info.get("description"),
+                    "|".join(info.get("author")),
+                    "|".join(info.get("references")),
+                    info.get("disclosure_date"),
+                    info.get("service_name"),
+                    info.get("service_version"),
+                    info.get("check"),
+                ),
             )
 
     def db_rebuild(self, debug):
@@ -69,35 +85,48 @@ class Database:
         self.create_table()
         erro = []
         success = []
-        for directory_name, directories, filenames in os.walk('modules/'):
+        for directory_name, directories, filenames in os.walk("modules/"):
             for filename in filenames:
-                if filename not in ['__init__.py'] \
-                        and not fnmatchcase(filename, "*.pyc") \
-                        and fnmatchcase(filename, "*.py"):
-                    full_name = "{directory}/{filename}".format(directory=directory_name, filename=filename)
+                if (
+                    filename not in ["__init__.py"]
+                    and not fnmatchcase(filename, "*.pyc")
+                    and fnmatchcase(filename, "*.py")
+                ):
+                    full_name = "{directory}/{filename}".format(
+                        directory=directory_name, filename=filename
+                    )
                     module_name = name_convert(full_name)
                     try:
                         module_class = import_module(
-                            "modules.{module_name}".format(module_name=module_name.replace("/", ".")))
+                            "modules.{module_name}".format(
+                                module_name=module_name.replace("/", ".")
+                            )
+                        )
                         success.append(module_name)
                         module_instance = module_class.Exploit()
                     except SyntaxError:
                         erro.append(module_name)
                     module_info = module_instance.get_info
-                    module_info['module_name'] = module_name
+                    module_info["module_name"] = module_name
                     try:
-                        getattr(module_instance, 'check')
-                        module_info['check'] = 'True'
+                        getattr(module_instance, "check")
+                        module_info["check"] = "True"
                     except AttributeError:
-                        module_info['check'] = 'False'
+                        module_info["check"] = "False"
                     self.insert_module(module_info)
         if debug == "debug":
             for mod_erro in erro:
-                print('{ye}modules not inset in database: [{red}{mod}{ye}]'.format(red=Fore.RED, mod=mod_erro,
-                                                                                   ye=Fore.YELLOW))
+                print(
+                    "{ye}modules not inset in database: [{red}{mod}{ye}]".format(
+                        red=Fore.RED, mod=mod_erro, ye=Fore.YELLOW
+                    )
+                )
             for mod_sucess in success:
-                print('modules insert success in database: [{red}{mod}{ye}]'.format(red=Fore.GREEN, mod=mod_sucess,
-                                                                                    ye=Fore.YELLOW))
+                print(
+                    "modules insert success in database: [{red}{mod}{ye}]".format(
+                        red=Fore.GREEN, mod=mod_sucess, ye=Fore.YELLOW
+                    )
+                )
 
     def get_modules(self):
         sql = "select `module_name`, `check`, `disclosure_date`, `description` from modules;"
@@ -105,16 +134,16 @@ class Database:
         return rs.fetchall()
 
     def search_modules(self, search_conditions):
-        name = search_conditions.get('name', '')
-        module_name = search_conditions.get('module_name', '')
-        description = search_conditions.get('description', '')
-        author = search_conditions.get('author', '')
-        disclosure_date = search_conditions.get('disclosure_date', '')
-        service_name = search_conditions.get('service_name', '')
-        service_version = search_conditions.get('service_version', '')
-        check = search_conditions.get('check', '')
+        name = search_conditions.get("name", "")
+        module_name = search_conditions.get("module_name", "")
+        description = search_conditions.get("description", "")
+        author = search_conditions.get("author", "")
+        disclosure_date = search_conditions.get("disclosure_date", "")
+        service_name = search_conditions.get("service_name", "")
+        service_version = search_conditions.get("service_version", "")
+        check = search_conditions.get("check", "")
         sql = (
-            'select `module_name`, `check`, `disclosure_date`, `description` from modules where '
+            "select `module_name`, `check`, `disclosure_date`, `description` from modules where "
             '`name` like "%{name}%" '
             'and `module_name` like "%{module_name}%" '
             'and `description` like "%{description}%" '
@@ -131,7 +160,7 @@ class Database:
             disclosure_date=disclosure_date,
             service_name=service_name,
             service_version=service_version,
-            check=check
+            check=check,
         )
         rs = self.cursor.execute(sql)
         return rs.fetchall()

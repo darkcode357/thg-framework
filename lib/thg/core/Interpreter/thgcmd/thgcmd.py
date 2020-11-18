@@ -40,8 +40,8 @@ import shlex
 import sys
 import threading
 from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Type, Union, IO
-
 import colorama
+
 from colorama import Fore
 
 from . import constants
@@ -52,14 +52,24 @@ from .clipboard import can_clip, get_paste_buffer, write_to_paste_buffer
 from .parsing import StatementParser, Statement, Macro, MacroArg
 
 # Set up readline
-from .rl_utils import rl_type, RlType, rl_get_point, rl_set_prompt, vt100_support, rl_make_safe_prompt
+from .rl_utils import (
+    rl_type,
+    RlType,
+    rl_get_point,
+    rl_set_prompt,
+    vt100_support,
+    rl_make_safe_prompt,
+)
 from colorama import Fore
+
 CMD_CORE = "Core Command"
 
 if rl_type == RlType.NONE:  # pragma: no cover
-    rl_warning = "Readline features including tab completion have been disabled since no \n" \
-                 "supported version of readline was found. To resolve this, install \n" \
-                 "pyreadline on Windows or gnureadline on Mac.\n\n"
+    rl_warning = (
+        "Readline features including tab completion have been disabled since no \n"
+        "supported version of readline was found. To resolve this, install \n"
+        "pyreadline on Windows or gnureadline on Mac.\n\n"
+    )
     sys.stderr.write(Fore.LIGHTYELLOW_EX + rl_warning + Fore.RESET)
 else:
     from .rl_utils import rl_force_redisplay, readline
@@ -79,8 +89,12 @@ else:
         import ctypes
         from .rl_utils import readline_lib
 
-        rl_basic_quote_characters = ctypes.c_char_p.in_dll(readline_lib, "rl_basic_quote_characters")
-        orig_rl_basic_quotes = ctypes.cast(rl_basic_quote_characters, ctypes.c_void_p).value
+        rl_basic_quote_characters = ctypes.c_char_p.in_dll(
+            readline_lib, "rl_basic_quote_characters"
+        )
+        orig_rl_basic_quotes = ctypes.cast(
+            rl_basic_quote_characters, ctypes.c_void_p
+        ).value
 
 # Collection is a container that is sizable and iterable
 # It was introduced in Python 3.6. We will try to import it, otherwise use our implementation
@@ -98,11 +112,14 @@ except ImportError:
         @classmethod
         def __subclasshook__(cls, C):
             if cls is Collection:
-                if any("__len__" in B.__dict__ for B in C.__mro__) and \
-                        any("__iter__" in B.__dict__ for B in C.__mro__) and \
-                        any("__contains__" in B.__dict__ for B in C.__mro__):
+                if (
+                    any("__len__" in B.__dict__ for B in C.__mro__)
+                    and any("__iter__" in B.__dict__ for B in C.__mro__)
+                    and any("__contains__" in B.__dict__ for B in C.__mro__)
+                ):
                     return True
             return NotImplemented
+
 
 # Python 3.4 require contextlib2 for temporarily redirecting stderr and stdout
 if sys.version_info < (3, 5):
@@ -120,17 +137,19 @@ except ImportError:  # pragma: no cover
 
 
 # optional attribute, when tagged on a function, allows cmd2 to categorize commands
-HELP_CATEGORY = 'help_category'
+HELP_CATEGORY = "help_category"
 
-INTERNAL_COMMAND_EPILOG = ("Notes:\n"
-                           "  This command is for internal use and is not intended to be called from the\n"
-                           "  command line.")
+INTERNAL_COMMAND_EPILOG = (
+    "Notes:\n"
+    "  This command is for internal use and is not intended to be called from the\n"
+    "  command line."
+)
 
 # All command functions start with this
-COMMAND_FUNC_PREFIX = 'thg_'
+COMMAND_FUNC_PREFIX = "thg_"
 
 # All help functions start with this
-HELP_FUNC_PREFIX = 'help_'
+HELP_FUNC_PREFIX = "help_"
 
 
 def categorize(func: Union[Callable, Iterable], category: str) -> None:
@@ -168,14 +187,17 @@ def parse_quoted_string(string: str, preserve_quotes: bool) -> List[str]:
 
 def with_category(category: str) -> Callable:
     """A decorator to apply a category to a command function."""
+
     def cat_decorator(func):
         categorize(func, category)
         return func
+
     return cat_decorator
 
 
-def with_argument_list(func: Callable[[Statement], Optional[bool]],
-                       preserve_quotes: bool=False) -> Callable[[List], Optional[bool]]:
+def with_argument_list(
+    func: Callable[[Statement], Optional[bool]], preserve_quotes: bool = False
+) -> Callable[[List], Optional[bool]]:
     """A decorator to alter the arguments passed to a thg_* cmd2 method. Default passes a string of whatever the user
     typed. With this decorator, the decorated method will receive a list of arguments parsed from user input using
     shlex.split().
@@ -195,8 +217,9 @@ def with_argument_list(func: Callable[[Statement], Optional[bool]],
     return cmd_wrapper
 
 
-def with_argparser_and_unknown_args(argparser: argparse.ArgumentParser, preserve_quotes: bool=False) -> \
-        Callable[[argparse.Namespace, List], Optional[bool]]:
+def with_argparser_and_unknown_args(
+    argparser: argparse.ArgumentParser, preserve_quotes: bool = False
+) -> Callable[[argparse.Namespace, List], Optional[bool]]:
     """A decorator to alter a cmd2 method to populate its ``args`` argument by parsing arguments with the given
     instance of argparse.ArgumentParser, but also returning unknown args as a list.
 
@@ -220,7 +243,7 @@ def with_argparser_and_unknown_args(argparser: argparse.ArgumentParser, preserve
 
         # argparser defaults the program name to sys.argv[0]
         # we want it to be the name of our command
-        argparser.prog = func.__name__[len(COMMAND_FUNC_PREFIX):]
+        argparser.prog = func.__name__[len(COMMAND_FUNC_PREFIX) :]
 
         # If the description has not been set, then use the method docstring if one exists
         if argparser.description is None and func.__doc__:
@@ -230,15 +253,16 @@ def with_argparser_and_unknown_args(argparser: argparse.ArgumentParser, preserve
         cmd_wrapper.__doc__ = argparser.description
 
         # Mark this function as having an argparse ArgumentParser
-        setattr(cmd_wrapper, 'argparser', argparser)
+        setattr(cmd_wrapper, "argparser", argparser)
 
         return cmd_wrapper
 
     return arg_decorator
 
 
-def with_argparser(argparser: argparse.ArgumentParser,
-                   preserve_quotes: bool=False) -> Callable[[argparse.Namespace], Optional[bool]]:
+def with_argparser(
+    argparser: argparse.ArgumentParser, preserve_quotes: bool = False
+) -> Callable[[argparse.Namespace], Optional[bool]]:
     """A decorator to alter a cmd2 method to populate its ``args`` argument by parsing arguments
     with the given instance of argparse.ArgumentParser.
 
@@ -262,7 +286,7 @@ def with_argparser(argparser: argparse.ArgumentParser,
 
         # argparser defaults the program name to sys.argv[0]
         # we want it to be the name of our command
-        argparser.prog = func.__name__[len(COMMAND_FUNC_PREFIX):]
+        argparser.prog = func.__name__[len(COMMAND_FUNC_PREFIX) :]
 
         # If the description has not been set, then use the method docstring if one exists
         if argparser.description is None and func.__doc__:
@@ -272,7 +296,7 @@ def with_argparser(argparser: argparse.ArgumentParser,
         cmd_wrapper.__doc__ = argparser.description
 
         # Mark this function as having an argparse ArgumentParser
-        setattr(cmd_wrapper, 'argparser', argparser)
+        setattr(cmd_wrapper, "argparser", argparser)
 
         return cmd_wrapper
 
@@ -281,11 +305,13 @@ def with_argparser(argparser: argparse.ArgumentParser,
 
 class EmbeddedConsoleExit(SystemExit):
     """Custom exception class for use with the py command."""
+
     pass
 
 
 class EmptyStatement(Exception):
     """Custom exception class for handling behavior when the user just presses <Enter>."""
+
     pass
 
 
@@ -297,7 +323,8 @@ class HistoryItem(str):
     representation of itself for convenience/efficiency.
 
     """
-    listformat = '-------------------------[{}]\n{}\n'
+
+    listformat = "-------------------------[{}]\n{}\n"
 
     # noinspection PyUnusedLocal
     def __init__(self, instr: str) -> None:
@@ -321,30 +348,46 @@ class Cmd(cmd.Cmd):
 
     Line-oriented command interpreters are often useful for test harnesses, internal tools, and rapid prototypes.
     """
+
     # Attributes used to configure the StatementParser, best not to change these at runtime
     multiline_commands = []
-    shortcuts = {'?': 'help', '!': 'shell', '@': 'load', '@@': '_relative_load'}
-    terminators = [';']
+    shortcuts = {"?": "help", "!": "shell", "@": "load", "@@": "_relative_load"}
+    terminators = [";"]
 
     # Attributes which are NOT dynamically settable at runtime
-    allow_cli_args = True       # Should arguments passed on the command-line be processed as commands?
-    allow_redirection = True    # Should output redirection and pipes be allowed
-    default_to_shell = False    # Attempt to run unrecognized commands as shell commands
-    quit_on_sigint = False      # Quit the loop on interrupt instead of just resetting prompt
+    allow_cli_args = (
+        True  # Should arguments passed on the command-line be processed as commands?
+    )
+    allow_redirection = True  # Should output redirection and pipes be allowed
+    default_to_shell = False  # Attempt to run unrecognized commands as shell commands
+    quit_on_sigint = (
+        False  # Quit the loop on interrupt instead of just resetting prompt
+    )
     reserved_words = []
 
     # Attributes which ARE dynamically settable at runtime
     colors = constants.COLORS_TERMINAL
-    continuation_prompt = '> '
+    continuation_prompt = "> "
     debug = False
     echo = False
-    editor = os.environ.get('EDITOR')
+    editor = os.environ.get("EDITOR")
     if not editor:
-        if sys.platform[:3] == 'win':
-            editor = 'notepad'
+        if sys.platform[:3] == "win":
+            editor = "notepad"
         else:
             # Favor command-line editors first so we don't leave the terminal to edit
-            for editor in ['vim', 'vi', 'emacs', 'nano', 'pico', 'gedit', 'kate', 'subl', 'geany', 'atom']:
+            for editor in [
+                "vim",
+                "vi",
+                "emacs",
+                "nano",
+                "pico",
+                "gedit",
+                "kate",
+                "subl",
+                "geany",
+                "atom",
+            ]:
                 if utils.which(editor):
                     break
     feedback_to_output = False  # Do not include nonessentials in >, | output by default (things like timing)
@@ -354,20 +397,30 @@ class Cmd(cmd.Cmd):
 
     # To make an attribute settable with the "thg_set" command, add it to this ...
     # This starts out as a dictionary but gets converted to an OrderedDict sorted alphabetically by key
-    settable = {'colors': 'Allow colorized output (valid values: Terminal, Always, Never)',
-                'continuation_prompt': 'On 2nd+ line of input',
-                'debug': 'Show full error stack on error',
-                'echo': 'Echo command issued into output',
-                'editor': 'Program used by ``edit``',
-                'feedback_to_output': 'Include nonessentials in `|`, `>` results',
-                'locals_in_py': 'Allow access to your application in py via self',
-                'prompt': 'The prompt issued to solicit input',
-                'quiet': "Don't print nonessential feedback",
-                'timing': 'Report execution times'}
+    settable = {
+        "colors": "Allow colorized output (valid values: Terminal, Always, Never)",
+        "continuation_prompt": "On 2nd+ line of input",
+        "debug": "Show full error stack on error",
+        "echo": "Echo command issued into output",
+        "editor": "Program used by ``edit``",
+        "feedback_to_output": "Include nonessentials in `|`, `>` results",
+        "locals_in_py": "Allow access to your application in py via self",
+        "prompt": "The prompt issued to solicit input",
+        "quiet": "Don't print nonessential feedback",
+        "timing": "Report execution times",
+    }
 
-    def __init__(self, completekey: str='tab', stdin=None, stdout=None, persistent_history_file: str='',
-                 persistent_history_length: int=1000, startup_script: Optional[str]=None, use_ipython: bool=False,
-                 transcript_files: Optional[List[str]]=None) -> None:
+    def __init__(
+        self,
+        completekey: str = "tab",
+        stdin=None,
+        stdout=None,
+        persistent_history_file: str = "",
+        persistent_history_length: int = 1000,
+        startup_script: Optional[str] = None,
+        use_ipython: bool = False,
+        transcript_files: Optional[List[str]] = None,
+    ) -> None:
         """An easy but powerful framework for writing line-oriented command interpreters, extends Python's cmd package.
 
         :param completekey: (optional) readline name of a completion key, default to Tab
@@ -397,10 +450,10 @@ class Cmd(cmd.Cmd):
         super().__init__(completekey=completekey, stdin=stdin, stdout=stdout)
 
         # Commands to exclude from the help menu and tab completion
-        self.hidden_commands = ['eof', 'eos', '_relative_load']
+        self.hidden_commands = ["eof", "eos", "_relative_load"]
 
         # Commands to exclude from the history command
-        self.exclude_from_history = '''history edit eof eos'''.split()
+        self.exclude_from_history = """history edit eof eos""".split()
 
         # Command aliases and macros
         self.aliases = dict()
@@ -412,7 +465,7 @@ class Cmd(cmd.Cmd):
         self.history = History()
         self.pystate = {}
         self.py_history = []
-        self.pyscript_name = 'app'
+        self.pyscript_name = "app"
         self.keywords = self.reserved_words + self.get_all_commands()
         self.statement_parser = StatementParser(
             allow_redirection=self.allow_redirection,
@@ -456,10 +509,10 @@ class Cmd(cmd.Cmd):
         self.at_continuation_prompt = False
 
         # If this string is non-empty, then this warning message will print if a broken pipe error occurs while printing
-        self.broken_pipe_warning = ''
+        self.broken_pipe_warning = ""
 
         # Check if history should persist
-        self.persistent_history_file = ''
+        self.persistent_history_file = ""
         if persistent_history_file and rl_type != RlType.NONE:
             persistent_history_file = os.path.expanduser(persistent_history_file)
             read_err = False
@@ -470,8 +523,12 @@ class Cmd(cmd.Cmd):
             except FileNotFoundError:
                 pass
             except OSError as ex:
-                self.perror("readline cannot read persistent history file '{}': {}".format(persistent_history_file, ex),
-                            traceback_war=False)
+                self.perror(
+                    "readline cannot read persistent history file '{}': {}".format(
+                        persistent_history_file, ex
+                    ),
+                    traceback_war=False,
+                )
                 read_err = True
 
             if not read_err:
@@ -482,13 +539,20 @@ class Cmd(cmd.Cmd):
                     readline.set_history_length(persistent_history_length)
                     readline.write_history_file(persistent_history_file)
                 except OSError as ex:
-                    self.perror("readline cannot write persistent history file '{}': {}".
-                                format(persistent_history_file, ex), traceback_war=False)
+                    self.perror(
+                        "readline cannot write persistent history file '{}': {}".format(
+                            persistent_history_file, ex
+                        ),
+                        traceback_war=False,
+                    )
                 else:
                     # Set history file and register to save our history at exit
                     import atexit
+
                     self.persistent_history_file = persistent_history_file
-                    atexit.register(readline.write_history_file, self.persistent_history_file)
+                    atexit.register(
+                        readline.write_history_file, self.persistent_history_file
+                    )
 
         # If a startup script is provided, then add it in the queue to load
         if startup_script is not None:
@@ -510,7 +574,7 @@ class Cmd(cmd.Cmd):
         self.allow_closing_quote = True
 
         # An optional header that prints above the tab-completion suggestions
-        self.completion_header = ''
+        self.completion_header = ""
 
         # Use this list if you are completing strings that contain a common delimiter and you only want to
         # display the final portion of the matches as the tab-completion suggestions. The full matches
@@ -528,16 +592,16 @@ class Cmd(cmd.Cmd):
         self.matches_sorted = False
 
         # Set the pager(s) for use with the ppaged() method for displaying output using a pager
-        if sys.platform.startswith('win'):
-            self.pager = self.pager_chop = 'more'
+        if sys.platform.startswith("win"):
+            self.pager = self.pager_chop = "more"
         else:
             # Here is the meaning of the various flags we are using with the less command:
             # -S causes lines longer than the screen width to be chopped (truncated) rather than wrapped
             # -R causes ANSI "color" escape sequences to be output in raw form (i.e. colors are displayed)
             # -X disables sending the termcap initialization and deinitialization strings to the terminal
             # -F causes less to automatically exit if the entire file can be displayed on the first screen
-            self.pager = 'less -RXF'
-            self.pager_chop = 'less -SRXF'
+            self.pager = "less -RXF"
+            self.pager_chop = "less -SRXF"
 
         # This boolean flag determines whether or not the cmd2 application can interact with the clipboard
         self.can_clip = can_clip
@@ -569,7 +633,9 @@ class Cmd(cmd.Cmd):
         self.shortcuts = sorted(self.shortcuts.items(), reverse=True)
 
         # Make sure settable parameters are sorted alphabetically by key
-        self.settable = collections.OrderedDict(sorted(self.settable.items(), key=lambda t: t[0]))
+        self.settable = collections.OrderedDict(
+            sorted(self.settable.items(), key=lambda t: t[0])
+        )
 
     def decolorized_write(self, fileobj: IO, msg: str) -> None:
         """Write a string to a fileobject, stripping ANSI escape sequences if necessary
@@ -577,12 +643,14 @@ class Cmd(cmd.Cmd):
         Honor the current colors setting, which requires us to check whether the
         fileobject is a tty.
         """
-        if self.colors.lower() == constants.COLORS_NEVER.lower() or \
-                (self.colors.lower() == constants.COLORS_TERMINAL.lower() and not fileobj.isatty()):
+        if self.colors.lower() == constants.COLORS_NEVER.lower() or (
+            self.colors.lower() == constants.COLORS_TERMINAL.lower()
+            and not fileobj.isatty()
+        ):
             msg = utils.strip_ansi(msg)
         fileobj.write(msg)
 
-    def poutput(self, msg: Any, end: str='\n', color: str='') -> None:
+    def poutput(self, msg: Any, end: str = "\n", color: str = "") -> None:
         """Smarter self.stdout.write(); color aware and adds newline of not present.
 
         Also handles BrokenPipeError exceptions for when a commands's output has
@@ -593,9 +661,9 @@ class Cmd(cmd.Cmd):
         :param end: (optional) string appended after the end of the message if not already present, default a newline
         :param color: (optional) color escape to output this message with
         """
-        if msg is not None and msg != '':
+        if msg is not None and msg != "":
             try:
-                msg_str = '{}'.format(msg)
+                msg_str = "{}".format(msg)
                 if not msg_str.endswith(end):
                     msg_str += end
                 if color:
@@ -610,9 +678,14 @@ class Cmd(cmd.Cmd):
                 if self.broken_pipe_warning:
                     sys.stderr.write(self.broken_pipe_warning)
 
-    def perror(self, err: Union[str, Exception], traceback_war: bool=True, err_color: str=Fore.LIGHTRED_EX,
-               war_color: str=Fore.LIGHTYELLOW_EX) -> None:
-        """ Print error message to sys.stderr and if debug is true, print an exception Traceback if one exists.
+    def perror(
+        self,
+        err: Union[str, Exception],
+        traceback_war: bool = True,
+        err_color: str = Fore.LIGHTRED_EX,
+        war_color: str = Fore.LIGHTYELLOW_EX,
+    ) -> None:
+        """Print error message to sys.stderr and if debug is true, print an exception Traceback if one exists.
 
         :param err: an Exception or error message to print out
         :param traceback_war: (optional) if True, print a message to let user know they can enable debug
@@ -621,10 +694,13 @@ class Cmd(cmd.Cmd):
         """
         if self.debug:
             import traceback
+
             traceback.print_exc()
 
         if isinstance(err, Exception):
-            err_msg = "EXCEPTION of type '{}' occurred with message: '{}'\n".format(type(err).__name__, err)
+            err_msg = "EXCEPTION of type '{}' occurred with message: '{}'\n".format(
+                type(err).__name__, err
+            )
         else:
             err_msg = "{}\n".format(err)
         err_msg = err_color + err_msg + Fore.RESET
@@ -637,14 +713,14 @@ class Cmd(cmd.Cmd):
 
     def pfeedback(self, msg: str) -> None:
         """For printing nonessential feedback.  Can be silenced with `quiet`.
-           Inclusion in redirected output is controlled by `feedback_to_output`."""
+        Inclusion in redirected output is controlled by `feedback_to_output`."""
         if not self.quiet:
             if self.feedback_to_output:
                 self.poutput(msg)
             else:
                 self.decolorized_write(sys.stderr, "{}\n".format(msg))
 
-    def ppaged(self, msg: str, end: str='\n', chop: bool=False) -> None:
+    def ppaged(self, msg: str, end: str = "\n", chop: bool = False) -> None:
         """Print output using a pager if it would go off screen and stdout isn't currently being redirected.
 
         Never uses a pager inside of a script (Python or text) or when output is being redirected or piped or when
@@ -661,9 +737,10 @@ class Cmd(cmd.Cmd):
         WARNING: On Windows, the text always wraps regardless of what the chop argument is set to
         """
         import subprocess
-        if msg is not None and msg != '':
+
+        if msg is not None and msg != "":
             try:
-                msg_str = '{}'.format(msg)
+                msg_str = "{}".format(msg)
                 if not msg_str.endswith(end):
                     msg_str += end
 
@@ -672,21 +749,31 @@ class Cmd(cmd.Cmd):
                 functional_terminal = False
 
                 if self.stdin.isatty() and self.stdout.isatty():
-                    if sys.platform.startswith('win') or os.environ.get('TERM') is not None:
+                    if (
+                        sys.platform.startswith("win")
+                        or os.environ.get("TERM") is not None
+                    ):
                         functional_terminal = True
 
                 # Don't attempt to use a pager that can block if redirecting or running a script (either text or Python)
                 # Also only attempt to use a pager if actually running in a real fully functional terminal
-                if functional_terminal and not self.redirecting and not self._in_py and not self._script_dir:
+                if (
+                    functional_terminal
+                    and not self.redirecting
+                    and not self._in_py
+                    and not self._script_dir
+                ):
                     if self.colors.lower() == constants.COLORS_NEVER.lower():
                         msg_str = utils.strip_ansi(msg_str)
 
                     pager = self.pager
                     if chop:
                         pager = self.pager_chop
-                    self.pipe_proc = subprocess.Popen(pager, shell=True, stdin=subprocess.PIPE)
+                    self.pipe_proc = subprocess.Popen(
+                        pager, shell=True, stdin=subprocess.PIPE
+                    )
                     try:
-                        self.pipe_proc.stdin.write(msg_str.encode('utf-8', 'replace'))
+                        self.pipe_proc.stdin.write(msg_str.encode("utf-8", "replace"))
                         self.pipe_proc.stdin.close()
                     except (OSError, KeyboardInterrupt):
                         pass
@@ -718,17 +805,21 @@ class Cmd(cmd.Cmd):
         """
         self.allow_appended_space = True
         self.allow_closing_quote = True
-        self.completion_header = ''
+        self.completion_header = ""
         self.display_matches = []
         self.matches_delimited = False
         self.matches_sorted = False
 
         if rl_type == RlType.GNU:
-            readline.set_completion_display_matches_hook(self._display_matches_gnu_readline)
+            readline.set_completion_display_matches_hook(
+                self._display_matches_gnu_readline
+            )
         elif rl_type == RlType.PYREADLINE:
             readline.rl.mode._display_completions = self._display_matches_pyreadline
 
-    def tokens_for_completion(self, line: str, begidx: int, endidx: int) -> Tuple[List[str], List[str]]:
+    def tokens_for_completion(
+        self, line: str, begidx: int, endidx: int
+    ) -> Tuple[List[str], List[str]]:
         """
         Used by tab completion functions to get all tokens through the one being completed
         :param line: the current input line with leading whitespace removed
@@ -748,7 +839,8 @@ class Cmd(cmd.Cmd):
                     Two empty lists
         """
         import copy
-        unclosed_quote = ''
+
+        unclosed_quote = ""
         quotes_to_try = copy.copy(constants.QUOTES)
 
         tmp_line = line[:endidx]
@@ -763,7 +855,7 @@ class Cmd(cmd.Cmd):
                 # If the cursor is at an empty token outside of a quoted string,
                 # then that is the token being completed. Add it to the list.
                 if not unclosed_quote and begidx == tmp_endidx:
-                    initial_tokens.append('')
+                    initial_tokens.append("")
                 break
             except ValueError as ex:
                 # Make sure the exception was due to an unclosed quote and
@@ -792,7 +884,10 @@ class Cmd(cmd.Cmd):
             for cur_initial_token in initial_tokens:
 
                 # Save tokens up to 1 character in length or quoted tokens. No need to parse these.
-                if len(cur_initial_token) <= 1 or cur_initial_token[0] in constants.QUOTES:
+                if (
+                    len(cur_initial_token) <= 1
+                    or cur_initial_token[0] in constants.QUOTES
+                ):
                     raw_tokens.append(cur_initial_token)
                     continue
 
@@ -801,7 +896,7 @@ class Cmd(cmd.Cmd):
                 cur_char = cur_initial_token[cur_index]
 
                 # Keep track of the token we are building
-                cur_raw_token = ''
+                cur_raw_token = ""
 
                 while True:
                     if cur_char not in constants.REDIRECTION_CHARS:
@@ -829,7 +924,7 @@ class Cmd(cmd.Cmd):
 
                     # Save the current token
                     raw_tokens.append(cur_raw_token)
-                    cur_raw_token = ''
+                    cur_raw_token = ""
 
                     # Check if we've viewed all characters
                     if cur_index >= len(cur_initial_token):
@@ -850,7 +945,9 @@ class Cmd(cmd.Cmd):
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def basic_complete(text: str, line: str, begidx: int, endidx: int, match_against: Iterable) -> List[str]:
+    def basic_complete(
+        text: str, line: str, begidx: int, endidx: int, match_against: Iterable
+    ) -> List[str]:
         """
         Performs tab completion against a list
 
@@ -863,8 +960,15 @@ class Cmd(cmd.Cmd):
         """
         return [cur_match for cur_match in match_against if cur_match.startswith(text)]
 
-    def delimiter_complete(self, text: str, line: str, begidx: int, endidx: int, match_against: Iterable,
-                           delimiter: str) -> List[str]:
+    def delimiter_complete(
+        self,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        match_against: Iterable,
+        delimiter: str,
+    ) -> List[str]:
         """
         Performs tab completion against a list but each match is split on a delimiter and only
         the portion of the match being tab completed is shown as the completion suggestions.
@@ -924,9 +1028,15 @@ class Cmd(cmd.Cmd):
 
         return matches
 
-    def flag_based_complete(self, text: str, line: str, begidx: int, endidx: int,
-                            flag_dict: Dict[str, Union[Iterable, Callable]],
-                            all_else: Union[None, Iterable, Callable]=None) -> List[str]:
+    def flag_based_complete(
+        self,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        flag_dict: Dict[str, Union[Iterable, Callable]],
+        all_else: Union[None, Iterable, Callable] = None,
+    ) -> List[str]:
         """
         Tab completes based on a particular flag preceding the token being completed
         :param text: the string prefix we are attempting to match (all returned matches must begin with it)
@@ -958,7 +1068,9 @@ class Cmd(cmd.Cmd):
 
         # Perform tab completion using a Collection
         if isinstance(match_against, Collection):
-            completions_matches = self.basic_complete(text, line, begidx, endidx, match_against)
+            completions_matches = self.basic_complete(
+                text, line, begidx, endidx, match_against
+            )
 
         # Perform tab completion using a function
         elif callable(match_against):
@@ -966,9 +1078,15 @@ class Cmd(cmd.Cmd):
 
         return completions_matches
 
-    def index_based_complete(self, text: str, line: str, begidx: int, endidx: int,
-                             index_dict: Mapping[int, Union[Iterable, Callable]],
-                             all_else: Union[None, Iterable, Callable] = None) -> List[str]:
+    def index_based_complete(
+        self,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        index_dict: Mapping[int, Union[Iterable, Callable]],
+        all_else: Union[None, Iterable, Callable] = None,
+    ) -> List[str]:
         """
         Tab completes based on a fixed position in the input string
         :param text: the string prefix we are attempting to match (all returned matches must begin with it)
@@ -1011,8 +1129,14 @@ class Cmd(cmd.Cmd):
         return matches
 
     # noinspection PyUnusedLocal
-    def path_complete(self, text: str, line: str, begidx: int, endidx: int,
-                      path_filter: Optional[Callable[[str], bool]] = None) -> List[str]:
+    def path_complete(
+        self,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        path_filter: Optional[Callable[[str], bool]] = None,
+    ) -> List[str]:
         """Performs completion of local file system paths
 
         :param text: the string prefix we are attempting to match (all returned matches must begin with it)
@@ -1038,7 +1162,7 @@ class Cmd(cmd.Cmd):
             # Windows lacks the pwd module so we can't get a list of users.
             # Instead we will return a result once the user enters text that
             # resolves to an existing home directory.
-            if sys.platform.startswith('win'):
+            if sys.platform.startswith("win"):
                 expanded_path = os.path.expanduser(text)
                 if os.path.isdir(expanded_path):
                     user = text
@@ -1055,7 +1179,7 @@ class Cmd(cmd.Cmd):
                     if os.path.isdir(cur_pw.pw_dir):
 
                         # Add a ~ to the user to match against text
-                        cur_user = '~' + cur_pw.pw_name
+                        cur_user = "~" + cur_pw.pw_name
                         if cur_user.startswith(text):
                             if add_trailing_sep_if_dir:
                                 cur_user += os.path.sep
@@ -1073,25 +1197,25 @@ class Cmd(cmd.Cmd):
         cwd_added = False
 
         # Used to replace expanded user path in final result
-        orig_tilde_path = ''
-        expanded_tilde_path = ''
+        orig_tilde_path = ""
+        expanded_tilde_path = ""
 
         # If the search text is blank, then search in the CWD for *
         if not text:
-            search_str = os.path.join(os.getcwd(), '*')
+            search_str = os.path.join(os.getcwd(), "*")
             cwd_added = True
         else:
             # Purposely don't match any path containing wildcards
-            wildcards = ['*', '?']
+            wildcards = ["*", "?"]
             for wildcard in wildcards:
                 if wildcard in text:
                     return []
 
             # Start the search string
-            search_str = text + '*'
+            search_str = text + "*"
 
             # Handle tilde expansion and completion
-            if text.startswith('~'):
+            if text.startswith("~"):
                 sep_index = text.find(os.path.sep, 1)
 
                 # If there is no slash, then the user is still completing the user after the tilde
@@ -1143,11 +1267,16 @@ class Cmd(cmd.Cmd):
 
         # Remove cwd if it was added to match the text readline expects
         if cwd_added:
-            matches = [cur_path.replace(cwd + os.path.sep, '', 1) for cur_path in matches]
+            matches = [
+                cur_path.replace(cwd + os.path.sep, "", 1) for cur_path in matches
+            ]
 
         # Restore the tilde string if we expanded one to match the text readline expects
         if expanded_tilde_path:
-            matches = [cur_path.replace(expanded_tilde_path, orig_tilde_path, 1) for cur_path in matches]
+            matches = [
+                cur_path.replace(expanded_tilde_path, orig_tilde_path, 1)
+                for cur_path in matches
+            ]
 
         return matches
 
@@ -1159,13 +1288,15 @@ class Cmd(cmd.Cmd):
         :return: a list of matching exe names
         """
         # Purposely don't match any executable containing wildcards
-        wildcards = ['*', '?']
+        wildcards = ["*", "?"]
         for wildcard in wildcards:
             if wildcard in starts_with:
                 return []
 
         # Get a list of every directory in the PATH environment variable and ignore symbolic links
-        paths = [p for p in os.getenv('PATH').split(os.path.pathsep) if not os.path.islink(p)]
+        paths = [
+            p for p in os.getenv("PATH").split(os.path.pathsep) if not os.path.islink(p)
+        ]
 
         # Use a set to store exe names since there can be duplicates
         exes_set = set()
@@ -1173,15 +1304,25 @@ class Cmd(cmd.Cmd):
         # Find every executable file in the user's path that matches the pattern
         for path in paths:
             full_path = os.path.join(path, starts_with)
-            matches = [f for f in glob.glob(full_path + '*') if os.path.isfile(f) and os.access(f, os.X_OK)]
+            matches = [
+                f
+                for f in glob.glob(full_path + "*")
+                if os.path.isfile(f) and os.access(f, os.X_OK)
+            ]
 
             for match in matches:
                 exes_set.add(os.path.basename(match))
 
         return list(exes_set)
 
-    def shell_cmd_complete(self, text: str, line: str, begidx: int, endidx: int,
-                           complete_blank: bool=False) -> List[str]:
+    def shell_cmd_complete(
+        self,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        complete_blank: bool = False,
+    ) -> List[str]:
         """Performs completion of executables either in a user's path or a given path
         :param text: the string prefix we are attempting to match (all returned matches must begin with it)
         :param line: the current input line with leading whitespace removed
@@ -1197,15 +1338,22 @@ class Cmd(cmd.Cmd):
             return []
 
         # If there are no path characters in the search text, then do shell command completion in the user's path
-        if not text.startswith('~') and os.path.sep not in text:
+        if not text.startswith("~") and os.path.sep not in text:
             return self.get_exes_in_path(text)
 
         # Otherwise look for executables in the given path
         else:
-            return self.path_complete(text, line, begidx, endidx,
-                                      lambda path: os.path.isdir(path) or os.access(path, os.X_OK))
+            return self.path_complete(
+                text,
+                line,
+                begidx,
+                endidx,
+                lambda path: os.path.isdir(path) or os.access(path, os.X_OK),
+            )
 
-    def _redirect_complete(self, text: str, line: str, begidx: int, endidx: int, compfunc: Callable) -> List[str]:
+    def _redirect_complete(
+        self, text: str, line: str, begidx: int, endidx: int, compfunc: Callable
+    ) -> List[str]:
         """Called by complete() as the first tab completion function for all commands
         It determines if it should tab complete for redirection (|, <, >, >>) or use the
         completer function for the current command
@@ -1259,7 +1407,9 @@ class Cmd(cmd.Cmd):
         return compfunc(text, line, begidx, endidx)
 
     @staticmethod
-    def _pad_matches_to_display(matches_to_display: List[str]) -> Tuple[List[str], int]:  # pragma: no cover
+    def _pad_matches_to_display(
+        matches_to_display: List[str],
+    ) -> Tuple[List[str], int]:  # pragma: no cover
         """Adds padding to the matches being displayed as tab completion suggestions.
         The default padding of readline/pyreadine is small and not visually appealing
         especially if matches have spaces. It appears very squished together.
@@ -1269,19 +1419,20 @@ class Cmd(cmd.Cmd):
         """
         if rl_type == RlType.GNU:
             # Add 2 to the padding of 2 that readline uses for a total of 4.
-            padding = 2 * ' '
+            padding = 2 * " "
 
         elif rl_type == RlType.PYREADLINE:
             # Add 3 to the padding of 1 that pyreadline uses for a total of 4.
-            padding = 3 * ' '
+            padding = 3 * " "
 
         else:
             return matches_to_display, 0
 
         return [cur_match + padding for cur_match in matches_to_display], len(padding)
 
-    def _display_matches_gnu_readline(self, substitution: str, matches: List[str],
-                                      longest_match_length: int) -> None:  # pragma: no cover
+    def _display_matches_gnu_readline(
+        self, substitution: str, matches: List[str], longest_match_length: int
+    ) -> None:  # pragma: no cover
         """Prints a match list using GNU readline's rl_display_match_list()
         This exists to print self.display_matches if it has data. Otherwise matches prints.
 
@@ -1306,13 +1457,17 @@ class Cmd(cmd.Cmd):
                 matches_to_display = matches
 
             # Add padding for visual appeal
-            matches_to_display, padding_length = self._pad_matches_to_display(matches_to_display)
+            matches_to_display, padding_length = self._pad_matches_to_display(
+                matches_to_display
+            )
             longest_match_length += padding_length
 
             # We will use readline's display function (rl_display_match_list()), so we
             # need to encode our string as bytes to place in a C array.
-            encoded_substitution = bytes(substitution, encoding='utf-8')
-            encoded_matches = [bytes(cur_match, encoding='utf-8') for cur_match in matches_to_display]
+            encoded_substitution = bytes(substitution, encoding="utf-8")
+            encoded_matches = [
+                bytes(cur_match, encoding="utf-8") for cur_match in matches_to_display
+            ]
 
             # rl_display_match_list() expects matches to be in argv format where
             # substitution is the first element, followed by the matches, and then a NULL.
@@ -1326,16 +1481,20 @@ class Cmd(cmd.Cmd):
 
             # Print the header if one exists
             if self.completion_header:
-                sys.stdout.write('\n' + self.completion_header)
+                sys.stdout.write("\n" + self.completion_header)
 
             # Call readline's display function
             # rl_display_match_list(strings_array, number of completion matches, longest match length)
-            readline_lib.rl_display_match_list(strings_array, len(encoded_matches), longest_match_length)
+            readline_lib.rl_display_match_list(
+                strings_array, len(encoded_matches), longest_match_length
+            )
 
             # Redraw prompt and input line
             rl_force_redisplay()
 
-    def _display_matches_pyreadline(self, matches: List[str]) -> None:  # pragma: no cover
+    def _display_matches_pyreadline(
+        self, matches: List[str]
+    ) -> None:  # pragma: no cover
         """Prints a match list using pyreadline's _display_completions()
         This exists to print self.display_matches if it has data. Otherwise matches prints.
 
@@ -1354,7 +1513,7 @@ class Cmd(cmd.Cmd):
 
             # Print the header if one exists
             if self.completion_header:
-                readline.rl.mode.console.write('\n' + self.completion_header)
+                readline.rl.mode.console.write("\n" + self.completion_header)
 
             # Display matches using actual display function. This also redraws the prompt and line.
             orig_pyreadline_display(matches_to_display)
@@ -1376,8 +1535,9 @@ class Cmd(cmd.Cmd):
         :param state: non-negative integer
         """
         import functools
+
         if state == 0 and rl_type != RlType.NONE:
-            unclosed_quote = ''
+            unclosed_quote = ""
             self.reset_completion_defaults()
 
             # lstrip the original line
@@ -1393,7 +1553,7 @@ class Cmd(cmd.Cmd):
             # Shortcuts are not word break characters when tab completing. Therefore shortcuts become part
             # of the text variable if there isn't a word break, like a space, after it. We need to remove it
             # from text and update the indexes. This only applies if we are at the the beginning of the line.
-            shortcut_to_restore = ''
+            shortcut_to_restore = ""
             if begidx == 0:
                 for (shortcut, _) in self.shortcuts:
                     if text.startswith(shortcut):
@@ -1401,7 +1561,7 @@ class Cmd(cmd.Cmd):
                         shortcut_to_restore = shortcut
 
                         # Adjust text and where it begins
-                        text = text[len(shortcut_to_restore):]
+                        text = text[len(shortcut_to_restore) :]
                         begidx += len(shortcut_to_restore)
                         break
 
@@ -1417,7 +1577,7 @@ class Cmd(cmd.Cmd):
                 # Restore the end spaces since line is only supposed to be lstripped when
                 # passed to completer functions according to Python docs
                 rstripped_len = len(line) - len(line.rstrip())
-                expanded_line += ' ' * rstripped_len
+                expanded_line += " " * rstripped_len
 
                 # Fix the index values if expanded_line has a different size than line
                 if len(expanded_line) != len(line):
@@ -1438,7 +1598,7 @@ class Cmd(cmd.Cmd):
                     return None
 
                 # Text we need to remove from completions later
-                text_to_remove = ''
+                text_to_remove = ""
 
                 # Get the token being completed with any opening quote preserved
                 raw_completion_token = raw_tokens[-1]
@@ -1467,14 +1627,16 @@ class Cmd(cmd.Cmd):
                 # Check if a valid command was entered
                 if command in self.get_all_commands():
                     # Get the completer function for this command
-                    compfunc = getattr(self, 'complete_' + command, None)
+                    compfunc = getattr(self, "complete_" + command, None)
 
                     if compfunc is None:
                         # There's no completer function, next see if the command uses argparser
                         func = self.cmd_func(command)
-                        if func and hasattr(func, 'argparser'):
-                            compfunc = functools.partial(self._autocomplete_default,
-                                                         argparser=getattr(func, 'argparser'))
+                        if func and hasattr(func, "argparser"):
+                            compfunc = functools.partial(
+                                self._autocomplete_default,
+                                argparser=getattr(func, "argparser"),
+                            )
                         else:
                             compfunc = self.completedefault
 
@@ -1485,19 +1647,25 @@ class Cmd(cmd.Cmd):
                 # A valid command was not entered
                 else:
                     # Check if this command should be run as a shell command
-                    if self.default_to_shell and command in self.get_exes_in_path(command):
+                    if self.default_to_shell and command in self.get_exes_in_path(
+                        command
+                    ):
                         compfunc = self.path_complete
                     else:
                         compfunc = self.completedefault
 
                 # Attempt tab completion for redirection first, and if that isn't occurring,
                 # call the completer function for the current command
-                self.completion_matches = self._redirect_complete(text, line, begidx, endidx, compfunc)
+                self.completion_matches = self._redirect_complete(
+                    text, line, begidx, endidx, compfunc
+                )
 
                 if self.completion_matches:
 
                     # Eliminate duplicates
-                    self.completion_matches = utils.remove_duplicates(self.completion_matches)
+                    self.completion_matches = utils.remove_duplicates(
+                        self.completion_matches
+                    )
                     self.display_matches = utils.remove_duplicates(self.display_matches)
 
                     if not self.display_matches:
@@ -1505,6 +1673,7 @@ class Cmd(cmd.Cmd):
                         # before we alter them. That way the suggestions will reflect how we parsed
                         # the token being completed and not how readline did.
                         import copy
+
                         self.display_matches = copy.copy(self.completion_matches)
 
                     # Check if we need to add an opening quote
@@ -1521,41 +1690,55 @@ class Cmd(cmd.Cmd):
 
                             # For delimited matches, we check what appears before the display
                             # matches (common_prefix) as well as the display matches themselves.
-                            if (' ' in common_prefix) or (display_prefix and ' ' in ''.join(self.display_matches)):
+                            if (" " in common_prefix) or (
+                                display_prefix and " " in "".join(self.display_matches)
+                            ):
                                 add_quote = True
 
                         # If there is a tab completion and any match has a space, then add an opening quote
-                        elif common_prefix and ' ' in ''.join(self.completion_matches):
+                        elif common_prefix and " " in "".join(self.completion_matches):
                             add_quote = True
 
                         if add_quote:
                             # Figure out what kind of quote to add and save it as the unclosed_quote
-                            if '"' in ''.join(self.completion_matches):
+                            if '"' in "".join(self.completion_matches):
                                 unclosed_quote = "'"
                             else:
                                 unclosed_quote = '"'
 
-                            self.completion_matches = [unclosed_quote + match for match in self.completion_matches]
+                            self.completion_matches = [
+                                unclosed_quote + match
+                                for match in self.completion_matches
+                            ]
 
                     # Check if we need to remove text from the beginning of tab completions
                     elif text_to_remove:
-                        self.completion_matches = \
-                            [m.replace(text_to_remove, '', 1) for m in self.completion_matches]
+                        self.completion_matches = [
+                            m.replace(text_to_remove, "", 1)
+                            for m in self.completion_matches
+                        ]
 
                     # Check if we need to restore a shortcut in the tab completions
                     # so it doesn't get erased from the command line
                     if shortcut_to_restore:
-                        self.completion_matches = \
-                            [shortcut_to_restore + match for match in self.completion_matches]
+                        self.completion_matches = [
+                            shortcut_to_restore + match
+                            for match in self.completion_matches
+                        ]
 
             else:
                 # Complete token against anything a user can run
-                self.completion_matches = self.basic_complete(text, line, begidx, endidx,
-                                                              self.get_commands_aliases_and_macros_for_completion())
+                self.completion_matches = self.basic_complete(
+                    text,
+                    line,
+                    begidx,
+                    endidx,
+                    self.get_commands_aliases_and_macros_for_completion(),
+                )
 
             # Handle single result
             if len(self.completion_matches) == 1:
-                str_to_append = ''
+                str_to_append = ""
 
                 # Add a closing quote if needed and allowed
                 if self.allow_closing_quote and unclosed_quote:
@@ -1563,7 +1746,7 @@ class Cmd(cmd.Cmd):
 
                 # If we are at the end of the line, then add a space if allowed
                 if self.allow_appended_space and endidx == len(line):
-                    str_to_append += ' '
+                    str_to_append += " "
 
                 self.completion_matches[0] += str_to_append
 
@@ -1578,8 +1761,14 @@ class Cmd(cmd.Cmd):
         except IndexError:
             return None
 
-    def _autocomplete_default(self, text: str, line: str, begidx: int, endidx: int,
-                              argparser: argparse.ArgumentParser) -> List[str]:
+    def _autocomplete_default(
+        self,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        argparser: argparse.ArgumentParser,
+    ) -> List[str]:
         """Default completion function for argparse commands."""
         completer = AutoCompleter(argparser, cmd2_app=self)
 
@@ -1591,8 +1780,11 @@ class Cmd(cmd.Cmd):
 
     def get_all_commands(self) -> List[str]:
         """Returns a list of all commands."""
-        return [name[len(COMMAND_FUNC_PREFIX):] for name in self.get_names()
-                if name.startswith(COMMAND_FUNC_PREFIX) and callable(getattr(self, name))]
+        return [
+            name[len(COMMAND_FUNC_PREFIX) :]
+            for name in self.get_names()
+            if name.startswith(COMMAND_FUNC_PREFIX) and callable(getattr(self, name))
+        ]
 
     def get_visible_commands(self) -> List[str]:
         """Returns a list of commands that have not been hidden."""
@@ -1622,8 +1814,11 @@ class Cmd(cmd.Cmd):
 
     def get_help_topics(self) -> List[str]:
         """ Returns a list of help topics """
-        return [name[len(HELP_FUNC_PREFIX):] for name in self.get_names()
-                if name.startswith(HELP_FUNC_PREFIX) and callable(getattr(self, name))]
+        return [
+            name[len(HELP_FUNC_PREFIX) :]
+            for name in self.get_names()
+            if name.startswith(HELP_FUNC_PREFIX) and callable(getattr(self, name))
+        ]
 
     # noinspection PyUnusedLocal
     def sigint_handler(self, signum: int, frame) -> None:
@@ -1727,7 +1922,9 @@ class Cmd(cmd.Cmd):
                 stop = self.postcmd(stop, statement)
 
                 if self.timing:
-                    self.pfeedback('Elapsed: %s' % str(datetime.datetime.now() - timestart))
+                    self.pfeedback(
+                        "Elapsed: %s" % str(datetime.datetime.now() - timestart)
+                    )
             finally:
                 if self.allow_redirection and self.redirecting:
                     self._restore_output(statement)
@@ -1739,14 +1936,17 @@ class Cmd(cmd.Cmd):
         finally:
             return self._run_cmdfinalization_hooks(stop, statement)
 
-    def _run_cmdfinalization_hooks(self, stop: bool, statement: Optional[Statement]) -> bool:
+    def _run_cmdfinalization_hooks(
+        self, stop: bool, statement: Optional[Statement]
+    ) -> bool:
         """Run the command finalization hooks"""
 
-        if not sys.platform.startswith('win'):
+        if not sys.platform.startswith("win"):
             # Fix those annoying problems that occur with terminal programs like "less" when you pipe to them
             if self.stdin.isatty():
                 import subprocess
-                proc = subprocess.Popen(shlex.split('stty sane'))
+
+                proc = subprocess.Popen(shlex.split("stty sane"))
                 proc.communicate()
 
         try:
@@ -1786,8 +1986,8 @@ class Cmd(cmd.Cmd):
         try:
             while self.cmdqueue and not stop:
                 line = self.cmdqueue.pop(0)
-                if self.echo and line != 'eos':
-                    self.poutput('{}{}'.format(self.prompt, line))
+                if self.echo and line != "eos":
+                    self.poutput("{}{}".format(self.prompt, line))
 
                 stop = self.onecmd_plus_hooks(line)
         finally:
@@ -1834,17 +2034,17 @@ class Cmd(cmd.Cmd):
                 try:
                     self.at_continuation_prompt = True
                     newline = self.pseuthg_raw_input(self.continuation_prompt)
-                    if newline == 'eof':
+                    if newline == "eof":
                         # they entered either a blank line, or we hit an EOF
                         # for some other reason. Turn the literal 'eof'
                         # into a blank line, which serves as a command
                         # terminator
-                        newline = '\n'
+                        newline = "\n"
                         self.poutput(newline)
-                    line = '{}\n{}'.format(statement.raw, newline)
+                    line = "{}\n{}".format(statement.raw, newline)
                 except KeyboardInterrupt:
-                    self.poutput('^C')
-                    statement = self.statement_parser.parse('')
+                    self.poutput("^C")
+                    statement = self.statement_parser.parse("")
                     break
                 finally:
                     self.at_continuation_prompt = False
@@ -1853,14 +2053,14 @@ class Cmd(cmd.Cmd):
                 newline = self.pseuthg_raw_input(self.continuation_prompt)
                 self.at_continuation_prompt = False
 
-                if newline == 'eof':
+                if newline == "eof":
                     # they entered either a blank line, or we hit an EOF
                     # for some other reason. Turn the literal 'eof'
                     # into a blank line, which serves as a command
                     # terminator
-                    newline = '\n'
+                    newline = "\n"
                     self.poutput(newline)
-                line = '{}\n{}'.format(statement.raw, newline)
+                line = "{}\n{}".format(statement.raw, newline)
 
         if not statement.command:
             raise EmptyStatement()
@@ -1875,23 +2075,25 @@ class Cmd(cmd.Cmd):
         import subprocess
 
         if statement.pipe_to:
-            self.kept_state = Statekeeper(self, ('stdout',))
+            self.kept_state = Statekeeper(self, ("stdout",))
 
             # Create a pipe with read and write sides
             read_fd, write_fd = os.pipe()
 
             # Open each side of the pipe and set stdout accordingly
             # noinspection PyTypeChecker
-            self.stdout = io.open(write_fd, 'w')
+            self.stdout = io.open(write_fd, "w")
             self.redirecting = True
             # noinspection PyTypeChecker
-            subproc_stdin = io.open(read_fd, 'r')
+            subproc_stdin = io.open(read_fd, "r")
 
             # We want Popen to raise an exception if it fails to open the process.  Thus we don't set shell to True.
             try:
-                self.pipe_proc = subprocess.Popen(statement.pipe_to, stdin=subproc_stdin)
+                self.pipe_proc = subprocess.Popen(
+                    statement.pipe_to, stdin=subproc_stdin
+                )
             except Exception as ex:
-                self.perror('Not piping because - {}'.format(ex), traceback_war=False)
+                self.perror("Not piping because - {}".format(ex), traceback_war=False)
 
                 # Restore stdout to what it was and close the pipe
                 self.stdout.close()
@@ -1903,22 +2105,27 @@ class Cmd(cmd.Cmd):
 
         elif statement.output:
             import tempfile
+
             if (not statement.output_to) and (not self.can_clip):
-                raise EnvironmentError("Cannot redirect to paste buffer; install 'pyperclip' and re-run to enable")
-            self.kept_state = Statekeeper(self, ('stdout',))
-            self.kept_sys = Statekeeper(sys, ('stdout',))
+                raise EnvironmentError(
+                    "Cannot redirect to paste buffer; install 'pyperclip' and re-run to enable"
+                )
+            self.kept_state = Statekeeper(self, ("stdout",))
+            self.kept_sys = Statekeeper(sys, ("stdout",))
             self.redirecting = True
             if statement.output_to:
                 # going to a file
-                mode = 'w'
+                mode = "w"
                 # statement.output can only contain
                 # REDIRECTION_APPEND or REDIRECTION_OUTPUT
                 if statement.output == constants.REDIRECTION_APPEND:
-                    mode = 'a'
+                    mode = "a"
                 try:
                     sys.stdout = self.stdout = open(statement.output_to, mode)
                 except OSError as ex:
-                    self.perror('Not redirecting because - {}'.format(ex), traceback_war=False)
+                    self.perror(
+                        "Not redirecting because - {}".format(ex), traceback_war=False
+                    )
                     self.redirecting = False
             else:
                 # going to a paste buffer
@@ -1977,10 +2184,10 @@ class Cmd(cmd.Cmd):
         :return: method name which implements the given command
         """
         target = COMMAND_FUNC_PREFIX + command
-        return target if callable(getattr(self, target, None)) else ''
+        return target if callable(getattr(self, target, None)) else ""
 
     def onecmd(self, statement: Union[Statement, str]) -> bool:
-        """ This executes the actual thg_* method for a command.
+        """This executes the actual thg_* method for a command.
 
         If the command provided doesn't exist, then it executes _default() instead.
 
@@ -2022,28 +2229,33 @@ class Cmd(cmd.Cmd):
         from itertools import islice
 
         if statement.command not in self.macros.keys():
-            raise KeyError('{} is not a macro'.format(statement.command))
+            raise KeyError("{} is not a macro".format(statement.command))
 
         macro = self.macros[statement.command]
 
         # Make sure enough arguments were passed in
         if len(statement.arg_list) < macro.minimum_arg_count:
-            self.perror("The macro '{}' expects at least {} argument(s)".format(statement.command,
-                                                                                macro.minimum_arg_count),
-                        traceback_war=False)
+            self.perror(
+                "The macro '{}' expects at least {} argument(s)".format(
+                    statement.command, macro.minimum_arg_count
+                ),
+                traceback_war=False,
+            )
             return False
 
         # Resolve the arguments in reverse and read their values from statement.argv since those
         # are unquoted. Macro args should have been quoted when the macro was created.
         resolved = macro.value
-        reverse_arg_list = sorted(macro.arg_list, key=lambda ma: ma.start_index, reverse=True)
+        reverse_arg_list = sorted(
+            macro.arg_list, key=lambda ma: ma.start_index, reverse=True
+        )
 
         for arg in reverse_arg_list:
             if arg.is_escaped:
-                to_replace = '{{' + arg.number_str + '}}'
-                replacement = '{' + arg.number_str + '}'
+                to_replace = "{{" + arg.number_str + "}}"
+                replacement = "{" + arg.number_str + "}"
             else:
-                to_replace = '{' + arg.number_str + '}'
+                to_replace = "{" + arg.number_str + "}"
                 replacement = statement.argv[int(arg.number_str)]
 
             parts = resolved.rsplit(to_replace, maxsplit=1)
@@ -2051,7 +2263,7 @@ class Cmd(cmd.Cmd):
 
         # Append extra arguments and use statement.arg_list since these arguments need their quotes preserved
         for arg in islice(statement.arg_list, macro.minimum_arg_count, None):
-            resolved += ' ' + arg
+            resolved += " " + arg
 
         # Run the resolved command
         return self.onecmd_plus_hooks(resolved)
@@ -2062,12 +2274,17 @@ class Cmd(cmd.Cmd):
         :param statement: Statement object with parsed input
         """
         if self.default_to_shell:
-            if 'shell' not in self.exclude_from_history:
+            if "shell" not in self.exclude_from_history:
                 self.history.append(statement.raw)
 
             return self.thg_shell(statement.command_and_args)
         else:
-            self.poutput('*** {} is not a recognized command, alias, or macro\n'.format(statement.command))
+
+            self.poutput(
+                "[{}WARNING{}] {} is not a recognized command, alias, or macro\n".format(colorama.Fore.YELLOW,
+                    colorama.Fore.RESET,statement.command
+                )
+            )
 
     def pseuthg_raw_input(self, prompt: str) -> str:
         """Began life as a copy of cmd's cmdloop; like raw_input but
@@ -2092,9 +2309,9 @@ class Cmd(cmd.Cmd):
                 else:
                     line = input()
                     if self.echo:
-                        sys.stdout.write('{}{}\n'.format(self.prompt, line))
+                        sys.stdout.write("{}{}\n".format(self.prompt, line))
             except EOFError:
-                line = 'eof'
+                line = "eof"
             finally:
                 if sys.stdin.isatty():
                     # The prompt is gone. Do not allow asynchronous changes to the terminal.
@@ -2102,11 +2319,11 @@ class Cmd(cmd.Cmd):
         else:
             if self.stdin.isatty():
                 # on a tty, print the prompt first, then read the line
-                self.poutput(self.prompt, end='')
+                self.poutput(self.prompt, end="")
                 self.stdout.flush()
                 line = self.stdin.readline()
                 if len(line) == 0:
-                    line = 'eof'
+                    line = "eof"
             else:
                 # we are reading from a pipe, read the line to see if there is
                 # anything there, if so, then decide whether to print the
@@ -2115,9 +2332,9 @@ class Cmd(cmd.Cmd):
                 if len(line):
                     # we read something, output the prompt and the something
                     if self.echo:
-                        self.poutput('{}{}'.format(self.prompt, line))
+                        self.poutput("{}{}".format(self.prompt, line))
                 else:
-                    line = 'eof'
+                    line = "eof"
 
         return line.strip()
 
@@ -2139,18 +2356,20 @@ class Cmd(cmd.Cmd):
                 # Set GNU readline's rl_basic_quote_characters to NULL so it won't automatically add a closing quote
                 # We don't need to worry about setting rl_completion_suppress_quote since we never declared
                 # rl_completer_quote_characters.
-                old_basic_quotes = ctypes.cast(rl_basic_quote_characters, ctypes.c_void_p).value
+                old_basic_quotes = ctypes.cast(
+                    rl_basic_quote_characters, ctypes.c_void_p
+                ).value
                 rl_basic_quote_characters.value = None
 
             old_completer = readline.get_completer()
             readline.set_completer(self.complete)
 
             # Break words on whitespace and quotes when tab completing
-            completer_delims = " \t\n" + ''.join(constants.QUOTES)
+            completer_delims = " \t\n" + "".join(constants.QUOTES)
 
             if self.allow_redirection:
                 # If redirection is allowed, then break words on those characters too
-                completer_delims += ''.join(constants.REDIRECTION_CHARS)
+                completer_delims += "".join(constants.REDIRECTION_CHARS)
 
             old_delims = readline.get_completer_delims()
             readline.set_completer_delims(completer_delims)
@@ -2165,16 +2384,16 @@ class Cmd(cmd.Cmd):
                     # Run command out of cmdqueue if nonempty (populated by load command or commands at invocation)
                     line = self.cmdqueue.pop(0)
 
-                    if self.echo and line != 'eos':
-                        self.poutput('{}{}'.format(self.prompt, line))
+                    if self.echo and line != "eos":
+                        self.poutput("{}{}".format(self.prompt, line))
                 else:
                     # Otherwise, read a command from stdin
                     if not self.quit_on_sigint:
                         try:
                             line = self.pseuthg_raw_input(self.prompt)
                         except KeyboardInterrupt:
-                            self.poutput('^C')
-                            line = ''
+                            self.poutput("^C")
+                            line = ""
                     else:
                         line = self.pseuthg_raw_input(self.prompt)
 
@@ -2210,7 +2429,9 @@ class Cmd(cmd.Cmd):
             return
 
         if args.name in self.macros:
-            self.perror("Alias cannot have the same name as a macro", traceback_war=False)
+            self.perror(
+                "Alias cannot have the same name as a macro", traceback_war=False
+            )
             return
 
         utils.unquote_redirection_tokens(args.command_args)
@@ -2218,7 +2439,7 @@ class Cmd(cmd.Cmd):
         # Build the alias value string
         value = args.command
         if args.command_args:
-            value += ' ' + ' '.join(args.command_args)
+            value += " " + " ".join(args.command_args)
 
         # Set the alias
         result = "overwritten" if args.name in self.aliases else "created"
@@ -2231,35 +2452,47 @@ class Cmd(cmd.Cmd):
             self.aliases.clear()
             self.poutput("All aliases deleted")
         elif not args.name:
-            self.thg_help('alias delete')
+            self.thg_help("alias delete")
         else:
             for cur_name in utils.remove_duplicates(args.name):
                 if cur_name in self.aliases:
                     del self.aliases[cur_name]
                     self.poutput("Alias '{}' deleted".format(cur_name))
                 else:
-                    self.perror("Alias '{}' does not exist".format(cur_name), traceback_war=False)
+                    self.perror(
+                        "Alias '{}' does not exist".format(cur_name),
+                        traceback_war=False,
+                    )
 
     def alias_list(self, args: argparse.Namespace) -> None:
         """List some or all aliases"""
         if args.name:
             for cur_name in utils.remove_duplicates(args.name):
                 if cur_name in self.aliases:
-                    self.poutput("alias create {} {}".format(cur_name, self.aliases[cur_name]))
+                    self.poutput(
+                        "alias create {} {}".format(cur_name, self.aliases[cur_name])
+                    )
                 else:
-                    self.perror("Alias '{}' not found".format(cur_name), traceback_war=False)
+                    self.perror(
+                        "Alias '{}' not found".format(cur_name), traceback_war=False
+                    )
         else:
             sorted_aliases = utils.alphabetical_sort(self.aliases)
             for cur_alias in sorted_aliases:
-                self.poutput("alias create {} {}".format(cur_alias, self.aliases[cur_alias]))
+                self.poutput(
+                    "alias create {} {}".format(cur_alias, self.aliases[cur_alias])
+                )
 
     # Top-level parser for alias
-    alias_description = ("Manage aliases\n"
-                         "\n"
-                         "An alias is a command that enables replacement of a word by another string.")
-    alias_epilog = ("See also:\n"
-                    "  macro")
-    alias_parser = ACArgumentParser(description=alias_description, epilog=alias_epilog, prog='alias')
+    alias_description = (
+        "Manage aliases\n"
+        "\n"
+        "An alias is a command that enables replacement of a word by another string."
+    )
+    alias_epilog = "See also:\n" "  macro"
+    alias_parser = ACArgumentParser(
+        description=alias_description, epilog=alias_epilog, prog="alias"
+    )
 
     # Add sub-commands to alias
     alias_subparsers = alias_parser.add_subparsers()
@@ -2268,50 +2501,78 @@ class Cmd(cmd.Cmd):
     alias_create_help = "create or overwrite an alias"
     alias_create_description = "Create or overwrite an alias"
 
-    alias_create_epilog = ("Notes:\n"
-                           "  If you want to use redirection or pipes in the alias, then quote them to\n"
-                           "  prevent the 'alias create' command from being redirected.\n"
-                           "\n"
-                           "  Since aliases are resolved during parsing, tab completion will function as it\n"
-                           "  would for the actual command the alias resolves to.\n"
-                           "\n"
-                           "Examples:\n"
-                           "  alias ls !ls -lF\n"
-                           "  alias create show_log !cat \"log file.txt\"\n"
-                           "  alias create save_results print_results \">\" out.txt\n")
+    alias_create_epilog = (
+        "Notes:\n"
+        "  If you want to use redirection or pipes in the alias, then quote them to\n"
+        "  prevent the 'alias create' command from being redirected.\n"
+        "\n"
+        "  Since aliases are resolved during parsing, tab completion will function as it\n"
+        "  would for the actual command the alias resolves to.\n"
+        "\n"
+        "Examples:\n"
+        "  alias ls !ls -lF\n"
+        '  alias create show_log !cat "log file.txt"\n'
+        '  alias create save_results print_results ">" out.txt\n'
+    )
 
-    alias_create_parser = alias_subparsers.add_parser('create', help=alias_create_help,
-                                                      description=alias_create_description,
-                                                      epilog=alias_create_epilog)
-    alias_create_parser.add_argument('name', help='name of this alias')
-    setattr(alias_create_parser.add_argument('command', help='what the alias resolves to'),
-            ACTION_ARG_CHOICES, get_commands_aliases_and_macros_for_completion)
-    setattr(alias_create_parser.add_argument('command_args', nargs=argparse.REMAINDER,
-                                             help='arguments to pass to command'),
-            ACTION_ARG_CHOICES, ('path_complete',))
+    alias_create_parser = alias_subparsers.add_parser(
+        "create",
+        help=alias_create_help,
+        description=alias_create_description,
+        epilog=alias_create_epilog,
+    )
+    alias_create_parser.add_argument("name", help="name of this alias")
+    setattr(
+        alias_create_parser.add_argument("command", help="what the alias resolves to"),
+        ACTION_ARG_CHOICES,
+        get_commands_aliases_and_macros_for_completion,
+    )
+    setattr(
+        alias_create_parser.add_argument(
+            "command_args",
+            nargs=argparse.REMAINDER,
+            help="arguments to pass to command",
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
     alias_create_parser.set_defaults(func=alias_create)
 
     # alias -> delete
     alias_delete_help = "delete aliases"
-    alias_delete_description = "Delete specified aliases or all aliases if --all is used"
-    alias_delete_parser = alias_subparsers.add_parser('delete', help=alias_delete_help,
-                                                      description=alias_delete_description)
-    setattr(alias_delete_parser.add_argument('name', nargs='*', help='alias to delete'),
-            ACTION_ARG_CHOICES, get_alias_names)
-    alias_delete_parser.add_argument('-a', '--all', action='store_true', help="delete all aliases")
+    alias_delete_description = (
+        "Delete specified aliases or all aliases if --all is used"
+    )
+    alias_delete_parser = alias_subparsers.add_parser(
+        "delete", help=alias_delete_help, description=alias_delete_description
+    )
+    setattr(
+        alias_delete_parser.add_argument("name", nargs="*", help="alias to delete"),
+        ACTION_ARG_CHOICES,
+        get_alias_names,
+    )
+    alias_delete_parser.add_argument(
+        "-a", "--all", action="store_true", help="delete all aliases"
+    )
     alias_delete_parser.set_defaults(func=alias_delete)
 
     # alias -> list
     alias_list_help = "list aliases"
-    alias_list_description = ("List specified aliases in a reusable form that can be saved to a startup script\n"
-                              "to preserve aliases across sessions\n"
-                              "\n"
-                              "Without arguments, all aliases will be listed.")
+    alias_list_description = (
+        "List specified aliases in a reusable form that can be saved to a startup script\n"
+        "to preserve aliases across sessions\n"
+        "\n"
+        "Without arguments, all aliases will be listed."
+    )
 
-    alias_list_parser = alias_subparsers.add_parser('list', help=alias_list_help,
-                                                    description=alias_list_description)
-    setattr(alias_list_parser.add_argument('name', nargs="*", help='alias to list'),
-            ACTION_ARG_CHOICES, get_alias_names)
+    alias_list_parser = alias_subparsers.add_parser(
+        "list", help=alias_list_help, description=alias_list_description
+    )
+    setattr(
+        alias_list_parser.add_argument("name", nargs="*", help="alias to list"),
+        ACTION_ARG_CHOICES,
+        get_alias_names,
+    )
     alias_list_parser.set_defaults(func=alias_list)
 
     # Preserve quotes since we are passing strings to other commands
@@ -2319,13 +2580,13 @@ class Cmd(cmd.Cmd):
     @with_category(CMD_CORE)
     def thg_alias(self, args: argparse.Namespace) -> None:
         """Manage aliases"""
-        func = getattr(args, 'func', None)
+        func = getattr(args, "func", None)
         if func is not None:
             # Call whatever sub-command function was selected
             func(self, args)
         else:
             # No sub-command was provided, so call help
-            self.thg_help('alias')
+            self.thg_help("alias")
 
     # -----  Macro sub-command functions -----
 
@@ -2339,11 +2600,15 @@ class Cmd(cmd.Cmd):
             return
 
         if args.name in self.get_all_commands():
-            self.perror("Macro cannot have the same name as a command", traceback_war=False)
+            self.perror(
+                "Macro cannot have the same name as a command", traceback_war=False
+            )
             return
 
         if args.name in self.aliases:
-            self.perror("Macro cannot have the same name as an alias", traceback_war=False)
+            self.perror(
+                "Macro cannot have the same name as an alias", traceback_war=False
+            )
             return
 
         utils.unquote_redirection_tokens(args.command_args)
@@ -2351,7 +2616,7 @@ class Cmd(cmd.Cmd):
         # Build the macro value string
         value = args.command
         if args.command_args:
-            value += ' ' + ' '.join(args.command_args)
+            value += " " + " ".join(args.command_args)
 
         # Find all normal arguments
         arg_list = []
@@ -2364,25 +2629,36 @@ class Cmd(cmd.Cmd):
                 cur_match = normal_matches.__next__()
 
                 # Get the number string between the braces
-                cur_num_str = (re.findall(MacroArg.digit_pattern, cur_match.group())[0])
+                cur_num_str = re.findall(MacroArg.digit_pattern, cur_match.group())[0]
                 cur_num = int(cur_num_str)
                 if cur_num < 1:
-                    self.perror("Argument numbers must be greater than 0", traceback_war=False)
+                    self.perror(
+                        "Argument numbers must be greater than 0", traceback_war=False
+                    )
                     return
 
                 arg_nums.add(cur_num)
                 if cur_num > max_arg_num:
                     max_arg_num = cur_num
 
-                arg_list.append(MacroArg(start_index=cur_match.start(), number_str=cur_num_str, is_escaped=False))
+                arg_list.append(
+                    MacroArg(
+                        start_index=cur_match.start(),
+                        number_str=cur_num_str,
+                        is_escaped=False,
+                    )
+                )
 
             except StopIteration:
                 break
 
         # Make sure the argument numbers are continuous
         if len(arg_nums) != max_arg_num:
-            self.perror("Not all numbers between 1 and {} are present "
-                        "in the argument placeholders".format(max_arg_num), traceback_war=False)
+            self.perror(
+                "Not all numbers between 1 and {} are present "
+                "in the argument placeholders".format(max_arg_num),
+                traceback_war=False,
+            )
             return
 
         # Find all escaped arguments
@@ -2395,13 +2671,24 @@ class Cmd(cmd.Cmd):
                 # Get the number string between the braces
                 cur_num_str = re.findall(MacroArg.digit_pattern, cur_match.group())[0]
 
-                arg_list.append(MacroArg(start_index=cur_match.start(), number_str=cur_num_str, is_escaped=True))
+                arg_list.append(
+                    MacroArg(
+                        start_index=cur_match.start(),
+                        number_str=cur_num_str,
+                        is_escaped=True,
+                    )
+                )
             except StopIteration:
                 break
 
         # Set the macro
         result = "overwritten" if args.name in self.macros else "created"
-        self.macros[args.name] = Macro(name=args.name, value=value, minimum_arg_count=max_arg_num, arg_list=arg_list)
+        self.macros[args.name] = Macro(
+            name=args.name,
+            value=value,
+            minimum_arg_count=max_arg_num,
+            arg_list=arg_list,
+        )
         self.poutput("Macro '{}' {}".format(args.name, result))
 
     def macro_delete(self, args: argparse.Namespace) -> None:
@@ -2410,35 +2697,49 @@ class Cmd(cmd.Cmd):
             self.macros.clear()
             self.poutput("All macros deleted")
         elif not args.name:
-            self.thg_help('macro delete')
+            self.thg_help("macro delete")
         else:
             for cur_name in utils.remove_duplicates(args.name):
                 if cur_name in self.macros:
                     del self.macros[cur_name]
                     self.poutput("Macro '{}' deleted".format(cur_name))
                 else:
-                    self.perror("Macro '{}' does not exist".format(cur_name), traceback_war=False)
+                    self.perror(
+                        "Macro '{}' does not exist".format(cur_name),
+                        traceback_war=False,
+                    )
 
     def macro_list(self, args: argparse.Namespace) -> None:
         """List some or all macros"""
         if args.name:
             for cur_name in utils.remove_duplicates(args.name):
                 if cur_name in self.macros:
-                    self.poutput("macro create {} {}".format(cur_name, self.macros[cur_name].value))
+                    self.poutput(
+                        "macro create {} {}".format(
+                            cur_name, self.macros[cur_name].value
+                        )
+                    )
                 else:
-                    self.perror("Macro '{}' not found".format(cur_name), traceback_war=False)
+                    self.perror(
+                        "Macro '{}' not found".format(cur_name), traceback_war=False
+                    )
         else:
             sorted_macros = utils.alphabetical_sort(self.macros)
             for cur_macro in sorted_macros:
-                self.poutput("macro create {} {}".format(cur_macro, self.macros[cur_macro].value))
+                self.poutput(
+                    "macro create {} {}".format(cur_macro, self.macros[cur_macro].value)
+                )
 
     # Top-level parser for macro
-    macro_description = ("Manage macros\n"
-                         "\n"
-                         "A macro is similar to an alias, but it can take arguments when called.")
-    macro_epilog = ("See also:\n"
-                    "  alias")
-    macro_parser = ACArgumentParser(description=macro_description, epilog=macro_epilog, prog='macro')
+    macro_description = (
+        "Manage macros\n"
+        "\n"
+        "A macro is similar to an alias, but it can take arguments when called."
+    )
+    macro_epilog = "See also:\n" "  alias"
+    macro_parser = ACArgumentParser(
+        description=macro_description, epilog=macro_epilog, prog="macro"
+    )
 
     # Add sub-commands to macro
     macro_subparsers = macro_parser.add_subparsers()
@@ -2447,75 +2748,102 @@ class Cmd(cmd.Cmd):
     macro_create_help = "create or overwrite a macro"
     macro_create_description = "Create or overwrite a macro"
 
-    macro_create_epilog = ("A macro is similar to an alias, but it can take arguments when called.\n"
-                           "Arguments are expressed when creating a macro using {#} notation where {1}\n"
-                           "means the first argument.\n"
-                           "\n"
-                           "The following creates a macro called my_macro that expects two arguments:\n"
-                           "\n"
-                           "  macro create my_macro make_dinner -meat {1} -veggie {2}\n"
-                           "\n"
-                           "When the macro is called, the provided arguments are resolved and the assembled\n"
-                           "command is run. For example:\n"
-                           "\n"
-                           "  my_macro beef broccoli ---> make_dinner -meat beef -veggie broccoli\n"
-                           "\n"
-                           "Notes:\n"
-                           "  To use the literal string {1} in your command, escape it this way: {{1}}.\n"
-                           "\n"
-                           "  Extra arguments passed when calling a macro are tacked onto resolved command.\n"
-                           "\n"
-                           "  An argument number can be repeated in a macro. In the following example the\n"
-                           "  first argument will populate both {1} instances.\n"
-                           "\n"
-                           "    macro create ft file_taxes -p {1} -q {2} -r {1}\n"
-                           "\n"
-                           "  To quote an argument in the resolved command, quote it during creation.\n"
-                           "\n"
-                           "    macro create backup !cp \"{1}\" \"{1}.orig\"\n"
-                           "\n"
-                           "  Be careful! Since macros can resolve into commands, aliases, and macros,\n"
-                           "  it is possible to create a macro that results in infinite recursion.\n"
-                           "\n"
-                           "  If you want to use redirection or pipes in the macro, then quote them as in\n"
-                           "  this example to prevent the 'macro create' command from being redirected.\n"
-                           "\n"
-                           "    macro create show_results print_results -type {1} \"|\" less\n"
-                           "\n"
-                           "  Because macros do not resolve until after parsing (hitting Enter), tab\n"
-                           "  completion will only complete paths.")
+    macro_create_epilog = (
+        "A macro is similar to an alias, but it can take arguments when called.\n"
+        "Arguments are expressed when creating a macro using {#} notation where {1}\n"
+        "means the first argument.\n"
+        "\n"
+        "The following creates a macro called my_macro that expects two arguments:\n"
+        "\n"
+        "  macro create my_macro make_dinner -meat {1} -veggie {2}\n"
+        "\n"
+        "When the macro is called, the provided arguments are resolved and the assembled\n"
+        "command is run. For example:\n"
+        "\n"
+        "  my_macro beef broccoli ---> make_dinner -meat beef -veggie broccoli\n"
+        "\n"
+        "Notes:\n"
+        "  To use the literal string {1} in your command, escape it this way: {{1}}.\n"
+        "\n"
+        "  Extra arguments passed when calling a macro are tacked onto resolved command.\n"
+        "\n"
+        "  An argument number can be repeated in a macro. In the following example the\n"
+        "  first argument will populate both {1} instances.\n"
+        "\n"
+        "    macro create ft file_taxes -p {1} -q {2} -r {1}\n"
+        "\n"
+        "  To quote an argument in the resolved command, quote it during creation.\n"
+        "\n"
+        '    macro create backup !cp "{1}" "{1}.orig"\n'
+        "\n"
+        "  Be careful! Since macros can resolve into commands, aliases, and macros,\n"
+        "  it is possible to create a macro that results in infinite recursion.\n"
+        "\n"
+        "  If you want to use redirection or pipes in the macro, then quote them as in\n"
+        "  this example to prevent the 'macro create' command from being redirected.\n"
+        "\n"
+        '    macro create show_results print_results -type {1} "|" less\n'
+        "\n"
+        "  Because macros do not resolve until after parsing (hitting Enter), tab\n"
+        "  completion will only complete paths."
+    )
 
-    macro_create_parser = macro_subparsers.add_parser('create', help=macro_create_help,
-                                                      description=macro_create_description,
-                                                      epilog=macro_create_epilog)
-    macro_create_parser.add_argument('name', help='name of this macro')
-    setattr(macro_create_parser.add_argument('command', help='what the macro resolves to'),
-            ACTION_ARG_CHOICES, get_commands_aliases_and_macros_for_completion)
-    setattr(macro_create_parser.add_argument('command_args', nargs=argparse.REMAINDER,
-                                             help='arguments to pass to command'),
-            ACTION_ARG_CHOICES, ('path_complete',))
+    macro_create_parser = macro_subparsers.add_parser(
+        "create",
+        help=macro_create_help,
+        description=macro_create_description,
+        epilog=macro_create_epilog,
+    )
+    macro_create_parser.add_argument("name", help="name of this macro")
+    setattr(
+        macro_create_parser.add_argument("command", help="what the macro resolves to"),
+        ACTION_ARG_CHOICES,
+        get_commands_aliases_and_macros_for_completion,
+    )
+    setattr(
+        macro_create_parser.add_argument(
+            "command_args",
+            nargs=argparse.REMAINDER,
+            help="arguments to pass to command",
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
     macro_create_parser.set_defaults(func=macro_create)
 
     # macro -> delete
     macro_delete_help = "delete macros"
     macro_delete_description = "Delete specified macros or all macros if --all is used"
-    macro_delete_parser = macro_subparsers.add_parser('delete', help=macro_delete_help,
-                                                      description=macro_delete_description)
-    setattr(macro_delete_parser.add_argument('name', nargs='*', help='macro to delete'),
-            ACTION_ARG_CHOICES, get_macro_names)
-    macro_delete_parser.add_argument('-a', '--all', action='store_true', help="delete all macros")
+    macro_delete_parser = macro_subparsers.add_parser(
+        "delete", help=macro_delete_help, description=macro_delete_description
+    )
+    setattr(
+        macro_delete_parser.add_argument("name", nargs="*", help="macro to delete"),
+        ACTION_ARG_CHOICES,
+        get_macro_names,
+    )
+    macro_delete_parser.add_argument(
+        "-a", "--all", action="store_true", help="delete all macros"
+    )
     macro_delete_parser.set_defaults(func=macro_delete)
 
     # macro -> list
     macro_list_help = "list macros"
-    macro_list_description = ("List specified macros in a reusable form that can be saved to a startup script\n"
-                              "to preserve macros across sessions\n"
-                              "\n"
-                              "Without arguments, all macros will be listed.")
+    macro_list_description = (
+        "List specified macros in a reusable form that can be saved to a startup script\n"
+        "to preserve macros across sessions\n"
+        "\n"
+        "Without arguments, all macros will be listed."
+    )
 
-    macro_list_parser = macro_subparsers.add_parser('list', help=macro_list_help, description=macro_list_description)
-    setattr(macro_list_parser.add_argument('name', nargs="*", help='macro to list'),
-            ACTION_ARG_CHOICES, get_macro_names)
+    macro_list_parser = macro_subparsers.add_parser(
+        "list", help=macro_list_help, description=macro_list_description
+    )
+    setattr(
+        macro_list_parser.add_argument("name", nargs="*", help="macro to list"),
+        ACTION_ARG_CHOICES,
+        get_macro_names,
+    )
     macro_list_parser.set_defaults(func=macro_list)
 
     # Preserve quotes since we are passing strings to other commands
@@ -2523,15 +2851,17 @@ class Cmd(cmd.Cmd):
     @with_category(CMD_CORE)
     def thg_macro(self, args: argparse.Namespace) -> None:
         """Manage macros"""
-        func = getattr(args, 'func', None)
+        func = getattr(args, "func", None)
         if func is not None:
             # Call whatever sub-command function was selected
             func(self, args)
         else:
             # No sub-command was provided, so call help
-            self.thg_help('macro')
+            self.thg_help("macro")
 
-    def complete_help_command(self, text: str, line: str, begidx: int, endidx: int) -> List[str]:
+    def complete_help_command(
+        self, text: str, line: str, begidx: int, endidx: int
+    ) -> List[str]:
         """Completes the command argument of help"""
 
         # Complete token against topics and visible commands
@@ -2540,7 +2870,9 @@ class Cmd(cmd.Cmd):
         strs_to_match = list(topics | visible_commands)
         return self.basic_complete(text, line, begidx, endidx, strs_to_match)
 
-    def complete_help_subcommand(self, text: str, line: str, begidx: int, endidx: int) -> List[str]:
+    def complete_help_subcommand(
+        self, text: str, line: str, begidx: int, endidx: int
+    ) -> List[str]:
         """Completes the subcommand argument of help"""
 
         # Get all tokens through the one being completed
@@ -2556,7 +2888,7 @@ class Cmd(cmd.Cmd):
         # Find where the command is by skipping past any flags
         cmd_index = 1
         for cur_token in tokens[cmd_index:]:
-            if not cur_token.startswith('-'):
+            if not cur_token.startswith("-"):
                 break
             cmd_index += 1
 
@@ -2568,25 +2900,42 @@ class Cmd(cmd.Cmd):
 
         # Check if this is a command with an argparse function
         func = self.cmd_func(command)
-        if func and hasattr(func, 'argparser'):
-            completer = AutoCompleter(getattr(func, 'argparser'), cmd2_app=self)
-            matches = completer.complete_command_help(tokens[cmd_index:], text, line, begidx, endidx)
+        if func and hasattr(func, "argparser"):
+            completer = AutoCompleter(getattr(func, "argparser"), cmd2_app=self)
+            matches = completer.complete_command_help(
+                tokens[cmd_index:], text, line, begidx, endidx
+            )
 
         return matches
 
     help_parser = ACArgumentParser()
 
-    setattr(help_parser.add_argument('command', help="command to retrieve help for", nargs="?"),
-            ACTION_ARG_CHOICES, ('complete_help_command',))
-    setattr(help_parser.add_argument('subcommand', help="sub-command to retrieve help for",
-                                     nargs=argparse.REMAINDER),
-            ACTION_ARG_CHOICES, ('complete_help_subcommand',))
-    help_parser.add_argument('-v', '--verbose', action='store_true',
-                             help="print a list of all commands with descriptions of each")
+    setattr(
+        help_parser.add_argument(
+            "command", help="command to retrieve help for", nargs="?"
+        ),
+        ACTION_ARG_CHOICES,
+        ("complete_help_command",),
+    )
+    setattr(
+        help_parser.add_argument(
+            "subcommand",
+            help="sub-command to retrieve help for",
+            nargs=argparse.REMAINDER,
+        ),
+        ACTION_ARG_CHOICES,
+        ("complete_help_subcommand",),
+    )
+    help_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="print a list of all commands with descriptions of each",
+    )
 
     # Get rid of cmd's complete_help() functions so AutoCompleter will complete the help command
-    if getattr(cmd.Cmd, 'complete_help', None) is not None:
-        delattr(cmd.Cmd, 'complete_help')
+    if getattr(cmd.Cmd, "complete_help", None) is not None:
+        delattr(cmd.Cmd, "complete_help")
 
     @with_argparser(help_parser)
     @with_category(CMD_CORE)
@@ -2598,17 +2947,16 @@ class Cmd(cmd.Cmd):
         else:
             # Getting help for a specific command
             func = self.cmd_func(args.command)
-            if func and hasattr(func, 'argparser'):
-                completer = AutoCompleter(getattr(func, 'argparser'), cmd2_app=self)
+            if func and hasattr(func, "argparser"):
+                completer = AutoCompleter(getattr(func, "argparser"), cmd2_app=self)
                 tokens = [args.command] + args.subcommand
                 self.poutput(completer.format_help(tokens))
             else:
                 # No special behavior needed, delegate to cmd base class thg_help()
                 super().thg_help(args.command)
 
-    def _help_menu(self, verbose: bool=False) -> None:
-        """Show a list of commands which help can be displayed for.
-        """
+    def _help_menu(self, verbose: bool = False) -> None:
+        """Show a list of commands which help can be displayed for."""
         # Get a sorted list of help topics
         help_topics = utils.alphabetical_sort(self.get_help_topics())
 
@@ -2628,7 +2976,7 @@ class Cmd(cmd.Cmd):
                 help_topics.remove(command)
 
                 # Non-argparse commands can have help_functions for their documentation
-                if not hasattr(func, 'argparser'):
+                if not hasattr(func, "argparser"):
                     has_help_func = True
 
             if hasattr(func, HELP_CATEGORY):
@@ -2643,19 +2991,25 @@ class Cmd(cmd.Cmd):
         if len(cmds_cats) == 0:
             # No categories found, fall back to standard behavior
             self.poutput("{}\n".format(str(self.doc_leader)))
-            self._print_topics(Fore.RED+self.doc_header+Fore.RED+Fore.RESET, cmds_doc, verbose)
+            self._print_topics(
+                Fore.RED + self.doc_header + Fore.RED + Fore.RESET, cmds_doc, verbose
+            )
         else:
             # Categories found, Organize all commands by category
-            #self.poutput('{}\n'.format(str(self.doc_leader)))
-            count_len = len(self.doc_header)+2
+            # self.poutput('{}\n'.format(str(self.doc_leader)))
+            count_len = len(self.doc_header) + 2
 
-            self.poutput('#'*count_len)
-            self.poutput('#{COLOR_START}{DOC}{COLOR_END}#'.format(COLOR_START=Fore.BLUE,DOC=self.doc_header, COLOR_END=Fore.YELLOW))
-            self.poutput('#' * count_len)
+            self.poutput("#" * count_len)
+            self.poutput(
+                "#{COLOR_START}{DOC}{COLOR_END}#".format(
+                    COLOR_START=Fore.BLUE, DOC=self.doc_header, COLOR_END=Fore.RESET
+                )
+            )
+            self.poutput("#" * count_len)
             self.poutput("\n")
             for category in sorted(cmds_cats.keys()):
                 self._print_topics(category, cmds_cats[category], verbose)
-            self._print_topics('Other', cmds_doc, verbose)
+            self._print_topics("Other", cmds_doc, verbose)
 
         self.print_topics(self.misc_header, help_topics, 15, 80)
         self.print_topics(self.undoc_header, cmds_undoc, 15, 80)
@@ -2668,7 +3022,7 @@ class Cmd(cmd.Cmd):
             if not verbose:
                 self.print_topics(header, cmds, 15, 80)
             else:
-                self.stdout.write('{}\n'.format(str(header)))
+                self.stdout.write("{}\n".format(str(header)))
                 widest = 0
                 # measure the commands
                 for command in cmds:
@@ -2681,7 +3035,9 @@ class Cmd(cmd.Cmd):
                     widest = 20
 
                 if self.ruler:
-                    self.stdout.write('{:{ruler}<{width}}\n'.format('', ruler=self.ruler, width=80))
+                    self.stdout.write(
+                        "{:{ruler}<{width}}\n".format("", ruler=self.ruler, width=80)
+                    )
 
                 # Try to get the documentation string for each command
                 topics = self.get_help_topics()
@@ -2690,7 +3046,7 @@ class Cmd(cmd.Cmd):
                     cmd_func = self.cmd_func(command)
 
                     # Non-argparse commands can have help_functions for their documentation
-                    if not hasattr(cmd_func, 'argparser') and command in topics:
+                    if not hasattr(cmd_func, "argparser") and command in topics:
                         help_func = getattr(self, HELP_FUNC_PREFIX + command)
                         result = io.StringIO()
 
@@ -2712,7 +3068,7 @@ class Cmd(cmd.Cmd):
 
                     # Attempt to locate the first documentation block
                     if not doc:
-                        doc_block = ['']
+                        doc_block = [""]
                     else:
                         doc_block = []
                         found_first = False
@@ -2720,7 +3076,7 @@ class Cmd(cmd.Cmd):
                             stripped_line = doc_line.strip()
 
                             # Don't include :param type lines
-                            if stripped_line.startswith(':'):
+                            if stripped_line.startswith(":"):
                                 if found_first:
                                     break
                             elif stripped_line:
@@ -2730,17 +3086,19 @@ class Cmd(cmd.Cmd):
                                 break
 
                     for doc_line in doc_block:
-                        self.stdout.write('{: <{col_width}}{doc}\n'.format(command,
-                                                                           col_width=widest,
-                                                                           doc=doc_line))
-                        command = ''
+                        self.stdout.write(
+                            "{: <{col_width}}{doc}\n".format(
+                                command, col_width=widest, doc=doc_line
+                            )
+                        )
+                        command = ""
                 self.stdout.write("\n")
 
     @with_argparser(ACArgumentParser())
     @with_category(CMD_CORE)
     def thg_shortcuts(self, _: argparse.Namespace) -> None:
         """List available shortcuts"""
-        result = "\n".join('%s: %s' % (sc[0], sc[1]) for sc in sorted(self.shortcuts))
+        result = "\n".join("%s: %s" % (sc[0], sc[1]) for sc in sorted(self.shortcuts))
         self.poutput("Shortcuts for other commands:\n{}\n".format(result))
 
     @with_argparser(ACArgumentParser(epilog=INTERNAL_COMMAND_EPILOG))
@@ -2756,17 +3114,21 @@ class Cmd(cmd.Cmd):
         self._should_quit = True
         return self._STOP_AND_EXIT
 
-    def select(self, opts: Union[str, List[str], List[Tuple[Any, Optional[str]]]], prompt: str='Your choice? ') -> str:
+    def select(
+        self,
+        opts: Union[str, List[str], List[Tuple[Any, Optional[str]]]],
+        prompt: str = "Your choice? ",
+    ) -> str:
         """Presents a numbered menu to the user.  Modeled after
-           the bash shell's SELECT.  Returns the item chosen.
+        the bash shell's SELECT.  Returns the item chosen.
 
-           Argument ``opts`` can be:
+        Argument ``opts`` can be:
 
-             | a single string -> will be split into one-word options
-             | a list of strings -> will be offered as options
-             | a list of tuples -> interpreted as (value, text), so
-                                   that the return value can differ from
-                                   the text advertised to the user """
+          | a single string -> will be split into one-word options
+          | a list of strings -> will be offered as options
+          | a list of tuples -> interpreted as (value, text), so
+                                that the return value can differ from
+                                the text advertised to the user"""
         local_opts = opts
         if isinstance(opts, str):
             local_opts = list(zip(opts.split(), opts.split()))
@@ -2780,14 +3142,14 @@ class Cmd(cmd.Cmd):
                 except IndexError:
                     fulloptions.append((opt[0], opt[0]))
         for (idx, (_, text)) in enumerate(fulloptions):
-            self.poutput('  %2d. %s\n' % (idx + 1, text))
+            self.poutput("  %2d. %s\n" % (idx + 1, text))
         while True:
             safe_prompt = rl_make_safe_prompt(prompt)
             response = input(safe_prompt)
 
             if rl_type != RlType.NONE:
                 hlen = readline.get_current_history_length()
-                if hlen >= 1 and response != '':
+                if hlen >= 1 and response != "":
                     readline.remove_history_item(hlen - 1)
 
             try:
@@ -2797,8 +3159,11 @@ class Cmd(cmd.Cmd):
                 result = fulloptions[choice - 1][0]
                 break
             except (ValueError, IndexError):
-                self.poutput("{!r} isn't a valid choice. Pick a number between 1 and {}:\n".format(response,
-                                                                                                   len(fulloptions)))
+                self.poutput(
+                    "{!r} isn't a valid choice. Pick a number between 1 and {}:\n".format(
+                        response, len(fulloptions)
+                    )
+                )
         return result
 
     def cmdenvironment(self) -> str:
@@ -2810,9 +3175,11 @@ class Cmd(cmd.Cmd):
         Commands may be terminated with: {}
         Arguments at invocation allowed: {}
         Output redirection and pipes allowed: {}"""
-        return read_only_settings.format(str(self.terminators), self.allow_cli_args, self.allow_redirection)
+        return read_only_settings.format(
+            str(self.terminators), self.allow_cli_args, self.allow_redirection
+        )
 
-    def show(self, args: argparse.Namespace, parameter: str='') -> None:
+    def show(self, args: argparse.Namespace, parameter: str = "") -> None:
         """Shows current settings of parameters.
 
         :param args: argparse parsed arguments from the set command
@@ -2824,33 +3191,48 @@ class Cmd(cmd.Cmd):
 
         for p in self.settable:
             if (not param) or p.startswith(param):
-                result[p] = '{}: {}'.format(p, str(getattr(self, p)))
+                result[p] = "{}: {}".format(p, str(getattr(self, p)))
                 maxlen = max(maxlen, len(result[p]))
 
         if result:
             for p in sorted(result):
                 if args.long:
-                    self.poutput('{} # {}'.format(result[p].ljust(maxlen), self.settable[p]))
+                    self.poutput(
+                        "{} # {}".format(result[p].ljust(maxlen), self.settable[p])
+                    )
                 else:
                     self.poutput(result[p])
 
             # If user has requested to see all settings, also show read-only settings
             if args.all:
-                self.poutput('\nRead only settings:{}'.format(self.cmdenvironment()))
+                self.poutput("\nRead only settings:{}".format(self.cmdenvironment()))
         else:
-            raise LookupError("Parameter '{}' not supported (type 'set' for list of parameters).".format(param))
+            raise LookupError(
+                "Parameter '{}' not supported (type 'set' for list of parameters).".format(
+                    param
+                )
+            )
 
-    set_description = ("Set a settable parameter or show current settings of parameters\n"
-                       "\n"
-                       "Accepts abbreviated parameter names so long as there is no ambiguity.\n"
-                       "Call without arguments for a list of settable parameters with their values.")
+    set_description = (
+        "Set a settable parameter or show current settings of parameters\n"
+        "\n"
+        "Accepts abbreviated parameter names so long as there is no ambiguity.\n"
+        "Call without arguments for a list of settable parameters with their values."
+    )
 
     set_parser = ACArgumentParser(description=set_description)
-    set_parser.add_argument('-a', '--all', action='store_true', help='display read-only settings as well')
-    set_parser.add_argument('-l', '--long', action='store_true', help='describe function of parameter')
-    setattr(set_parser.add_argument('param', nargs='?', help='parameter to set or view'),
-            ACTION_ARG_CHOICES, settable)
-    set_parser.add_argument('value', nargs='?', help='the new value for settable')
+    set_parser.add_argument(
+        "-a", "--all", action="store_true", help="display read-only settings as well"
+    )
+    set_parser.add_argument(
+        "-l", "--long", action="store_true", help="describe function of parameter"
+    )
+    setattr(
+        set_parser.add_argument("param", nargs="?", help="parameter to set or view"),
+        ACTION_ARG_CHOICES,
+        settable,
+    )
+    set_parser.add_argument("value", nargs="?", help="the new value for settable")
 
     @with_argparser(set_parser)
     def thg_set(self, args: argparse.Namespace) -> None:
@@ -2879,20 +3261,29 @@ class Cmd(cmd.Cmd):
         value = utils.cast(current_value, value)
         setattr(self, param, value)
 
-        self.poutput('{} - was: {}\nnow: {}\n'.format(param, current_value, value))
+        self.poutput("{} - was: {}\nnow: {}\n".format(param, current_value, value))
 
         # See if we need to call a change hook for this settable
         if current_value != value:
-            onchange_hook = getattr(self, '_onchange_{}'.format(param), None)
+            onchange_hook = getattr(self, "_onchange_{}".format(param), None)
             if onchange_hook is not None:
                 onchange_hook(old=current_value, new=value)
 
     shell_parser = ACArgumentParser()
-    setattr(shell_parser.add_argument('command', help='the command to run'),
-            ACTION_ARG_CHOICES, ('shell_cmd_complete',))
-    setattr(shell_parser.add_argument('command_args', nargs=argparse.REMAINDER,
-                                      help='arguments to pass to command'),
-            ACTION_ARG_CHOICES, ('path_complete',))
+    setattr(
+        shell_parser.add_argument("command", help="the command to run"),
+        ACTION_ARG_CHOICES,
+        ("shell_cmd_complete",),
+    )
+    setattr(
+        shell_parser.add_argument(
+            "command_args",
+            nargs=argparse.REMAINDER,
+            help="arguments to pass to command",
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
 
     # Preserve quotes since we are passing these strings to the shell
     @with_argparser(shell_parser, preserve_quotes=True)
@@ -2919,7 +3310,7 @@ class Cmd(cmd.Cmd):
                 if first_char in constants.QUOTES:
                     tokens[index] = first_char + tokens[index] + first_char
 
-        expanded_command = ' '.join(tokens)
+        expanded_command = " ".join(tokens)
         proc = subprocess.Popen(expanded_command, stdout=self.stdout, shell=True)
         proc.communicate()
 
@@ -2936,7 +3327,7 @@ class Cmd(cmd.Cmd):
         is run. Therefore this method only needs to be called before creating a Python console.
         """
         # Delete any prompts that have been set
-        attributes = ['ps1', 'ps2', 'ps3']
+        attributes = ["ps1", "ps2", "ps3"]
         for cur_attr in attributes:
             try:
                 del sys.__dict__[cur_attr]
@@ -2947,18 +3338,22 @@ class Cmd(cmd.Cmd):
         sys.displayhook = sys.__displayhook__
         sys.excepthook = sys.__excepthook__
 
-    py_description = ("Invoke Python command or shell\n"
-                      "\n"
-                      "Note that, when invoking a command directly from the command line, this shell\n"
-                      "has limited ability to parse Python statements into tokens. In particular,\n"
-                      "there may be problems with whitespace and quotes depending on their placement.\n"
-                      "\n"
-                      "If you see strange parsing behavior, it's best to just open the Python shell by\n"
-                      "providing no arguments to py and run more complex statements there.")
+    py_description = (
+        "Invoke Python command or shell\n"
+        "\n"
+        "Note that, when invoking a command directly from the command line, this shell\n"
+        "has limited ability to parse Python statements into tokens. In particular,\n"
+        "there may be problems with whitespace and quotes depending on their placement.\n"
+        "\n"
+        "If you see strange parsing behavior, it's best to just open the Python shell by\n"
+        "providing no arguments to py and run more complex statements there."
+    )
 
     py_parser = ACArgumentParser(description=py_description)
-    py_parser.add_argument('command', help="command to run", nargs='?')
-    py_parser.add_argument('remainder', help="remainder of command", nargs=argparse.REMAINDER)
+    py_parser.add_argument("command", help="command to run", nargs="?")
+    py_parser.add_argument(
+        "remainder", help="remainder of command", nargs=argparse.REMAINDER
+    )
 
     # Preserve quotes since we are passing these strings to Python
     @with_argparser(py_parser, preserve_quotes=True)
@@ -2966,10 +3361,11 @@ class Cmd(cmd.Cmd):
     def thg_py(self, args: argparse.Namespace) -> bool:
         """Invoke Python command or shell"""
         from .pyscript_bridge import PyscriptBridge, CommandResult
+
         if self._in_py:
             err = "Recursively entering interactive Python consoles is not allowed."
             self.perror(err, traceback_war=False)
-            self._last_result = CommandResult('', err)
+            self._last_result = CommandResult("", err)
             return False
 
         try:
@@ -2989,7 +3385,9 @@ class Cmd(cmd.Cmd):
                     with open(expanded_filename) as f:
                         interp.runcode(f.read())
                 except OSError as ex:
-                    error_msg = "Error opening script file '{}': {}".format(expanded_filename, ex)
+                    error_msg = "Error opening script file '{}': {}".format(
+                        expanded_filename, ex
+                    )
                     self.perror(error_msg, traceback_war=False)
 
             def py_quit():
@@ -2999,25 +3397,26 @@ class Cmd(cmd.Cmd):
             # Set up Python environment
             bridge = PyscriptBridge(self)
             self.pystate[self.pyscript_name] = bridge
-            self.pystate['run'] = py_run
-            self.pystate['quit'] = py_quit
-            self.pystate['exit'] = py_quit
+            self.pystate["run"] = py_run
+            self.pystate["quit"] = py_quit
+            self.pystate["exit"] = py_quit
 
             if self.locals_in_py:
-                self.pystate['self'] = self
-            elif 'self' in self.pystate:
-                del self.pystate['self']
+                self.pystate["self"] = self
+            elif "self" in self.pystate:
+                del self.pystate["self"]
 
             localvars = self.pystate
             from code import InteractiveConsole
+
             interp = InteractiveConsole(locals=localvars)
-            interp.runcode('import sys, os;sys.path.insert(0, os.getcwd())')
+            interp.runcode("import sys, os;sys.path.insert(0, os.getcwd())")
 
             # Check if the user is running a Python statement on the command line
             if args.command:
                 full_command = args.command
                 if args.remainder:
-                    full_command += ' ' + ' '.join(args.remainder)
+                    full_command += " " + " ".join(args.remainder)
 
                 # Set cmd_echo to True so PyscriptBridge statements like: py app('help')
                 # run at the command line will print their output.
@@ -3049,17 +3448,19 @@ class Cmd(cmd.Cmd):
                         # Set up tab completion for the Python console
                         # rlcompleter relies on the default settings of the Python readline module
                         if rl_type == RlType.GNU:
-                            old_basic_quotes = ctypes.cast(rl_basic_quote_characters, ctypes.c_void_p).value
+                            old_basic_quotes = ctypes.cast(
+                                rl_basic_quote_characters, ctypes.c_void_p
+                            ).value
                             rl_basic_quote_characters.value = orig_rl_basic_quotes
 
-                            if 'gnureadline' in sys.modules:
+                            if "gnureadline" in sys.modules:
                                 # rlcompleter imports readline by name, so it won't use gnureadline
                                 # Force rlcompleter to use gnureadline instead so it has our settings and history
                                 saved_readline = None
-                                if 'readline' in sys.modules:
-                                    saved_readline = sys.modules['readline']
+                                if "readline" in sys.modules:
+                                    saved_readline = sys.modules["readline"]
 
-                                sys.modules['readline'] = sys.modules['gnureadline']
+                                sys.modules["readline"] = sys.modules["gnureadline"]
 
                         old_delims = readline.get_completer_delims()
                         readline.set_completer_delims(orig_rl_delims)
@@ -3069,31 +3470,41 @@ class Cmd(cmd.Cmd):
                         if rl_type == RlType.GNU:
                             readline.set_completion_display_matches_hook(None)
                         elif rl_type == RlType.PYREADLINE:
-                            readline.rl.mode._display_completions = self._display_matches_pyreadline
+                            readline.rl.mode._display_completions = (
+                                self._display_matches_pyreadline
+                            )
 
                         # Save off the current completer and set a new one in the Python console
                         # Make sure it tab completes from its locals() dictionary
                         old_completer = readline.get_completer()
                         interp.runcode("from rlcompleter import Completer")
                         interp.runcode("import readline")
-                        interp.runcode("readline.set_completer(Completer(locals()).complete)")
+                        interp.runcode(
+                            "readline.set_completer(Completer(locals()).complete)"
+                        )
 
                 # Set up sys module for the Python console
                 self._reset_py_display()
-                keepstate = Statekeeper(sys, ('stdin', 'stdout'))
+                keepstate = Statekeeper(sys, ("stdin", "stdout"))
                 sys.stdout = self.stdout
                 sys.stdin = self.stdin
 
                 cprt = 'Type "help", "copyright", "credits" or "license" for more information.'
-                instructions = ('End with `Ctrl-D` (Unix) / `Ctrl-Z` (Windows), `quit()`, `exit()`.\n'
-                                'Non-Python commands can be issued with: {}("your command")\n'
-                                'Run Python code from external script files with: run("script.py")'
-                                .format(self.pyscript_name))
+                instructions = (
+                    "End with `Ctrl-D` (Unix) / `Ctrl-Z` (Windows), `quit()`, `exit()`.\n"
+                    'Non-Python commands can be issued with: {}("your command")\n'
+                    'Run Python code from external script files with: run("script.py")'.format(
+                        self.pyscript_name
+                    )
+                )
 
                 # noinspection PyBroadException
                 try:
-                    interp.interact(banner="Python {} on {}\n{}\n\n{}\n".
-                                    format(sys.version, sys.platform, cprt, instructions))
+                    interp.interact(
+                        banner="Python {} on {}\n{}\n\n{}\n".format(
+                            sys.version, sys.platform, cprt, instructions
+                        )
+                    )
                 except BaseException:
                     # We don't care about any exception that happened in the interactive console
                     pass
@@ -3122,12 +3533,12 @@ class Cmd(cmd.Cmd):
                             if rl_type == RlType.GNU:
                                 rl_basic_quote_characters.value = old_basic_quotes
 
-                                if 'gnureadline' in sys.modules:
+                                if "gnureadline" in sys.modules:
                                     # Restore what the readline module pointed to
                                     if saved_readline is None:
-                                        del(sys.modules['readline'])
+                                        del sys.modules["readline"]
                                     else:
-                                        sys.modules['readline'] = saved_readline
+                                        sys.modules["readline"] = saved_readline
 
         except KeyboardInterrupt:
             pass
@@ -3138,11 +3549,20 @@ class Cmd(cmd.Cmd):
         return self._should_quit
 
     pyscript_parser = ACArgumentParser()
-    setattr(pyscript_parser.add_argument('script_path', help='path to the script file'),
-            ACTION_ARG_CHOICES, ('path_complete',))
-    setattr(pyscript_parser.add_argument('script_arguments', nargs=argparse.REMAINDER,
-                                         help='arguments to pass to script'),
-            ACTION_ARG_CHOICES, ('path_complete',))
+    setattr(
+        pyscript_parser.add_argument("script_path", help="path to the script file"),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
+    setattr(
+        pyscript_parser.add_argument(
+            "script_arguments",
+            nargs=argparse.REMAINDER,
+            help="arguments to pass to script",
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
 
     @with_argparser(pyscript_parser)
     @with_category(CMD_CORE)
@@ -3173,44 +3593,77 @@ class Cmd(cmd.Cmd):
 
     # Only include the thg_ipy() method if IPython is available on the system
     if ipython_available:  # pragma: no cover
+
         @with_argparser(ACArgumentParser())
         def thg_ipy(self, _: argparse.Namespace) -> None:
             """Enter an interactive IPython shell"""
             from .pyscript_bridge import PyscriptBridge
+
             bridge = PyscriptBridge(self)
 
-            banner = ('Entering an embedded IPython shell. Type quit or <Ctrl>-d to exit.\n'
-                      'Run Python code from external files with: run filename.py\n')
-            exit_msg = 'Leaving IPython, back to {}'.format(sys.argv[0])
+            banner = (
+                "Entering an embedded IPython shell. Type quit or <Ctrl>-d to exit.\n"
+                "Run Python code from external files with: run filename.py\n"
+            )
+            exit_msg = "Leaving IPython, back to {}".format(sys.argv[0])
 
             if self.locals_in_py:
+
                 def load_ipy(self, app):
                     embed(banner1=banner, exit_msg=exit_msg)
+
                 load_ipy(self, bridge)
             else:
+
                 def load_ipy(app):
                     embed(banner1=banner, exit_msg=exit_msg)
+
                 load_ipy(bridge)
 
     history_parser = ACArgumentParser()
     history_parser_group = history_parser.add_mutually_exclusive_group()
-    history_parser_group.add_argument('-r', '--run', action='store_true', help='run selected history items')
-    history_parser_group.add_argument('-e', '--edit', action='store_true',
-                                      help='edit and then run selected history items')
-    history_parser_group.add_argument('-s', '--script', action='store_true', help='output commands in script format')
-    setattr(history_parser_group.add_argument('-o', '--output-file', metavar='FILE',
-                                              help='output commands to a script file'),
-            ACTION_ARG_CHOICES, ('path_complete',))
-    setattr(history_parser_group.add_argument('-t', '--transcript',
-                                              help='output commands and results to a transcript file'),
-            ACTION_ARG_CHOICES, ('path_complete',))
-    history_parser_group.add_argument('-c', '--clear', action="store_true", help='clear all history')
-    history_arg_help = ("empty               all history items\n"
-                        "a                   one history item by number\n"
-                        "a..b, a:b, a:, ..b  items by indices (inclusive)\n"
-                        "string              items containing string\n"
-                        "/regex/             items matching regular expression")
-    history_parser.add_argument('arg', nargs='?', help=history_arg_help)
+    history_parser_group.add_argument(
+        "-r", "--run", action="store_true", help="run selected history items"
+    )
+    history_parser_group.add_argument(
+        "-e",
+        "--edit",
+        action="store_true",
+        help="edit and then run selected history items",
+    )
+    history_parser_group.add_argument(
+        "-s", "--script", action="store_true", help="output commands in script format"
+    )
+    setattr(
+        history_parser_group.add_argument(
+            "-o",
+            "--output-file",
+            metavar="FILE",
+            help="output commands to a script file",
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
+    setattr(
+        history_parser_group.add_argument(
+            "-t",
+            "--transcript",
+            help="output commands and results to a transcript file",
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
+    history_parser_group.add_argument(
+        "-c", "--clear", action="store_true", help="clear all history"
+    )
+    history_arg_help = (
+        "empty               all history items\n"
+        "a                   one history item by number\n"
+        "a..b, a:b, a:, ..b  items by indices (inclusive)\n"
+        "string              items containing string\n"
+        "/regex/             items matching regular expression"
+    )
+    history_parser.add_argument("arg", nargs="?", help=history_arg_help)
 
     @with_argparser(history_parser)
     @with_category(CMD_CORE)
@@ -3233,7 +3686,7 @@ class Cmd(cmd.Cmd):
             # If a character indicating a slice is present, retrieve
             # a slice of the history
             arg = args.arg
-            if '..' in arg or ':' in arg:
+            if ".." in arg or ":" in arg:
                 try:
                     # Get a slice of history
                     history = self.history.span(arg)
@@ -3250,9 +3703,14 @@ class Cmd(cmd.Cmd):
 
         if args.run:
             if cowardly_refuse_to_run:
-                self.perror("Cowardly refusing to run all previously entered commands.", traceback_war=False)
-                self.perror("If this is what you want to do, specify '1:' as the range of history.",
-                            traceback_war=False)
+                self.perror(
+                    "Cowardly refusing to run all previously entered commands.",
+                    traceback_war=False,
+                )
+                self.perror(
+                    "If this is what you want to do, specify '1:' as the range of history.",
+                    traceback_war=False,
+                )
             else:
                 for runme in history:
                     self.pfeedback(runme)
@@ -3260,10 +3718,11 @@ class Cmd(cmd.Cmd):
                         self.onecmd_plus_hooks(runme)
         elif args.edit:
             import tempfile
-            fd, fname = tempfile.mkstemp(suffix='.txt', text=True)
-            with os.fdopen(fd, 'w') as fobj:
+
+            fd, fname = tempfile.mkstemp(suffix=".txt", text=True)
+            with os.fdopen(fd, "w") as fobj:
                 for command in history:
-                    fobj.write('{}\n'.format(command))
+                    fobj.write("{}\n".format(command))
             try:
                 os.system('"{}" "{}"'.format(self.editor, fname))
                 self.thg_load(fname)
@@ -3273,13 +3732,19 @@ class Cmd(cmd.Cmd):
                 os.remove(fname)
         elif args.output_file:
             try:
-                with open(os.path.expanduser(args.output_file), 'w') as fobj:
+                with open(os.path.expanduser(args.output_file), "w") as fobj:
                     for command in history:
-                        fobj.write('{}\n'.format(command))
-                plural = 's' if len(history) > 1 else ''
-                self.pfeedback('{} command{} saved to {}'.format(len(history), plural, args.output_file))
+                        fobj.write("{}\n".format(command))
+                plural = "s" if len(history) > 1 else ""
+                self.pfeedback(
+                    "{} command{} saved to {}".format(
+                        len(history), plural, args.output_file
+                    )
+                )
             except Exception as e:
-                self.perror('Saving {!r} - {}'.format(args.output_file, e), traceback_war=False)
+                self.perror(
+                    "Saving {!r} - {}".format(args.output_file, e), traceback_war=False
+                )
         elif args.transcript:
             self._generate_transcript(history, args.transcript)
         else:
@@ -3290,7 +3755,9 @@ class Cmd(cmd.Cmd):
                 else:
                     self.poutput(hi.pr())
 
-    def _generate_transcript(self, history: List[HistoryItem], transcript_file: str) -> None:
+    def _generate_transcript(
+        self, history: List[HistoryItem], transcript_file: str
+    ) -> None:
         """Generate a transcript file from a given history of commands."""
         # Save the current echo state, and turn it off. We inject commands into the
         # output using a different mechanism
@@ -3310,19 +3777,19 @@ class Cmd(cmd.Cmd):
         #
         # We have to jump through some hoops here in order to catch the commands
         # separately from the output and escape the slashes in the output.
-        transcript = ''
+        transcript = ""
         for history_item in history:
             # build the command, complete with prompts. When we replay
             # the transcript, we look for the prompts to separate
             # the command from the output
             first = True
-            command = ''
+            command = ""
             for line in history_item.splitlines():
                 if first:
-                    command += '{}{}\n'.format(self.prompt, line)
+                    command += "{}{}\n".format(self.prompt, line)
                     first = False
                 else:
-                    command += '{}{}\n'.format(self.continuation_prompt, line)
+                    command += "{}{}\n".format(self.continuation_prompt, line)
             transcript += command
             # create a new string buffer and set it to stdout to catch the output
             # of the command
@@ -3335,7 +3802,7 @@ class Cmd(cmd.Cmd):
             # get the output out of the buffer
             output = membuf.read()
             # and add the regex-escaped output to the transcript
-            transcript += output.replace('/', r'\/')
+            transcript += output.replace("/", r"\/")
 
         # Restore stdout to its original state
         self.stdout = saved_self_stdout
@@ -3344,42 +3811,53 @@ class Cmd(cmd.Cmd):
 
         # finally, we can write the transcript out to the file
         try:
-            with open(transcript_file, 'w') as fout:
+            with open(transcript_file, "w") as fout:
                 fout.write(transcript)
         except OSError as ex:
-            self.perror('Failed to save transcript: {}'.format(ex), traceback_war=False)
+            self.perror("Failed to save transcript: {}".format(ex), traceback_war=False)
         else:
             # and let the user know what we did
             if len(history) > 1:
-                plural = 'commands and their outputs'
+                plural = "commands and their outputs"
             else:
-                plural = 'command and its output'
-            msg = '{} {} saved to transcript file {!r}'
+                plural = "command and its output"
+            msg = "{} {} saved to transcript file {!r}"
             self.pfeedback(msg.format(len(history), plural, transcript_file))
 
-    edit_description = ("Edit a file in a text editor\n"
-                        "\n"
-                        "The editor used is determined by a settable parameter. To set it:\n"
-                        "\n"
-                        "  set editor (program-name)")
+    edit_description = (
+        "Edit a file in a text editor\n"
+        "\n"
+        "The editor used is determined by a settable parameter. To set it:\n"
+        "\n"
+        "  set editor (program-name)"
+    )
 
     edit_parser = ACArgumentParser(description=edit_description)
-    setattr(edit_parser.add_argument('file_path', help="path to a file to open in editor", nargs="?"),
-            ACTION_ARG_CHOICES, ('path_complete',))
+    setattr(
+        edit_parser.add_argument(
+            "file_path", help="path to a file to open in editor", nargs="?"
+        ),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
 
     @with_argparser(edit_parser)
     @with_category(CMD_CORE)
     def thg_edit(self, args: argparse.Namespace) -> None:
         """Edit a file in a text editor"""
         if not self.editor:
-            raise EnvironmentError("Please use 'set editor' to specify your text editing program of choice.")
+            raise EnvironmentError(
+                "Please use 'set editor' to specify your text editing program of choice."
+            )
 
         editor = utils.quote_string_if_needed(self.editor)
         if args.file_path:
-            expanded_path = utils.quote_string_if_needed(os.path.expanduser(args.file_path))
-            os.system('{} {}'.format(editor, expanded_path))
+            expanded_path = utils.quote_string_if_needed(
+                os.path.expanduser(args.file_path)
+            )
+            os.system("{} {}".format(editor, expanded_path))
         else:
-            os.system('{}'.format(editor))
+            os.system("{}".format(editor))
 
     @property
     def _current_script_dir(self) -> Optional[str]:
@@ -3395,14 +3873,19 @@ class Cmd(cmd.Cmd):
         if self._script_dir:
             self._script_dir.pop()
 
-    load_description = ("Run commands in script file that is encoded as either ASCII or UTF-8 text\n"
-                        "\n"
-                        "Script should contain one command per line, just like the command would be\n"
-                        "typed in the console.")
+    load_description = (
+        "Run commands in script file that is encoded as either ASCII or UTF-8 text\n"
+        "\n"
+        "Script should contain one command per line, just like the command would be\n"
+        "typed in the console."
+    )
 
     load_parser = ACArgumentParser(description=load_description)
-    setattr(load_parser.add_argument('script_path', help="path to the script file"),
-            ACTION_ARG_CHOICES, ('path_complete',))
+    setattr(
+        load_parser.add_argument("script_path", help="path to the script file"),
+        ACTION_ARG_CHOICES,
+        ("path_complete",),
+    )
 
     @with_argparser(load_parser)
     @with_category(CMD_CORE)
@@ -3412,7 +3895,10 @@ class Cmd(cmd.Cmd):
 
         # Make sure the path exists and we can access it
         if not os.path.exists(expanded_path):
-            self.perror("'{}' does not exist or cannot be accessed".format(expanded_path), traceback_war=False)
+            self.perror(
+                "'{}' does not exist or cannot be accessed".format(expanded_path),
+                traceback_war=False,
+            )
             return
 
         # Make sure expanded_path points to a file
@@ -3427,38 +3913,51 @@ class Cmd(cmd.Cmd):
 
         # Make sure the file is ASCII or UTF-8 encoded text
         if not utils.is_text_file(expanded_path):
-            self.perror("'{}' is not an ASCII or UTF-8 encoded text file".format(expanded_path), traceback_war=False)
+            self.perror(
+                "'{}' is not an ASCII or UTF-8 encoded text file".format(expanded_path),
+                traceback_war=False,
+            )
             return
 
         try:
             # Read all lines of the script and insert into the head of the
             # command queue. Add an "end of script (eos)" command to cleanup the
             # self._script_dir list when done.
-            with open(expanded_path, encoding='utf-8') as target:
-                self.cmdqueue = target.read().splitlines() + ['eos'] + self.cmdqueue
+            with open(expanded_path, encoding="utf-8") as target:
+                self.cmdqueue = target.read().splitlines() + ["eos"] + self.cmdqueue
         except OSError as ex:  # pragma: no cover
-            self.perror("Problem accessing script from '{}': {}".format(expanded_path, ex))
+            self.perror(
+                "Problem accessing script from '{}': {}".format(expanded_path, ex)
+            )
             return
 
         self._script_dir.append(os.path.dirname(expanded_path))
 
     relative_load_description = load_description
-    relative_load_description += ("\n\n"
-                                  "If this is called from within an already-running script, the filename will be\n"
-                                  "interpreted relative to the already-running script's directory.")
+    relative_load_description += (
+        "\n\n"
+        "If this is called from within an already-running script, the filename will be\n"
+        "interpreted relative to the already-running script's directory."
+    )
 
-    relative_load_epilog = ("Notes:\n"
-                            "  This command is intended to only be used within text file scripts.")
+    relative_load_epilog = (
+        "Notes:\n"
+        "  This command is intended to only be used within text file scripts."
+    )
 
-    relative_load_parser = ACArgumentParser(description=relative_load_description, epilog=relative_load_epilog)
-    relative_load_parser.add_argument('file_path', help='a file path pointing to a script')
+    relative_load_parser = ACArgumentParser(
+        description=relative_load_description, epilog=relative_load_epilog
+    )
+    relative_load_parser.add_argument(
+        "file_path", help="a file path pointing to a script"
+    )
 
     @with_argparser(relative_load_parser)
     def thg__relative_load(self, args: argparse.Namespace) -> None:
         """Run commands in script file that is encoded as either ASCII or UTF-8 text"""
         file_path = args.file_path
         # NOTE: Relative path is an absolute path, it is just relative to the current script directory
-        relative_path = os.path.join(self._current_script_dir or '', file_path)
+        relative_path = os.path.join(self._current_script_dir or "", file_path)
         self.thg_load(relative_path)
 
     def run_transcript_tests(self, callargs: List[str]) -> None:
@@ -3481,7 +3980,9 @@ class Cmd(cmd.Cmd):
         runner = unittest.TextTestRunner()
         runner.run(testcase)
 
-    def async_alert(self, alert_msg: str, new_prompt: Optional[str] = None) -> None:  # pragma: no cover
+    def async_alert(
+        self, alert_msg: str, new_prompt: Optional[str] = None
+    ) -> None:  # pragma: no cover
         """
         Display an important message to the user while they are at the prompt in between commands.
         To the user it appears as if an alert message is printed above the prompt and their current input
@@ -3507,13 +4008,15 @@ class Cmd(cmd.Cmd):
         if self.terminal_lock.acquire(blocking=False):
 
             # Figure out what prompt is displaying
-            current_prompt = self.continuation_prompt if self.at_continuation_prompt else self.prompt
+            current_prompt = (
+                self.continuation_prompt if self.at_continuation_prompt else self.prompt
+            )
 
             # Only update terminal if there are changes
             update_terminal = False
 
             if alert_msg:
-                alert_msg += '\n'
+                alert_msg += "\n"
                 update_terminal = True
 
             # Set the prompt if its changed
@@ -3533,7 +4036,9 @@ class Cmd(cmd.Cmd):
                 terminal_size = shutil.get_terminal_size()
 
                 # Figure out how many lines the prompt and user input take up
-                total_str_size = prompt_width + utils.ansi_safe_wcswidth(readline.get_line_buffer())
+                total_str_size = prompt_width + utils.ansi_safe_wcswidth(
+                    readline.get_line_buffer()
+                )
                 num_input_lines = int(total_str_size / terminal_size.columns) + 1
 
                 # Get the cursor's offset from the beginning of the first input line
@@ -3543,18 +4048,20 @@ class Cmd(cmd.Cmd):
                 cursor_input_line = int(cursor_input_offset / terminal_size.columns) + 1
 
                 # Create a string that when printed will clear all input lines and display the alert
-                terminal_str = ''
+                terminal_str = ""
 
                 # Move the cursor down to the last input line
                 if cursor_input_line != num_input_lines:
                     terminal_str += Cursor.DOWN(num_input_lines - cursor_input_line)
 
                 # Clear each input line from the bottom up so that the cursor ends up on the original first input line
-                terminal_str += (ansi.clear_line() + Cursor.UP(1)) * (num_input_lines - 1)
+                terminal_str += (ansi.clear_line() + Cursor.UP(1)) * (
+                    num_input_lines - 1
+                )
                 terminal_str += ansi.clear_line()
 
                 # Move the cursor to the beginning of the first input line and print the alert
-                terminal_str += '\r' + alert_msg
+                terminal_str += "\r" + alert_msg
 
                 if rl_type == RlType.GNU:
                     sys.stderr.write(terminal_str)
@@ -3588,7 +4095,7 @@ class Cmd(cmd.Cmd):
         :param new_prompt: what to change the prompt to
         :raises RuntimeError if called while another thread holds terminal_lock
         """
-        self.async_alert('', new_prompt)
+        self.async_alert("", new_prompt)
 
     def set_window_title(self, title: str) -> None:  # pragma: no cover
         """
@@ -3608,6 +4115,7 @@ class Cmd(cmd.Cmd):
         if self.terminal_lock.acquire(blocking=False):
             try:
                 import colorama.ansi as ansi
+
                 sys.stderr.write(ansi.set_title(title))
             except AttributeError:
                 # Debugging in Pycharm has issues with setting terminal title
@@ -3618,7 +4126,7 @@ class Cmd(cmd.Cmd):
         else:
             raise RuntimeError("another thread holds terminal_lock")
 
-    def cmdloop(self, intro: Optional[str]=None) -> None:
+    def cmdloop(self, intro: Optional[str] = None) -> None:
         """This is an outer wrapper around _cmdloop() which deals with extra features provided by cmd2.
 
         _cmdloop() provides the main loop equivalent to cmd.cmdloop().  This is a wrapper around that which deals with
@@ -3631,8 +4139,12 @@ class Cmd(cmd.Cmd):
         """
         if self.allow_cli_args:
             parser = argparse.ArgumentParser()
-            parser.add_argument('-t', '--test', action="store_true",
-                                help='Test against transcript(s) in FILE (wildcards OK)')
+            parser.add_argument(
+                "-t",
+                "--test",
+                action="store_true",
+                help="Test against transcript(s) in FILE (wildcards OK)",
+            )
             callopts, callargs = parser.parse_known_args()
 
             # If transcript testing was called for, use other arguments as transcript files
@@ -3647,6 +4159,7 @@ class Cmd(cmd.Cmd):
         if threading.current_thread() is threading.main_thread():
             # Register a SIGINT signal handler for Ctrl+C
             import signal
+
             original_sigint_handler = signal.getsignal(signal.SIGINT)
             signal.signal(signal.SIGINT, self.sigint_handler)
 
@@ -3710,11 +4223,13 @@ class Cmd(cmd.Cmd):
         # validate that the callable has the right number of parameters
         nparam = len(signature.parameters)
         if nparam != count:
-            raise TypeError('{} has {} positional arguments, expected {}'.format(
-                func.__name__,
-                nparam,
-                count,
-            ))
+            raise TypeError(
+                "{} has {} positional arguments, expected {}".format(
+                    func.__name__,
+                    nparam,
+                    count,
+                )
+            )
 
     @classmethod
     def _validate_prepostloop_callable(cls, func: Callable[[None], None]) -> None:
@@ -3723,9 +4238,11 @@ class Cmd(cmd.Cmd):
         # make sure there is no return notation
         signature = inspect.signature(func)
         if signature.return_annotation is not None:
-            raise TypeError("{} must declare return a return type of 'None'".format(
-                func.__name__,
-            ))
+            raise TypeError(
+                "{} must declare return a return type of 'None'".format(
+                    func.__name__,
+                )
+            )
 
     def register_preloop_hook(self, func: Callable[[None], None]) -> None:
         """Register a function to be called at the beginning of the command loop."""
@@ -3738,21 +4255,29 @@ class Cmd(cmd.Cmd):
         self._postloop_hooks.append(func)
 
     @classmethod
-    def _validate_postparsing_callable(cls, func: Callable[[plugin.PostparsingData], plugin.PostparsingData]) -> None:
+    def _validate_postparsing_callable(
+        cls, func: Callable[[plugin.PostparsingData], plugin.PostparsingData]
+    ) -> None:
         """Check parameter and return types for postparsing hooks"""
         cls._validate_callable_param_count(func, 1)
         signature = inspect.signature(func)
         _, param = list(signature.parameters.items())[0]
         if param.annotation != plugin.PostparsingData:
-            raise TypeError("{} must have one parameter declared with type 'cmd2.plugin.PostparsingData'".format(
-                func.__name__
-            ))
+            raise TypeError(
+                "{} must have one parameter declared with type 'cmd2.plugin.PostparsingData'".format(
+                    func.__name__
+                )
+            )
         if signature.return_annotation != plugin.PostparsingData:
-            raise TypeError("{} must declare return a return type of 'cmd2.plugin.PostparsingData'".format(
-                func.__name__
-            ))
+            raise TypeError(
+                "{} must declare return a return type of 'cmd2.plugin.PostparsingData'".format(
+                    func.__name__
+                )
+            )
 
-    def register_postparsing_hook(self, func: Callable[[plugin.PostparsingData], plugin.PostparsingData]) -> None:
+    def register_postparsing_hook(
+        self, func: Callable[[plugin.PostparsingData], plugin.PostparsingData]
+    ) -> None:
         """Register a function to be called after parsing user input but before running the command"""
         self._validate_postparsing_callable(func)
         self._postparsing_hooks.append(func)
@@ -3767,50 +4292,72 @@ class Cmd(cmd.Cmd):
         paramname = list(signature.parameters.keys())[0]
         param = signature.parameters[paramname]
         if param.annotation != data_type:
-            raise TypeError('argument 1 of {} has incompatible type {}, expected {}'.format(
-                func.__name__,
-                param.annotation,
-                data_type,
-            ))
+            raise TypeError(
+                "argument 1 of {} has incompatible type {}, expected {}".format(
+                    func.__name__,
+                    param.annotation,
+                    data_type,
+                )
+            )
         # validate the return value has the right annotation
         if signature.return_annotation == signature.empty:
-            raise TypeError('{} does not have a declared return type, expected {}'.format(
-                func.__name__,
-                data_type,
-            ))
+            raise TypeError(
+                "{} does not have a declared return type, expected {}".format(
+                    func.__name__,
+                    data_type,
+                )
+            )
         if signature.return_annotation != data_type:
-            raise TypeError('{} has incompatible return type {}, expected {}'.format(
-                func.__name__,
-                signature.return_annotation,
-                data_type,
-            ))
+            raise TypeError(
+                "{} has incompatible return type {}, expected {}".format(
+                    func.__name__,
+                    signature.return_annotation,
+                    data_type,
+                )
+            )
 
-    def register_precmd_hook(self, func: Callable[[plugin.PrecommandData], plugin.PrecommandData]) -> None:
+    def register_precmd_hook(
+        self, func: Callable[[plugin.PrecommandData], plugin.PrecommandData]
+    ) -> None:
         """Register a hook to be called before the command function."""
         self._validate_prepostcmd_hook(func, plugin.PrecommandData)
         self._precmd_hooks.append(func)
 
-    def register_postcmd_hook(self, func: Callable[[plugin.PostcommandData], plugin.PostcommandData]) -> None:
+    def register_postcmd_hook(
+        self, func: Callable[[plugin.PostcommandData], plugin.PostcommandData]
+    ) -> None:
         """Register a hook to be called after the command function."""
         self._validate_prepostcmd_hook(func, plugin.PostcommandData)
         self._postcmd_hooks.append(func)
 
     @classmethod
-    def _validate_cmdfinalization_callable(cls, func: Callable[[plugin.CommandFinalizationData],
-                                                               plugin.CommandFinalizationData]) -> None:
+    def _validate_cmdfinalization_callable(
+        cls,
+        func: Callable[
+            [plugin.CommandFinalizationData], plugin.CommandFinalizationData
+        ],
+    ) -> None:
         """Check parameter and return types for command finalization hooks."""
         cls._validate_callable_param_count(func, 1)
         signature = inspect.signature(func)
         _, param = list(signature.parameters.items())[0]
         if param.annotation != plugin.CommandFinalizationData:
-            raise TypeError("{} must have one parameter declared with type "
-                            "'cmd2.plugin.CommandFinalizationData'".format(func.__name__))
+            raise TypeError(
+                "{} must have one parameter declared with type "
+                "'cmd2.plugin.CommandFinalizationData'".format(func.__name__)
+            )
         if signature.return_annotation != plugin.CommandFinalizationData:
-            raise TypeError("{} must declare return a return type of "
-                            "'cmd2.plugin.CommandFinalizationData'".format(func.__name__))
+            raise TypeError(
+                "{} must declare return a return type of "
+                "'cmd2.plugin.CommandFinalizationData'".format(func.__name__)
+            )
 
-    def register_cmdfinalization_hook(self, func: Callable[[plugin.CommandFinalizationData],
-                                                           plugin.CommandFinalizationData]) -> None:
+    def register_cmdfinalization_hook(
+        self,
+        func: Callable[
+            [plugin.CommandFinalizationData], plugin.CommandFinalizationData
+        ],
+    ) -> None:
         """Register a hook to be called after a command is completed, whether it completes successfully or not."""
         self._validate_cmdfinalization_callable(func)
         self._cmdfinalization_hooks.append(func)
@@ -3834,7 +4381,9 @@ class History(list):
             result = None
         return result
 
-    spanpattern = re.compile(r'^\s*(?P<start>-?\d+)?\s*(?P<separator>:|(\.{2,}))?\s*(?P<end>-?\d+)?\s*$')
+    spanpattern = re.compile(
+        r"^\s*(?P<start>-?\d+)?\s*(?P<separator>:|(\.{2,}))?\s*(?P<end>-?\d+)?\s*$"
+    )
 
     def span(self, raw: str) -> List[HistoryItem]:
         """Parses the input string search for a span pattern and if if found, returns a slice from the History list.
@@ -3842,15 +4391,15 @@ class History(list):
         :param raw: string potentially containing a span of the forms a..b, a:b, a:, ..b
         :return: slice from the History list
         """
-        if raw.lower() in ('*', '-', 'all'):
-            raw = ':'
+        if raw.lower() in ("*", "-", "all"):
+            raw = ":"
         results = self.spanpattern.search(raw)
         if not results:
             raise IndexError
-        if not results.group('separator'):
-            return [self[self._to_index(results.group('start'))]]
-        start = self._to_index(results.group('start')) or 0  # Ensure start is not None
-        end = self._to_index(results.group('end'))
+        if not results.group("separator"):
+            return [self[self._to_index(results.group("start"))]]
+        start = self._to_index(results.group("start")) or 0  # Ensure start is not None
+        end = self._to_index(results.group("end"))
         reverse = False
         if end is not None:
             if end < start:
@@ -3862,7 +4411,7 @@ class History(list):
             result.reverse()
         return result
 
-    rangePattern = re.compile(r'^\s*(?P<start>[\d]+)?\s*-\s*(?P<end>[\d]+)?\s*$')
+    rangePattern = re.compile(r"^\s*(?P<start>[\d]+)?\s*-\s*(?P<end>[\d]+)?\s*$")
 
     def append(self, new: str) -> None:
         """Append a HistoryItem to end of the History list
@@ -3873,7 +4422,7 @@ class History(list):
         list.append(self, new)
         new.idx = len(self)
 
-    def get(self, getme: Optional[Union[int, str]]=None) -> List[HistoryItem]:
+    def get(self, getme: Optional[Union[int, str]] = None) -> List[HistoryItem]:
         """Get an item or items from the History list using 1-based indexing.
 
         :param getme: optional item(s) to get (either an integer index or string to search for)
@@ -3884,7 +4433,7 @@ class History(list):
         try:
             getme = int(getme)
             if getme < 0:
-                return self[:(-1 * getme)]
+                return self[: (-1 * getme)]
             else:
                 return [self[getme - 1]]
         except IndexError:
@@ -3892,8 +4441,8 @@ class History(list):
         except ValueError:
             range_result = self.rangePattern.search(getme)
             if range_result:
-                start = range_result.group('start') or None
-                end = range_result.group('start') or None
+                start = range_result.group("start") or None
+                end = range_result.group("start") or None
                 if start:
                     start = int(start) - 1
                 if end:
@@ -3902,8 +4451,10 @@ class History(list):
 
             getme = getme.strip()
 
-            if getme.startswith(r'/') and getme.endswith(r'/'):
-                finder = re.compile(getme[1:-1], re.DOTALL | re.MULTILINE | re.IGNORECASE)
+            if getme.startswith(r"/") and getme.endswith(r"/"):
+                finder = re.compile(
+                    getme[1:-1], re.DOTALL | re.MULTILINE | re.IGNORECASE
+                )
 
                 def isin(hi):
                     """Listcomp filter function for doing a regular expression search of History.
@@ -3912,7 +4463,9 @@ class History(list):
                     :return: bool - True if search matches
                     """
                     return finder.search(hi)
+
             else:
+
                 def isin(hi):
                     """Listcomp filter function for doing a case-insensitive string search of History.
 
@@ -3920,11 +4473,13 @@ class History(list):
                     :return: bool - True if search matches
                     """
                     return utils.norm_fold(getme) in utils.norm_fold(hi)
+
             return [itm for itm in self if isin(itm)]
 
 
 class Statekeeper(object):
     """Class used to save and restore state during load and py commands as well as when redirecting output or pipes."""
+
     def __init__(self, obj: Any, attribs: Iterable) -> None:
         """Use the instance attributes as a generic key-value store to copy instance attributes from outer object.
 

@@ -10,16 +10,15 @@ from .torch import Torch
 from .yahoo import Yahoo
 
 
-search_engines_dict = { 
-    'google': Google, 
-    'bing': Bing, 
-    'yahoo': Yahoo, 
-    'aol': Aol, 
-    'duckduckgo': Duckduckgo, 
-    'startpage': Startpage, 
-    'dogpile': Dogpile, 
-    'ask': Ask, 
-    'mojeek': Mojeek, 
-    'torch': Torch 
+search_engines_dict = {
+    "google": Google,
+    "bing": Bing,
+    "yahoo": Yahoo,
+    "aol": Aol,
+    "duckduckgo": Duckduckgo,
+    "startpage": Startpage,
+    "dogpile": Dogpile,
+    "ask": Ask,
+    "mojeek": Mojeek,
+    "torch": Torch,
 }
-

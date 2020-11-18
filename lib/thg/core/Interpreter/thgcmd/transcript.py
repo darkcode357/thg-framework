@@ -26,6 +26,7 @@ class Cmd2TestCase(unittest.TestCase):
 
     See example.py
     """
+
     cmdapp = None
 
     def fetchTranscripts(self):
@@ -66,30 +67,32 @@ class Cmd2TestCase(unittest.TestCase):
                     finished = True
                     break
                 line_num += 1
-            command = [line[len(self.cmdapp.visible_prompt):]]
+            command = [line[len(self.cmdapp.visible_prompt) :]]
             try:
                 line = next(transcript)
             except StopIteration:
-                line = ''
+                line = ""
             # Read the entirety of a multi-line command
             while line.startswith(self.cmdapp.continuation_prompt):
-                command.append(line[len(self.cmdapp.continuation_prompt):])
+                command.append(line[len(self.cmdapp.continuation_prompt) :])
                 try:
                     line = next(transcript)
                 except StopIteration as exc:
-                    msg = 'Transcript broke off while reading command beginning at line {} with\n{}'.format(line_num,
-                                                                                                            command[0])
+                    msg = "Transcript broke off while reading command beginning at line {} with\n{}".format(
+                        line_num, command[0]
+                    )
                     raise StopIteration(msg) from exc
                 line_num += 1
-            command = ''.join(command)
+            command = "".join(command)
             # Send the command into the application and capture the resulting output
             # TODO: Should we get the return value and act if stop == True?
             self.cmdapp.onecmd_plus_hooks(command)
             result = self.cmdapp.stdout.read()
             # Read the expected result from transcript
             if utils.strip_ansi(line).startswith(self.cmdapp.visible_prompt):
-                message = '\nFile {}, line {}\nCommand was:\n{}\nExpected: (nothing)\nGot:\n{}\n'.format(
-                          fname, line_num, command, result)
+                message = "\nFile {}, line {}\nCommand was:\n{}\nExpected: (nothing)\nGot:\n{}\n".format(
+                    fname, line_num, command, result
+                )
                 self.assertTrue(not (result.strip()), message)
                 continue
             expected = []
@@ -101,13 +104,16 @@ class Cmd2TestCase(unittest.TestCase):
                     finished = True
                     break
                 line_num += 1
-            expected = ''.join(expected)
+            expected = "".join(expected)
 
             # transform the expected text into a valid regular expression
             expected = self._transform_transcript_expected(expected)
-            message = '\nFile {}, line {}\nCommand was:\n{}\nExpected:\n{}\nGot:\n{}\n'.format(
-                      fname, line_num, command, expected, result)
-            self.assertTrue(re.match(expected, result, re.MULTILINE | re.DOTALL), message)
+            message = "\nFile {}, line {}\nCommand was:\n{}\nExpected:\n{}\nGot:\n{}\n".format(
+                fname, line_num, command, expected, result
+            )
+            self.assertTrue(
+                re.match(expected, result, re.MULTILINE | re.DOTALL), message
+            )
 
     def _transform_transcript_expected(self, s: str) -> str:
         r"""Parse the string with slashed regexes into a valid regex.
@@ -126,7 +132,7 @@ class Cmd2TestCase(unittest.TestCase):
         Check the tests in tests/test_transcript.py to see all the edge
         cases.
         """
-        regex = ''
+        regex = ""
         start = 0
 
         while True:
@@ -141,7 +147,9 @@ class Cmd2TestCase(unittest.TestCase):
                 regex += re.escape(s[start:first_slash_pos])
                 start = first_slash_pos + 1
                 # and go find the next one
-                (regex, second_slash_pos, start) = self._escaped_find(regex, s, start, True)
+                (regex, second_slash_pos, start) = self._escaped_find(
+                    regex, s, start, True
+                )
                 if second_slash_pos > 0:
                     # add everything between the slashes (but not the slashes)
                     # as a regular expression
@@ -152,12 +160,14 @@ class Cmd2TestCase(unittest.TestCase):
                 else:
                     # No closing slash, we have to add the first slash,
                     # and the rest of the text
-                    regex += re.escape(s[start - 1:])
+                    regex += re.escape(s[start - 1 :])
                     break
         return regex
 
     @staticmethod
-    def _escaped_find(regex: str, s: str, start: int, in_regex: bool) -> Tuple[str, int, int]:
+    def _escaped_find(
+        regex: str, s: str, start: int, in_regex: bool
+    ) -> Tuple[str, int, int]:
         """Find the next slash in {s} after {start} that is not preceded by a backslash.
 
         If we find an escaped slash, add everything up to and including it to regex,
@@ -169,7 +179,7 @@ class Cmd2TestCase(unittest.TestCase):
         differently if we are or if we aren't.
         """
         while True:
-            pos = s.find('/', start)
+            pos = s.find("/", start)
             if pos == -1:
                 # no match, return to caller
                 break
@@ -179,18 +189,18 @@ class Cmd2TestCase(unittest.TestCase):
                 break
             else:
                 # check if the slash is preceeded by a backslash
-                if s[pos - 1:pos] == '\\':
+                if s[pos - 1 : pos] == "\\":
                     # it is.
                     if in_regex:
                         # add everything up to the backslash as a
                         # regular expression
-                        regex += s[start:pos - 1]
+                        regex += s[start : pos - 1]
                         # skip the backslash, and add the slash
                         regex += s[pos]
                     else:
                         # add everything up to the backslash as escaped
                         # plain text
-                        regex += re.escape(s[start:pos - 1])
+                        regex += re.escape(s[start : pos - 1])
                         # and then add the slash as escaped
                         # plain text
                         regex += re.escape(s[pos])

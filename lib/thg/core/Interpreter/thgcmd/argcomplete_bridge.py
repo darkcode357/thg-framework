@@ -1,4 +1,3 @@
-
 """Hijack the ArgComplete's bash completion handler to return AutoCompleter results"""
 
 try:
@@ -28,8 +27,9 @@ else:
     from . import constants
     from . import utils
 
-    def tokens_for_completion(line: str, endidx: int) -> Union[Tuple[List[str], List[str], int, int],
-                                                               Tuple[None, None, None, None]]:
+    def tokens_for_completion(
+        line: str, endidx: int
+    ) -> Union[Tuple[List[str], List[str], int, int], Tuple[None, None, None, None]]:
         """
         Used by tab completion functions to get all tokens through the one being completed
         :param line: the current input line with leading whitespace removed
@@ -49,7 +49,7 @@ else:
                  On Failure
                     All 4 items are None
         """
-        unclosed_quote = ''
+        unclosed_quote = ""
         quotes_to_try = copy.copy(constants.QUOTES)
 
         tmp_line = line[:endidx]
@@ -65,7 +65,7 @@ else:
                 if unclosed_quote:
                     begidx = tmp_line[:tmp_endidx].rfind(initial_tokens[-1]) + 1
                 else:
-                    if tmp_endidx > 0 and tmp_line[tmp_endidx - 1] == ' ':
+                    if tmp_endidx > 0 and tmp_line[tmp_endidx - 1] == " ":
                         begidx = endidx
                     else:
                         begidx = tmp_line[:tmp_endidx].rfind(initial_tokens[-1])
@@ -73,7 +73,7 @@ else:
                 # If the cursor is at an empty token outside of a quoted string,
                 # then that is the token being completed. Add it to the list.
                 if not unclosed_quote and begidx == tmp_endidx:
-                    initial_tokens.append('')
+                    initial_tokens.append("")
                 break
             except ValueError:
                 # ValueError can be caused by missing closing quote
@@ -107,9 +107,19 @@ else:
     class CompletionFinder(argcomplete.CompletionFinder):
         """Hijack the functor from argcomplete to call AutoCompleter"""
 
-        def __call__(self, argument_parser, completer=None, always_complete_options=True, exit_method=os._exit,
-                     output_stream=None, exclude=None, validator=None, print_suppressed=False, append_space=None,
-                     default_completer=DEFAULT_COMPLETER):
+        def __call__(
+            self,
+            argument_parser,
+            completer=None,
+            always_complete_options=True,
+            exit_method=os._exit,
+            output_stream=None,
+            exclude=None,
+            validator=None,
+            print_suppressed=False,
+            append_space=None,
+            default_completer=DEFAULT_COMPLETER,
+        ):
             """
             :param argument_parser: The argument parser to autocomplete on
             :type argument_parser: :class:`argparse.ArgumentParser`
@@ -149,12 +159,23 @@ else:
             """
             # Older versions of argcomplete have fewer keyword arguments
             if sys.version_info >= (3, 5):
-                self.__init__(argument_parser, always_complete_options=always_complete_options, exclude=exclude,
-                              validator=validator, print_suppressed=print_suppressed, append_space=append_space,
-                              default_completer=default_completer)
+                self.__init__(
+                    argument_parser,
+                    always_complete_options=always_complete_options,
+                    exclude=exclude,
+                    validator=validator,
+                    print_suppressed=print_suppressed,
+                    append_space=append_space,
+                    default_completer=default_completer,
+                )
             else:
-                self.__init__(argument_parser, always_complete_options=always_complete_options, exclude=exclude,
-                              validator=validator, print_suppressed=print_suppressed)
+                self.__init__(
+                    argument_parser,
+                    always_complete_options=always_complete_options,
+                    exclude=exclude,
+                    validator=validator,
+                    print_suppressed=print_suppressed,
+                )
 
             if "_ARGCOMPLETE" not in os.environ:
                 # not an argument completion invocation
@@ -220,18 +241,22 @@ else:
             # capture stdout from the autocompleter
             result = StringIO()
             with redirect_stdout(result):
-                completions = completer.complete_command(tokens, tokens[-1], comp_line, begidx, endidx)
+                completions = completer.complete_command(
+                    tokens, tokens[-1], comp_line, begidx, endidx
+                )
             outstr = result.getvalue()
 
             if completions:
                 # If any completion has a space in it, then quote all completions
                 # this improves the user experience so they don't nede to go back and add a quote
-                if ' ' in ''.join(completions):
+                if " " in "".join(completions):
                     completions = ['"{}"'.format(entry) for entry in completions]
 
                 argcomplete.debug("\nReturning completions:", completions)
 
-                output_stream.write(ifs.join(completions).encode(argcomplete.sys_encoding))
+                output_stream.write(
+                    ifs.join(completions).encode(argcomplete.sys_encoding)
+                )
             elif outstr:
                 # if there are no completions, but we got something from stdout, try to print help
                 # trick the bash completion into thinking there are 2 completions that are unlikely
@@ -239,10 +264,12 @@ else:
 
                 comp_type = int(os.environ["COMP_TYPE"])
                 if comp_type == 63:  # type is 63 for second tab press
-                    print(outstr.rstrip(), file=argcomplete.debug_stream, end='')
+                    print(outstr.rstrip(), file=argcomplete.debug_stream, end="")
 
                 if completions is not None:
-                    output_stream.write(ifs.join([ifs, ' ']).encode(argcomplete.sys_encoding))
+                    output_stream.write(
+                        ifs.join([ifs, " "]).encode(argcomplete.sys_encoding)
+                    )
                 else:
                     output_stream.write(ifs.join([]).encode(argcomplete.sys_encoding))
             else:
@@ -258,6 +285,7 @@ else:
 
         This function tags a parameter for bash completion, bypassing the autocompleter (for file input).
         """
+
         def complete_none(*args, **kwargs):
             return None
 

@@ -14,8 +14,10 @@ os.path.isdir() - Returns True if path is Directory.
 #
 ###
 from os.path import exists
+
+
 class OptPath:
-    def __init__(self,path):
+    def __init__(self, path):
         self.path = path
 
     def check_is_path_file(self):

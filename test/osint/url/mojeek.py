@@ -2,20 +2,23 @@ from lib.thg.core.osint import Mojeek
 from lib.thg.core.BaseXmodeClass import BaseMod
 from colorama import Fore
 
+
 class Exploit(BaseMod):
     def __init__(self):
         super(Exploit, self).__init__()
-        self.update_info({
-            "name": "mojeek",
-            "description": "buscador de url no mojeek",
-            "author": ["darkcode0x00"],
-            "references": [
-                "mojeek",
-            ],
-            "disclosure_date": "2020, 9, 5",
-            "service_name": "mojeek",
-            "service_version": "mojeek_search 0.1",
-        })
+        self.update_info(
+            {
+                "name": "mojeek",
+                "description": "buscador de url no mojeek",
+                "author": ["darkcode0x00"],
+                "references": [
+                    "mojeek",
+                ],
+                "disclosure_date": "2020, 9, 5",
+                "service_name": "mojeek",
+                "service_version": "mojeek_search 0.1",
+            }
+        )
         self.register_query_target()
 
     def check(self):
@@ -25,5 +28,11 @@ class Exploit(BaseMod):
         results = engine.search(query, int(pages))
         for resultado in results.results():
             for chave, valor in resultado.items():
-                print("{}[ok]{}{}".format(Fore.GREEN, Fore.GREEN, Fore.RESET), chave, valor, "\n", end=" ")
+                print(
+                    "{}[ok]{}{}".format(Fore.GREEN, Fore.GREEN, Fore.RESET),
+                    chave,
+                    valor,
+                    "\n",
+                    end=" ",
+                )
             print(" ")

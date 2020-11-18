@@ -68,7 +68,14 @@ from typing import List, Dict, Tuple, Callable, Union
 
 
 # imports copied from argparse to support our customized argparse functions
-from argparse import ZERO_OR_MORE, ONE_OR_MORE, ArgumentError, _, _get_action_name, SUPPRESS
+from argparse import (
+    ZERO_OR_MORE,
+    ONE_OR_MORE,
+    ArgumentError,
+    _,
+    _get_action_name,
+    SUPPRESS,
+)
 
 import re as _re
 
@@ -78,9 +85,9 @@ from .rl_utils import rl_force_redisplay
 
 # attribute that can optionally added to an argparse argument (called an Action) to
 # define the completion choices for the argument. You may provide a Collection or a Function.
-ACTION_ARG_CHOICES = 'arg_choices'
-ACTION_SUPPRESS_HINT = 'suppress_hint'
-ACTION_DESCRIPTIVE_COMPLETION_HEADER = 'desc_header'
+ACTION_ARG_CHOICES = "arg_choices"
+ACTION_SUPPRESS_HINT = "suppress_hint"
+ACTION_DESCRIPTIVE_COMPLETION_HEADER = "desc_header"
 
 
 class CompletionItem(str):
@@ -111,11 +118,12 @@ class CompletionItem(str):
     Instead of this:
         1     2     3
     """
-    def __new__(cls, o, desc='', *args, **kwargs) -> str:
+
+    def __new__(cls, o, desc="", *args, **kwargs) -> str:
         return str.__new__(cls, o, *args, **kwargs)
 
     # noinspection PyMissingConstructor,PyUnusedLocal
-    def __init__(self, o, desc='', *args, **kwargs) -> None:
+    def __init__(self, o, desc="", *args, **kwargs) -> None:
         self.description = desc
 
 
@@ -126,90 +134,106 @@ class _RangeAction(object):
 
         # pre-process special ranged nargs
         if isinstance(nargs, tuple):
-            if len(nargs) != 2 or not isinstance(nargs[0], int) or not isinstance(nargs[1], int):
-                raise ValueError('Ranged values for nargs must be a tuple of 2 integers')
+            if (
+                len(nargs) != 2
+                or not isinstance(nargs[0], int)
+                or not isinstance(nargs[1], int)
+            ):
+                raise ValueError(
+                    "Ranged values for nargs must be a tuple of 2 integers"
+                )
             if nargs[0] >= nargs[1]:
-                raise ValueError('Invalid nargs range. The first value must be less than the second')
+                raise ValueError(
+                    "Invalid nargs range. The first value must be less than the second"
+                )
             if nargs[0] < 0:
-                raise ValueError('Negative numbers are invalid for nargs range.')
+                raise ValueError("Negative numbers are invalid for nargs range.")
             narg_range = nargs
             self.nargs_min = nargs[0]
             self.nargs_max = nargs[1]
             if narg_range[0] == 0:
                 if narg_range[1] > 1:
-                    self.nargs_adjusted = '*'
+                    self.nargs_adjusted = "*"
                 else:
                     # this shouldn't use a range tuple, but yet here we are
-                    self.nargs_adjusted = '?'
+                    self.nargs_adjusted = "?"
             else:
-                self.nargs_adjusted = '+'
+                self.nargs_adjusted = "+"
         else:
             self.nargs_adjusted = nargs
 
 
 # noinspection PyShadowingBuiltins,PyShadowingBuiltins
 class _StoreRangeAction(argparse._StoreAction, _RangeAction):
-    def __init__(self,
-                 option_strings,
-                 dest,
-                 nargs=None,
-                 const=None,
-                 default=None,
-                 type=None,
-                 choices=None,
-                 required=False,
-                 help=None,
-                 metavar=None) -> None:
+    def __init__(
+        self,
+        option_strings,
+        dest,
+        nargs=None,
+        const=None,
+        default=None,
+        type=None,
+        choices=None,
+        required=False,
+        help=None,
+        metavar=None,
+    ) -> None:
 
         _RangeAction.__init__(self, nargs)
 
-        argparse._StoreAction.__init__(self,
-                                       option_strings=option_strings,
-                                       dest=dest,
-                                       nargs=self.nargs_adjusted,
-                                       const=const,
-                                       default=default,
-                                       type=type,
-                                       choices=choices,
-                                       required=required,
-                                       help=help,
-                                       metavar=metavar)
+        argparse._StoreAction.__init__(
+            self,
+            option_strings=option_strings,
+            dest=dest,
+            nargs=self.nargs_adjusted,
+            const=const,
+            default=default,
+            type=type,
+            choices=choices,
+            required=required,
+            help=help,
+            metavar=metavar,
+        )
 
 
 # noinspection PyShadowingBuiltins,PyShadowingBuiltins
 class _AppendRangeAction(argparse._AppendAction, _RangeAction):
-    def __init__(self,
-                 option_strings,
-                 dest,
-                 nargs=None,
-                 const=None,
-                 default=None,
-                 type=None,
-                 choices=None,
-                 required=False,
-                 help=None,
-                 metavar=None) -> None:
+    def __init__(
+        self,
+        option_strings,
+        dest,
+        nargs=None,
+        const=None,
+        default=None,
+        type=None,
+        choices=None,
+        required=False,
+        help=None,
+        metavar=None,
+    ) -> None:
 
         _RangeAction.__init__(self, nargs)
 
-        argparse._AppendAction.__init__(self,
-                                        option_strings=option_strings,
-                                        dest=dest,
-                                        nargs=self.nargs_adjusted,
-                                        const=const,
-                                        default=default,
-                                        type=type,
-                                        choices=choices,
-                                        required=required,
-                                        help=help,
-                                        metavar=metavar)
+        argparse._AppendAction.__init__(
+            self,
+            option_strings=option_strings,
+            dest=dest,
+            nargs=self.nargs_adjusted,
+            const=const,
+            default=default,
+            type=type,
+            choices=choices,
+            required=required,
+            help=help,
+            metavar=metavar,
+        )
 
 
 def register_custom_actions(parser: argparse.ArgumentParser) -> None:
     """Register custom argument action types"""
-    parser.register('action', None, _StoreRangeAction)
-    parser.register('action', 'store', _StoreRangeAction)
-    parser.register('action', 'append', _AppendRangeAction)
+    parser.register("action", None, _StoreRangeAction)
+    parser.register("action", "store", _StoreRangeAction)
+    parser.register("action", "append", _AppendRangeAction)
 
 
 def is_potential_flag(token: str, parser: argparse.ArgumentParser) -> bool:
@@ -233,7 +257,7 @@ def is_potential_flag(token: str, parser: argparse.ArgumentParser) -> bool:
             return False
 
     # if it contains a space, it was meant to be a positional
-    if ' ' in token:
+    if " " in token:
         return False
 
     # Looks like a flag
@@ -259,13 +283,15 @@ class AutoCompleter(object):
             self.needed = False
             self.variable = False
 
-    def __init__(self,
-                 parser: argparse.ArgumentParser,
-                 token_start_index: int = 1,
-                 arg_choices: Dict[str, Union[List, Tuple, Callable]] = None,
-                 subcmd_args_lookup: dict = None,
-                 tab_for_arg_help: bool = True,
-                 cmd2_app=None) -> None:
+    def __init__(
+        self,
+        parser: argparse.ArgumentParser,
+        token_start_index: int = 1,
+        arg_choices: Dict[str, Union[List, Tuple, Callable]] = None,
+        subcmd_args_lookup: dict = None,
+        tab_for_arg_help: bool = True,
+        cmd2_app=None,
+    ) -> None:
         """
         Create an AutoCompleter
 
@@ -291,7 +317,9 @@ class AutoCompleter(object):
         self._flags = []  # all flags in this command
         self._flags_without_args = []  # all flags that don't take arguments
         self._flag_to_action = {}  # maps flags to the argparse action object
-        self._positional_actions = []  # argument names for positional arguments (by position index)
+        self._positional_actions = (
+            []
+        )  # argument names for positional arguments (by position index)
         # maps action name to sub-command autocompleter:
         #   action_name -> dict(sub_command -> completer)
         self._positional_completers = {}
@@ -321,23 +349,35 @@ class AutoCompleter(object):
                 if isinstance(action, argparse._SubParsersAction):
                     sub_completers = {}
                     sub_commands = []
-                    args_for_action = subcmd_args_lookup[action.dest]\
-                        if action.dest in subcmd_args_lookup else {}
+                    args_for_action = (
+                        subcmd_args_lookup[action.dest]
+                        if action.dest in subcmd_args_lookup
+                        else {}
+                    )
                     for subcmd in action.choices:
-                        (subcmd_args, subcmd_lookup) = args_for_action[subcmd] if \
-                            subcmd in args_for_action else \
-                            (arg_choices, subcmd_args_lookup) if forward_arg_choices else ({}, {})
+                        (subcmd_args, subcmd_lookup) = (
+                            args_for_action[subcmd]
+                            if subcmd in args_for_action
+                            else (arg_choices, subcmd_args_lookup)
+                            if forward_arg_choices
+                            else ({}, {})
+                        )
                         subcmd_start = token_start_index + len(self._positional_actions)
-                        sub_completers[subcmd] = AutoCompleter(action.choices[subcmd], subcmd_start,
-                                                               arg_choices=subcmd_args,
-                                                               subcmd_args_lookup=subcmd_lookup,
-                                                               tab_for_arg_help=tab_for_arg_help,
-                                                               cmd2_app=cmd2_app)
+                        sub_completers[subcmd] = AutoCompleter(
+                            action.choices[subcmd],
+                            subcmd_start,
+                            arg_choices=subcmd_args,
+                            subcmd_args_lookup=subcmd_lookup,
+                            tab_for_arg_help=tab_for_arg_help,
+                            cmd2_app=cmd2_app,
+                        )
                         sub_commands.append(subcmd)
                     self._positional_completers[action.dest] = sub_completers
                     self._arg_choices[action.dest] = sub_commands
 
-    def complete_command(self, tokens: List[str], text: str, line: str, begidx: int, endidx: int) -> List[str]:
+    def complete_command(
+        self, tokens: List[str], text: str, line: str, begidx: int, endidx: int
+    ) -> List[str]:
         """Complete the command using the argparse metadata and provided argument dictionary"""
         # Count which positional argument index we're at now. Loop through all tokens on the command line so far
         # Skip any flags or flag parameter tokens
@@ -354,7 +394,7 @@ class AutoCompleter(object):
         flag_action = None
 
         # dict is used because object wrapper is necessary to allow inner functions to modify outer variables
-        remainder = {'arg': None, 'action': None}
+        remainder = {"arg": None, "action": None}
 
         matched_flags = []
         current_is_positional = False
@@ -393,7 +433,9 @@ class AutoCompleter(object):
                 consumed_arg_values.setdefault(pos_action.dest, [])
                 consumed_arg_values[pos_action.dest].append(token)
 
-        def process_action_nargs(action: argparse.Action, arg_state: AutoCompleter._ArgumentState) -> None:
+        def process_action_nargs(
+            action: argparse.Action, arg_state: AutoCompleter._ArgumentState
+        ) -> None:
             """Process the current argparse Action and initialize the ArgumentState object used
             to track what arguments we have processed for this action"""
             if isinstance(action, _RangeAction):
@@ -404,18 +446,18 @@ class AutoCompleter(object):
                 if action.nargs is None:
                     arg_state.min = 1
                     arg_state.max = 1
-                elif action.nargs == '+':
+                elif action.nargs == "+":
                     arg_state.min = 1
-                    arg_state.max = float('inf')
+                    arg_state.max = float("inf")
                     arg_state.variable = True
-                elif action.nargs == '*' or action.nargs == argparse.REMAINDER:
+                elif action.nargs == "*" or action.nargs == argparse.REMAINDER:
                     arg_state.min = 0
-                    arg_state.max = float('inf')
+                    arg_state.max = float("inf")
                     arg_state.variable = True
                     if action.nargs == argparse.REMAINDER:
-                        remainder['action'] = action
-                        remainder['arg'] = arg_state
-                elif action.nargs == '?':
+                        remainder["action"] = action
+                        remainder["arg"] = arg_state
+                elif action.nargs == "?":
                     arg_state.min = 0
                     arg_state.max = 1
                     arg_state.variable = True
@@ -444,11 +486,11 @@ class AutoCompleter(object):
             if idx >= self._token_start_index:
 
                 # If a remainder action is found, force all future tokens to go to that
-                if remainder['arg'] is not None:
-                    if remainder['action'] == pos_action:
+                if remainder["arg"] is not None:
+                    if remainder["action"] == pos_action:
                         consume_positional_argument()
                         continue
-                    elif remainder['action'] == flag_action:
+                    elif remainder["action"] == flag_action:
                         consume_flag_argument()
                         continue
 
@@ -463,19 +505,26 @@ class AutoCompleter(object):
                         #   - The next positional argument is a REMAINDER argument
                         # Argparse will now treat all future tokens as arguments to the positional including tokens that
                         # look like flags so the completer should skip any flag related processing once this happens
-                        if (pos_action is not None) and pos_arg.count >= pos_arg.max and \
-                                next_pos_arg_index < len(self._positional_actions) and \
-                                self._positional_actions[next_pos_arg_index].nargs == argparse.REMAINDER:
+                        if (
+                            (pos_action is not None)
+                            and pos_arg.count >= pos_arg.max
+                            and next_pos_arg_index < len(self._positional_actions)
+                            and self._positional_actions[next_pos_arg_index].nargs
+                            == argparse.REMAINDER
+                        ):
                             skip_remaining_flags = True
 
                     # At this point we're no longer consuming flag arguments. Is the current argument a potential flag?
-                    if is_potential_flag(token, self._parser) and not skip_remaining_flags:
+                    if (
+                        is_potential_flag(token, self._parser)
+                        and not skip_remaining_flags
+                    ):
                         # reset some tracking values
                         flag_arg.reset()
                         # don't reset positional tracking because flags can be interspersed anywhere between positionals
                         flag_action = None
 
-                        if token == '--':
+                        if token == "--":
                             if is_last_token:
                                 # Exit loop and see if -- can be completed into a flag
                                 break
@@ -486,15 +535,24 @@ class AutoCompleter(object):
                         # does the token fully match a known flag?
                         if token in self._flag_to_action:
                             flag_action = self._flag_to_action[token]
-                        elif hasattr(self._parser, 'allow_abbrev') and self._parser.allow_abbrev:
-                            candidates_flags = [flag for flag in self._flag_to_action if flag.startswith(token)]
+                        elif (
+                            hasattr(self._parser, "allow_abbrev")
+                            and self._parser.allow_abbrev
+                        ):
+                            candidates_flags = [
+                                flag
+                                for flag in self._flag_to_action
+                                if flag.startswith(token)
+                            ]
                             if len(candidates_flags) == 1:
                                 flag_action = self._flag_to_action[candidates_flags[0]]
 
                         if flag_action is not None:
                             # resolve argument counts
                             process_action_nargs(flag_action, flag_arg)
-                            if not is_last_token and not isinstance(flag_action, argparse._AppendAction):
+                            if not is_last_token and not isinstance(
+                                flag_action, argparse._AppendAction
+                            ):
                                 matched_flags.extend(flag_action.option_strings)
 
                     # current token isn't a potential flag
@@ -508,7 +566,11 @@ class AutoCompleter(object):
                         flag_action = None
                         current_is_positional = True
 
-                        if len(token) > 0 and pos_action is not None and pos_arg.count < pos_arg.max:
+                        if (
+                            len(token) > 0
+                            and pos_action is not None
+                            and pos_arg.count < pos_arg.max
+                        ):
                             # we have positional action match and we haven't reached the max arg count, consume
                             # the positional argument and move on.
                             consume_positional_argument()
@@ -525,10 +587,13 @@ class AutoCompleter(object):
                                 action = self._positional_actions[pos_index]
                                 pos_name = action.dest
                                 if pos_name in self._positional_completers:
-                                    sub_completers = self._positional_completers[pos_name]
+                                    sub_completers = self._positional_completers[
+                                        pos_name
+                                    ]
                                     if token in sub_completers:
-                                        return sub_completers[token].complete_command(tokens, text, line,
-                                                                                      begidx, endidx)
+                                        return sub_completers[token].complete_command(
+                                            tokens, text, line, begidx, endidx
+                                        )
                                 pos_action = action
                                 process_action_nargs(pos_action, pos_arg)
                                 consume_positional_argument()
@@ -543,7 +608,7 @@ class AutoCompleter(object):
                 else:
                     consume_flag_argument()
 
-                if remainder['arg'] is not None:
+                if remainder["arg"] is not None:
                     skip_remaining_flags = True
 
                 # don't reset this if we're on the last token - this allows completion to occur on the current token
@@ -556,37 +621,67 @@ class AutoCompleter(object):
 
         # if we don't have a flag to populate with arguments and the last token starts with
         # a flag prefix then we'll complete the list of flag options
-        if not flag_arg.needed and len(tokens[-1]) > 0 and tokens[-1][0] in self._parser.prefix_chars and \
-                not skip_remaining_flags:
-            return AutoCompleter.basic_complete(text, line, begidx, endidx,
-                                                [flag for flag in self._flags if flag not in matched_flags])
+        if (
+            not flag_arg.needed
+            and len(tokens[-1]) > 0
+            and tokens[-1][0] in self._parser.prefix_chars
+            and not skip_remaining_flags
+        ):
+            return AutoCompleter.basic_complete(
+                text,
+                line,
+                begidx,
+                endidx,
+                [flag for flag in self._flags if flag not in matched_flags],
+            )
         # we're not at a positional argument, see if we're in a flag argument
         elif not current_is_positional:
             if flag_action is not None:
-                consumed = consumed_arg_values[flag_action.dest]\
-                    if flag_action.dest in consumed_arg_values else []
+                consumed = (
+                    consumed_arg_values[flag_action.dest]
+                    if flag_action.dest in consumed_arg_values
+                    else []
+                )
                 # current_items.extend(self._resolve_choices_for_arg(flag_action, consumed))
-                completion_results = self._complete_for_arg(flag_action, text, line, begidx, endidx, consumed)
+                completion_results = self._complete_for_arg(
+                    flag_action, text, line, begidx, endidx, consumed
+                )
                 if not completion_results:
                     self._print_action_help(flag_action)
                 elif len(completion_results) > 1:
-                    completion_results = self._format_completions(flag_action, completion_results)
+                    completion_results = self._format_completions(
+                        flag_action, completion_results
+                    )
 
         # ok, we're not a flag, see if there's a positional argument to complete
         else:
             if pos_action is not None:
                 pos_name = pos_action.dest
-                consumed = consumed_arg_values[pos_name] if pos_name in consumed_arg_values else []
-                completion_results = self._complete_for_arg(pos_action, text, line, begidx, endidx, consumed)
+                consumed = (
+                    consumed_arg_values[pos_name]
+                    if pos_name in consumed_arg_values
+                    else []
+                )
+                completion_results = self._complete_for_arg(
+                    pos_action, text, line, begidx, endidx, consumed
+                )
                 if not completion_results:
                     self._print_action_help(pos_action)
                 elif len(completion_results) > 1:
-                    completion_results = self._format_completions(pos_action, completion_results)
+                    completion_results = self._format_completions(
+                        pos_action, completion_results
+                    )
 
         return completion_results
 
-    def _format_completions(self, action, completions: List[Union[str, CompletionItem]]) -> List[str]:
-        if completions and len(completions) > 1 and isinstance(completions[0], CompletionItem):
+    def _format_completions(
+        self, action, completions: List[Union[str, CompletionItem]]
+    ) -> List[str]:
+        if (
+            completions
+            and len(completions) > 1
+            and isinstance(completions[0], CompletionItem)
+        ):
             token_width = len(action.dest)
             completions_with_desc = []
 
@@ -595,18 +690,23 @@ class AutoCompleter(object):
                     token_width = len(item)
 
             term_size = os.get_terminal_size()
-            fill_width = int(term_size.columns * .6) - (token_width + 2)
+            fill_width = int(term_size.columns * 0.6) - (token_width + 2)
             for item in completions:
-                entry = '{: <{token_width}}{: <{fill_width}}'.format(item, item.description,
-                                                                     token_width=token_width + 2,
-                                                                     fill_width=fill_width)
+                entry = "{: <{token_width}}{: <{fill_width}}".format(
+                    item,
+                    item.description,
+                    token_width=token_width + 2,
+                    fill_width=fill_width,
+                )
                 completions_with_desc.append(entry)
 
             try:
                 desc_header = action.desc_header
             except AttributeError:
-                desc_header = 'Description'
-            header = '\n{: <{token_width}}{}'.format(action.dest.upper(), desc_header, token_width=token_width + 2)
+                desc_header = "Description"
+            header = "\n{: <{token_width}}{}".format(
+                action.dest.upper(), desc_header, token_width=token_width + 2
+            )
 
             self._cmd2_app.completion_header = header
             self._cmd2_app.display_matches = completions_with_desc
@@ -614,7 +714,9 @@ class AutoCompleter(object):
 
         return completions
 
-    def complete_command_help(self, tokens: List[str], text: str, line: str, begidx: int, endidx: int) -> List[str]:
+    def complete_command_help(
+        self, tokens: List[str], text: str, line: str, begidx: int, endidx: int
+    ) -> List[str]:
         """Supports the completion of sub-commands for commands through the thgcmd help command."""
         for idx, token in enumerate(tokens):
             if idx >= self._token_start_index:
@@ -623,9 +725,13 @@ class AutoCompleter(object):
                     # so this will only loop once.
                     for completers in self._positional_completers.values():
                         if token in completers:
-                            return completers[token].complete_command_help(tokens, text, line, begidx, endidx)
+                            return completers[token].complete_command_help(
+                                tokens, text, line, begidx, endidx
+                            )
                         else:
-                            return self.basic_complete(text, line, begidx, endidx, completers.keys())
+                            return self.basic_complete(
+                                text, line, begidx, endidx, completers.keys()
+                            )
         return []
 
     def format_help(self, tokens: List[str]) -> str:
@@ -640,12 +746,15 @@ class AutoCompleter(object):
                             return completers[token].format_help(tokens)
         return self._parser.format_help()
 
-    def _complete_for_arg(self, action: argparse.Action,
-                          text: str,
-                          line: str,
-                          begidx: int,
-                          endidx: int,
-                          used_values=()) -> List[str]:
+    def _complete_for_arg(
+        self,
+        action: argparse.Action,
+        text: str,
+        line: str,
+        begidx: int,
+        endidx: int,
+        used_values=(),
+    ) -> List[str]:
         if action.dest in self._arg_choices:
             arg_choices = self._arg_choices[action.dest]
 
@@ -653,30 +762,42 @@ class AutoCompleter(object):
             #   Let's see if it's a custom completion function.  If it is, return what it provides
             # To do this, we make sure the first element is either a callable
             #   or it's the name of a callable in the application
-            if isinstance(arg_choices, tuple) and len(arg_choices) > 0 and \
-                    (callable(arg_choices[0]) or
-                         (isinstance(arg_choices[0], str) and hasattr(self._cmd2_app, arg_choices[0]) and
-                          callable(getattr(self._cmd2_app, arg_choices[0]))
-                          )
-                     ):
+            if (
+                isinstance(arg_choices, tuple)
+                and len(arg_choices) > 0
+                and (
+                    callable(arg_choices[0])
+                    or (
+                        isinstance(arg_choices[0], str)
+                        and hasattr(self._cmd2_app, arg_choices[0])
+                        and callable(getattr(self._cmd2_app, arg_choices[0]))
+                    )
+                )
+            ):
 
                 if callable(arg_choices[0]):
                     completer = arg_choices[0]
-                elif isinstance(arg_choices[0], str) and callable(getattr(self._cmd2_app, arg_choices[0])):
+                elif isinstance(arg_choices[0], str) and callable(
+                    getattr(self._cmd2_app, arg_choices[0])
+                ):
                     completer = getattr(self._cmd2_app, arg_choices[0])
 
                 # extract the positional and keyword arguments from the tuple
                 list_args = None
                 kw_args = None
                 for index in range(1, len(arg_choices)):
-                    if isinstance(arg_choices[index], list) or isinstance(arg_choices[index], tuple):
+                    if isinstance(arg_choices[index], list) or isinstance(
+                        arg_choices[index], tuple
+                    ):
                         list_args = arg_choices[index]
                     elif isinstance(arg_choices[index], dict):
                         kw_args = arg_choices[index]
                 try:
                     # call the provided function differently depending on the provided positional and keyword arguments
                     if list_args is not None and kw_args is not None:
-                        return completer(text, line, begidx, endidx, *list_args, **kw_args)
+                        return completer(
+                            text, line, begidx, endidx, *list_args, **kw_args
+                        )
                     elif list_args is not None:
                         return completer(text, line, begidx, endidx, *list_args)
                     elif kw_args is not None:
@@ -687,12 +808,19 @@ class AutoCompleter(object):
                     # assume this is due to an incorrect function signature, return nothing.
                     return []
             else:
-                return AutoCompleter.basic_complete(text, line, begidx, endidx,
-                                                    self._resolve_choices_for_arg(action, used_values))
+                return AutoCompleter.basic_complete(
+                    text,
+                    line,
+                    begidx,
+                    endidx,
+                    self._resolve_choices_for_arg(action, used_values),
+                )
 
         return []
 
-    def _resolve_choices_for_arg(self, action: argparse.Action, used_values=()) -> List[str]:
+    def _resolve_choices_for_arg(
+        self, action: argparse.Action, used_values=()
+    ) -> List[str]:
         if action.dest in self._arg_choices:
             args = self._arg_choices[action.dest]
 
@@ -746,20 +874,20 @@ class AutoCompleter(object):
                 return
 
         if action.option_strings:
-            flags = ', '.join(action.option_strings)
-            param = ''
+            flags = ", ".join(action.option_strings)
+            param = ""
             if action.nargs is None or action.nargs != 0:
-                param += ' ' + str(action.dest).upper()
+                param += " " + str(action.dest).upper()
 
-            prefix = '{}{}'.format(flags, param)
+            prefix = "{}{}".format(flags, param)
         else:
             if action.dest != SUPPRESS:
-                prefix = '{}'.format(str(action.dest).upper())
+                prefix = "{}".format(str(action.dest).upper())
             else:
-                prefix = ''
+                prefix = ""
 
         if action.help is None:
-            help_text = ''
+            help_text = ""
         else:
             help_text = action.help
 
@@ -767,23 +895,25 @@ class AutoCompleter(object):
         if not prefix and not help_text:
             return
 
-        prefix = '  {0: <{width}}    '.format(prefix, width=20)
+        prefix = "  {0: <{width}}    ".format(prefix, width=20)
         pref_len = len(prefix)
         help_lines = help_text.splitlines()
 
         if len(help_lines) == 1:
-            print('\nHint:\n{}{}\n'.format(prefix, help_lines[0]))
+            print("\nHint:\n{}{}\n".format(prefix, help_lines[0]))
         else:
-            out_str = '\n{}'.format(prefix)
-            out_str += '\n{0: <{width}}'.format('', width=pref_len).join(help_lines)
-            print('\nHint:' + out_str + '\n')
+            out_str = "\n{}".format(prefix)
+            out_str += "\n{0: <{width}}".format("", width=pref_len).join(help_lines)
+            print("\nHint:" + out_str + "\n")
 
         # Redraw prompt and input line
         rl_force_redisplay()
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def basic_complete(text: str, line: str, begidx: int, endidx: int, match_against: List[str]) -> List[str]:
+    def basic_complete(
+        text: str, line: str, begidx: int, endidx: int, match_against: List[str]
+    ) -> List[str]:
         """
         Performs tab completion against a list
 
@@ -811,7 +941,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
 
     def _format_usage(self, usage, actions, groups, prefix) -> str:
         if prefix is None:
-            prefix = _('Usage: ')
+            prefix = _("Usage: ")
 
         # if usage is specified, use that
         if usage is not None:
@@ -819,11 +949,11 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
 
         # if no optionals or positionals are available, usage is just prog
         elif usage is None and not actions:
-            usage = '%(prog)s' % dict(prog=self._prog)
+            usage = "%(prog)s" % dict(prog=self._prog)
 
         # if optionals and positionals are available, calculate usage
         elif usage is None:
-            prog = '%(prog)s' % dict(prog=self._prog)
+            prog = "%(prog)s" % dict(prog=self._prog)
 
             # split optionals from positionals
             optionals = []
@@ -843,7 +973,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
             # build full usage string
             format = self._format_actions_usage
             action_usage = format(required_options + optionals + positionals, groups)
-            usage = ' '.join([s for s in [prog, action_usage] if s])
+            usage = " ".join([s for s in [prog, action_usage] if s])
 
             # wrap the usage parts if it's too long
             text_width = self._width - self._current_indent
@@ -852,16 +982,16 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                 # Begin thgcmd customization
 
                 # break usage into wrappable parts
-                part_regexp = r'\(.*?\)+|\[.*?\]+|\S+'
+                part_regexp = r"\(.*?\)+|\[.*?\]+|\S+"
                 req_usage = format(required_options, groups)
                 opt_usage = format(optionals, groups)
                 pos_usage = format(positionals, groups)
                 req_parts = _re.findall(part_regexp, req_usage)
                 opt_parts = _re.findall(part_regexp, opt_usage)
                 pos_parts = _re.findall(part_regexp, pos_usage)
-                assert ' '.join(req_parts) == req_usage
-                assert ' '.join(opt_parts) == opt_usage
-                assert ' '.join(pos_parts) == pos_usage
+                assert " ".join(req_parts) == req_usage
+                assert " ".join(opt_parts) == opt_usage
+                assert " ".join(pos_parts) == pos_usage
 
                 # End thgcmd customization
 
@@ -876,20 +1006,20 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                         line_len = len(indent) - 1
                     for part in parts:
                         if line_len + 1 + len(part) > text_width and line:
-                            lines.append(indent + ' '.join(line))
+                            lines.append(indent + " ".join(line))
                             line = []
                             line_len = len(indent) - 1
                         line.append(part)
                         line_len += len(part) + 1
                     if line:
-                        lines.append(indent + ' '.join(line))
+                        lines.append(indent + " ".join(line))
                     if prefix is not None:
-                        lines[0] = lines[0][len(indent):]
+                        lines[0] = lines[0][len(indent) :]
                     return lines
 
                 # if prog is short, follow it with optionals or positionals
                 if len(prefix) + len(prog) <= 0.75 * text_width:
-                    indent = ' ' * (len(prefix) + len(prog) + 1)
+                    indent = " " * (len(prefix) + len(prog) + 1)
                     # Begin thgcmd customization
                     if req_parts:
                         lines = get_lines([prog] + req_parts, indent, prefix)
@@ -906,7 +1036,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
 
                 # if prog is long, put it on its own line
                 else:
-                    indent = ' ' * len(prefix)
+                    indent = " " * len(prefix)
                     # Begin thgcmd customization
                     parts = req_parts + opt_parts + pos_parts
                     lines = get_lines(parts, indent)
@@ -919,15 +1049,15 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                     lines = [prog] + lines
 
                 # join lines into usage
-                usage = '\n'.join(lines)
+                usage = "\n".join(lines)
 
         # prefix with 'usage:'
-        return '%s%s\n\n' % (prefix, usage)
+        return "%s%s\n\n" % (prefix, usage)
 
     def _format_action_invocation(self, action) -> str:
         if not action.option_strings:
             default = self._get_default_metavar_for_positional(action)
-            metavar, = self._metavar_formatter(action, default)(1)
+            (metavar,) = self._metavar_formatter(action, default)(1)
             return metavar
 
         else:
@@ -937,7 +1067,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
             #    -s, --long
             if action.nargs == 0:
                 parts.extend(action.option_strings)
-                return ', '.join(parts)
+                return ", ".join(parts)
 
             # Begin thgcmd customization (less verbose)
             # if the Optional takes a value, format is:
@@ -946,7 +1076,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
                 default = self._get_default_metavar_for_optional(action)
                 args_string = self._format_args(action, default)
 
-                return ', '.join(action.option_strings) + ' ' + args_string
+                return ", ".join(action.option_strings) + " " + args_string
             # End thgcmd customization
 
     def _metavar_formatter(self, action, default_metavar) -> Callable:
@@ -955,7 +1085,7 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
         elif action.choices is not None:
             choice_strs = [str(choice) for choice in action.choices]
             # Begin thgcmd customization (added space after comma)
-            result = '{%s}' % ', '.join(choice_strs)
+            result = "{%s}" % ", ".join(choice_strs)
             # End thgcmd customization
         else:
             result = default_metavar
@@ -965,26 +1095,32 @@ class ACHelpFormatter(argparse.RawTextHelpFormatter):
             if isinstance(result, tuple):
                 return result
             else:
-                return (result, ) * tuple_size
+                return (result,) * tuple_size
+
         return format
 
     def _format_args(self, action, default_metavar) -> str:
         get_metavar = self._metavar_formatter(action, default_metavar)
         # Begin thgcmd customization (less verbose)
-        if isinstance(action, _RangeAction) and \
-                action.nargs_min is not None and action.nargs_max is not None:
-            result = '{}{{{}..{}}}'.format('%s' % get_metavar(1), action.nargs_min, action.nargs_max)
+        if (
+            isinstance(action, _RangeAction)
+            and action.nargs_min is not None
+            and action.nargs_max is not None
+        ):
+            result = "{}{{{}..{}}}".format(
+                "%s" % get_metavar(1), action.nargs_min, action.nargs_max
+            )
         elif action.nargs == ZERO_OR_MORE:
-            result = '[%s [...]]' % get_metavar(1)
+            result = "[%s [...]]" % get_metavar(1)
         elif action.nargs == ONE_OR_MORE:
-            result = '%s [...]' % get_metavar(1)
+            result = "%s [...]" % get_metavar(1)
         # End thgcmd customization
         else:
             result = super()._format_args(action, default_metavar)
         return result
 
     def format_help(self):
-        return super().format_help() + '\n'
+        return super().format_help() + "\n"
 
 
 # noinspection PyCompatibility
@@ -992,27 +1128,28 @@ class ACArgumentParser(argparse.ArgumentParser):
     """Custom argparse class to override error method to change default help text."""
 
     def __init__(self, *args, **kwargs) -> None:
-        if 'formatter_class' not in kwargs:
-            kwargs['formatter_class'] = ACHelpFormatter
+        if "formatter_class" not in kwargs:
+            kwargs["formatter_class"] = ACHelpFormatter
 
         super().__init__(*args, **kwargs)
         register_custom_actions(self)
 
-        self._custom_error_message = ''
+        self._custom_error_message = ""
 
     # Begin thgcmd customization
-    def set_custom_message(self, custom_message: str='') -> None:
+    def set_custom_message(self, custom_message: str = "") -> None:
         """
         Allows an error message override to the error() function, useful when forcing a
         re-parse of arguments with newly required parameters
         """
         self._custom_error_message = custom_message
+
     # End thgcmd customization
 
     def add_subparsers(self, **kwargs):
         """Custom override. Sets a default title if one was not given."""
-        if 'title' not in kwargs:
-            kwargs['title'] = 'sub-commands'
+        if "title" not in kwargs:
+            kwargs["title"] = "sub-commands"
 
         return super().add_subparsers(**kwargs)
 
@@ -1020,19 +1157,21 @@ class ACArgumentParser(argparse.ArgumentParser):
         """Custom error override. Allows application to control the error being displayed by argparse"""
         if len(self._custom_error_message) > 0:
             message = self._custom_error_message
-            self._custom_error_message = ''
+            self._custom_error_message = ""
 
-        lines = message.split('\n')
+        lines = message.split("\n")
         linum = 0
-        formatted_message = ''
+        formatted_message = ""
         for line in lines:
             if linum == 0:
-                formatted_message = 'Error: ' + line
+                formatted_message = "Error: " + line
             else:
-                formatted_message += '\n       ' + line
+                formatted_message += "\n       " + line
             linum += 1
 
-        sys.stderr.write(Fore.LIGHTRED_EX + '{}\n\n'.format(formatted_message) + Fore.RESET)
+        sys.stderr.write(
+            Fore.LIGHTRED_EX + "{}\n\n".format(formatted_message) + Fore.RESET
+        )
         # sys.stderr.write('{}\n\n'.format(formatted_message))
         self.print_help()
         sys.exit(1)
@@ -1042,8 +1181,7 @@ class ACArgumentParser(argparse.ArgumentParser):
         formatter = self._get_formatter()
 
         # usage
-        formatter.add_usage(self.usage, self._actions,
-                            self._mutually_exclusive_groups)
+        formatter.add_usage(self.usage, self._actions, self._mutually_exclusive_groups)
 
         # description
         formatter.add_text(self.description)
@@ -1052,7 +1190,7 @@ class ACArgumentParser(argparse.ArgumentParser):
 
         # positionals, optionals and user-defined groups
         for action_group in self._action_groups:
-            if action_group.title == 'optional arguments':
+            if action_group.title == "optional arguments":
                 # check if the arguments are required, group accordingly
                 req_args = []
                 opt_args = []
@@ -1063,7 +1201,7 @@ class ACArgumentParser(argparse.ArgumentParser):
                         opt_args.append(action)
 
                 # separately display required arguments
-                formatter.start_section('required arguments')
+                formatter.start_section("required arguments")
                 formatter.add_text(action_group.description)
                 formatter.add_arguments(req_args)
                 formatter.end_section()
@@ -1089,14 +1227,19 @@ class ACArgumentParser(argparse.ArgumentParser):
 
     def _get_nargs_pattern(self, action) -> str:
         # Override _get_nargs_pattern behavior to use the nargs ranges provided by AutoCompleter
-        if isinstance(action, _RangeAction) and \
-                action.nargs_min is not None and action.nargs_max is not None:
-            nargs_pattern = '(-*A{{{},{}}}-*)'.format(action.nargs_min, action.nargs_max)
+        if (
+            isinstance(action, _RangeAction)
+            and action.nargs_min is not None
+            and action.nargs_max is not None
+        ):
+            nargs_pattern = "(-*A{{{},{}}}-*)".format(
+                action.nargs_min, action.nargs_max
+            )
 
             # if this is an optional action, -- is not allowed
             if action.option_strings:
-                nargs_pattern = nargs_pattern.replace('-*', '')
-                nargs_pattern = nargs_pattern.replace('-', '')
+                nargs_pattern = nargs_pattern.replace("-*", "")
+                nargs_pattern = nargs_pattern.replace("-", "")
             return nargs_pattern
         return super(ACArgumentParser, self)._get_nargs_pattern(action)
 
@@ -1107,16 +1250,27 @@ class ACArgumentParser(argparse.ArgumentParser):
 
         # raise an exception if we weren't able to find a match
         if match is None:
-            if isinstance(action, _RangeAction) and \
-                    action.nargs_min is not None and action.nargs_max is not None:
-                raise ArgumentError(action,
-                                    'Expected between {} and {} arguments'.format(action.nargs_min, action.nargs_max))
+            if (
+                isinstance(action, _RangeAction)
+                and action.nargs_min is not None
+                and action.nargs_max is not None
+            ):
+                raise ArgumentError(
+                    action,
+                    "Expected between {} and {} arguments".format(
+                        action.nargs_min, action.nargs_max
+                    ),
+                )
 
-        return super(ACArgumentParser, self)._match_argument(action, arg_strings_pattern)
+        return super(ACArgumentParser, self)._match_argument(
+            action, arg_strings_pattern
+        )
 
     # This is the official python implementation with a 5 year old patch applied
     # See the comment below describing the patch
-    def _parse_known_args(self, arg_strings, namespace) -> Tuple[argparse.Namespace, List[str]]:  # pragma: no cover
+    def _parse_known_args(
+        self, arg_strings, namespace
+    ) -> Tuple[argparse.Namespace, List[str]]:  # pragma: no cover
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:
             arg_strings = self._read_args_from_files(arg_strings)
@@ -1129,7 +1283,7 @@ class ACArgumentParser(argparse.ArgumentParser):
             for i, mutex_action in enumerate(mutex_group._group_actions):
                 conflicts = action_conflicts.setdefault(mutex_action, [])
                 conflicts.extend(group_actions[:i])
-                conflicts.extend(group_actions[i + 1:])
+                conflicts.extend(group_actions[i + 1 :])
 
         # find all option indices, and determine the arg_string_pattern
         # which has an 'O' if there is an option at an index,
@@ -1140,24 +1294,24 @@ class ACArgumentParser(argparse.ArgumentParser):
         for i, arg_string in enumerate(arg_strings_iter):
 
             # all args after -- are non-options
-            if arg_string == '--':
-                arg_string_pattern_parts.append('-')
+            if arg_string == "--":
+                arg_string_pattern_parts.append("-")
                 for arg_string in arg_strings_iter:
-                    arg_string_pattern_parts.append('A')
+                    arg_string_pattern_parts.append("A")
 
             # otherwise, add the arg to the arg strings
             # and note the index if it was an option
             else:
                 option_tuple = self._parse_optional(arg_string)
                 if option_tuple is None:
-                    pattern = 'A'
+                    pattern = "A"
                 else:
                     option_string_indices[i] = option_tuple
-                    pattern = 'O'
+                    pattern = "O"
                 arg_string_pattern_parts.append(pattern)
 
         # join the pieces together to form the pattern
-        arg_strings_pattern = ''.join(arg_string_pattern_parts)
+        arg_strings_pattern = "".join(arg_string_pattern_parts)
 
         # converts arg strings to the appropriate and then takes the action
         seen_actions = set()
@@ -1174,7 +1328,7 @@ class ACArgumentParser(argparse.ArgumentParser):
                 seen_non_default_actions.add(action)
                 for conflict_action in action_conflicts.get(action, []):
                     if conflict_action in seen_non_default_actions:
-                        msg = _('not allowed with argument %s')
+                        msg = _("not allowed with argument %s")
                         action_name = _get_action_name(conflict_action)
                         raise ArgumentError(action, msg % action_name)
 
@@ -1204,7 +1358,7 @@ class ACArgumentParser(argparse.ArgumentParser):
                 # if there is an explicit argument, try to match the
                 # optional's string arguments to only this
                 if explicit_arg is not None:
-                    arg_count = match_argument(action, 'A')
+                    arg_count = match_argument(action, "A")
 
                     # if the action is a single-dash option and takes no
                     # arguments, try to parse more single-dash options out
@@ -1220,7 +1374,7 @@ class ACArgumentParser(argparse.ArgumentParser):
                             action = optionals_map[option_string]
                             explicit_arg = new_explicit_arg
                         else:
-                            msg = _('ignored explicit argument %r')
+                            msg = _("ignored explicit argument %r")
                             raise ArgumentError(action, msg % explicit_arg)
 
                     # if the action expect exactly one argument, we've
@@ -1234,7 +1388,7 @@ class ACArgumentParser(argparse.ArgumentParser):
                     # error if a double-dash option did not use the
                     # explicit argument
                     else:
-                        msg = _('ignored explicit argument %r')
+                        msg = _("ignored explicit argument %r")
                         raise ArgumentError(action, msg % explicit_arg)
 
                 # if there is no explicit argument, try to match the
@@ -1269,7 +1423,7 @@ class ACArgumentParser(argparse.ArgumentParser):
 
             ####################################################################
             # Applied mixed.patch from https://bugs.python.org/issue15112
-            if 'O' in arg_strings_pattern[start_index:]:
+            if "O" in arg_strings_pattern[start_index:]:
                 # if there is an optional after this, remove
                 # 'empty' positionals from the current match
 
@@ -1280,13 +1434,13 @@ class ACArgumentParser(argparse.ArgumentParser):
             # slice off the appropriate arg strings for each Positional
             # and add the Positional and its args to the list
             for action, arg_count in zip(positionals, arg_counts):
-                args = arg_strings[start_index: start_index + arg_count]
+                args = arg_strings[start_index : start_index + arg_count]
                 start_index += arg_count
                 take_action(action, args)
 
             # slice off the Positionals that we just parsed and return the
             # index at which the Positionals' string args stopped
-            positionals[:] = positionals[len(arg_counts):]
+            positionals[:] = positionals[len(arg_counts) :]
             return start_index
 
         # consume Positionals and Optionals alternately, until we have
@@ -1300,10 +1454,9 @@ class ACArgumentParser(argparse.ArgumentParser):
         while start_index <= max_option_string_index:
 
             # consume any Positionals preceding the next option
-            next_option_string_index = min([
-                index
-                for index in option_string_indices
-                if index >= start_index])
+            next_option_string_index = min(
+                [index for index in option_string_indices if index >= start_index]
+            )
             if start_index != next_option_string_index:
                 positionals_end_index = consume_positionals(start_index)
 
@@ -1343,16 +1496,23 @@ class ACArgumentParser(argparse.ArgumentParser):
                     # parsing arguments to avoid calling convert functions
                     # twice (which may fail) if the argument was given, but
                     # only if it was defined already in the namespace
-                    if (action.default is not None and
-                            isinstance(action.default, str) and
-                            hasattr(namespace, action.dest) and
-                            action.default is getattr(namespace, action.dest)):
-                        setattr(namespace, action.dest,
-                                self._get_value(action, action.default))
+                    if (
+                        action.default is not None
+                        and isinstance(action.default, str)
+                        and hasattr(namespace, action.dest)
+                        and action.default is getattr(namespace, action.dest)
+                    ):
+                        setattr(
+                            namespace,
+                            action.dest,
+                            self._get_value(action, action.default),
+                        )
 
         if required_actions:
-            self.error(_('the following arguments are required: %s') %
-                       ', '.join(required_actions))
+            self.error(
+                _("the following arguments are required: %s")
+                % ", ".join(required_actions)
+            )
 
         # make sure all required groups had one option present
         for group in self._mutually_exclusive_groups:
@@ -1363,11 +1523,13 @@ class ACArgumentParser(argparse.ArgumentParser):
 
                 # if no actions were used, report the error
                 else:
-                    names = [_get_action_name(action)
-                             for action in group._group_actions
-                             if action.help is not SUPPRESS]
-                    msg = _('one of the arguments %s is required')
-                    self.error(msg % ' '.join(names))
+                    names = [
+                        _get_action_name(action)
+                        for action in group._group_actions
+                        if action.help is not SUPPRESS
+                    ]
+                    msg = _("one of the arguments %s is required")
+                    self.error(msg % " ".join(names))
 
         # return the updated namespace and the extra arguments
         return namespace, extras

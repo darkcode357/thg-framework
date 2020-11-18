@@ -34,20 +34,22 @@ class AddSubmenu(object):
         Used to mark missing attributes.
         Disable __dict__ creation since this class does nothing
         """
+
         __slots__ = ()  #
 
     @with_category(MNTHG)
-    def __init__(self,
-                 submenu,
-                 command,
-                 aliases=(),
-                 reformat_prompt="{super_prompt}::{sub_prompt}",
-                 shared_attributes=None,
-                 require_predefined_shares=True,
-                 create_subclass=False,
-                 preserve_shares=False,
-                 persistent_history_file=None
-                 ):
+    def __init__(
+        self,
+        submenu,
+        command,
+        aliases=(),
+        reformat_prompt="{super_prompt}::{sub_prompt}",
+        shared_attributes=None,
+        require_predefined_shares=True,
+        create_subclass=False,
+        preserve_shares=False,
+        persistent_history_file=None,
+    ):
         """Set up the class decorator
         submenu (Cmd):              Instance of something cmd.Cmd-like
         command (str):              The command the user types to access the SubMenu instance
@@ -83,9 +85,12 @@ class AddSubmenu(object):
         if require_predefined_shares:
             for attr in self.shared_attributes.keys():
                 if not hasattr(submenu, attr):
-                    raise AttributeError("The shared attribute '{attr}' is not defined in {cmd}. Either define {attr} "
-                                         "in {cmd} or set require_predefined_shares=False."
-                                         .format(cmd=submenu.__class__.__name__, attr=attr))
+                    raise AttributeError(
+                        "The shared attribute '{attr}' is not defined in {cmd}. Either define {attr} "
+                        "in {cmd} or set require_predefined_shares=False.".format(
+                            cmd=submenu.__class__.__name__, attr=attr
+                        )
+                    )
 
         self.create_subclass = create_subclass
         self.preserve_shares = preserve_shares
@@ -177,7 +182,7 @@ class AddSubmenu(object):
                 # Reset the submenu's tab completion parameters
                 submenu.allow_appended_space = True
                 submenu.allow_closing_quote = True
-                submenu.completion_header = ''
+                submenu.completion_header = ""
                 submenu.display_matches = []
                 submenu.matches_delimited = False
                 submenu.matches_sorted = False
@@ -205,7 +210,7 @@ class AddSubmenu(object):
             """
             tokens = line.split(None, 1)
             if tokens and (tokens[0] == self.command or tokens[0] in self.aliases):
-                self.submenu.thg_help(tokens[1] if len(tokens) == 2 else '')
+                self.submenu.thg_help(tokens[1] if len(tokens) == 2 else "")
             else:
                 original_thg_help(_self, line)
 
@@ -214,8 +219,10 @@ class AddSubmenu(object):
             """autocomplete to match help_submenu()'s behavior"""
             tokens = line.split(None, 1)
             if len(tokens) == 2 and (
-                    not (not tokens[1].startswith(self.command) and not any(
-                        tokens[1].startswith(alias) for alias in self.aliases))
+                not (
+                    not tokens[1].startswith(self.command)
+                    and not any(tokens[1].startswith(alias) for alias in self.aliases)
+                )
             ):
                 return self.submenu.complete_help(
                     text,
@@ -227,9 +234,11 @@ class AddSubmenu(object):
                 return original_complete_help_command(_self, text, line, begidx, endidx)
 
         if self.create_subclass:
+
             class _Cmd(cmd_obj):
                 thg_help = help_submenu
                 complete_help = _complete_submenu_help
+
         else:
             _Cmd = cmd_obj
             _Cmd.thg_help = help_submenu
@@ -237,13 +246,13 @@ class AddSubmenu(object):
 
         # Create bindings in the parent command to the submenus commands.
 
-        setattr(_Cmd, 'thg_' + self.command, enter_submenu)
-        setattr(_Cmd, 'complete_' + self.command, complete_submenu)
+        setattr(_Cmd, "thg_" + self.command, enter_submenu)
+        setattr(_Cmd, "complete_" + self.command, complete_submenu)
 
         # Create additional bindings for aliases
         for _alias in self.aliases:
-            setattr(_Cmd, 'thg_' + _alias, enter_submenu)
-            setattr(_Cmd, 'complete_' + _alias, complete_submenu)
+            setattr(_Cmd, "thg_" + _alias, enter_submenu)
+            setattr(_Cmd, "complete_" + _alias, complete_submenu)
         return _Cmd
 
 
@@ -277,6 +286,7 @@ def _push_readline_history(history, clear_history=True):
 def _complete_from_cmd(cmd_obj, text, line, begidx, endidx):
     """Complete as though the user was typing inside cmd's cmdloop()"""
     from itertools import takewhile
+
     command_subcommand_params = line.split(None, 3)
 
     if len(command_subcommand_params) < (3 if text else 2):
@@ -286,5 +296,5 @@ def _complete_from_cmd(cmd_obj, text, line, begidx, endidx):
 
     command, subcommand = command_subcommand_params[:2]
     n = len(command) + sum(1 for _ in takewhile(str.isspace, line))
-    cfun = getattr(cmd_obj, 'complete_' + subcommand, cmd_obj.complete)
+    cfun = getattr(cmd_obj, "complete_" + subcommand, cmd_obj.complete)
     return cfun(text, line[n:], begidx - n, endidx - n)

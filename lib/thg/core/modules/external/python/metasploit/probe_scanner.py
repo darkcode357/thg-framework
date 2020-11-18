@@ -6,8 +6,17 @@ from async_timeout import timeout
 from metasploit import module
 
 
-def make_scanner(payload='', pattern='', onmatch=None, connect_timeout=3, read_timeout=10):
-    return lambda args: start_scanner(payload, pattern, args, onmatch, connect_timeout=connect_timeout, read_timeout=read_timeout)
+def make_scanner(
+    payload="", pattern="", onmatch=None, connect_timeout=3, read_timeout=10
+):
+    return lambda args: start_scanner(
+        payload,
+        pattern,
+        args,
+        onmatch,
+        connect_timeout=connect_timeout,
+        read_timeout=read_timeout,
+    )
 
 
 def start_scanner(payload, pattern, args, onmatch, **timeouts):
@@ -16,17 +25,24 @@ def start_scanner(payload, pattern, args, onmatch, **timeouts):
 
 
 async def run_scanner(payload, pattern, args, onmatch, **timeouts):
-    probes = [probe_host(host, int(args['rport']), payload, **timeouts) for host in args['rhosts']]
+    probes = [
+        probe_host(host, int(args["rport"]), payload, **timeouts)
+        for host in args["rhosts"]
+    ]
     async for (target, res) in Scan(probes):
         if isinstance(res, Exception):
-            module.log('{}:{} - Error connecting: {}'.format(*target, res), level='error')
+            module.log(
+                "{}:{} - Error connecting: {}".format(*target, res), level="error"
+            )
         elif res and re.search(pattern, res):
-            module.log('{}:{} - Matches'.format(*target), level='good')
-            module.log('{}:{} - Matches with: {}'.format(*target, res), level='debug')
+            module.log("{}:{} - Matches".format(*target), level="good")
+            module.log("{}:{} - Matches with: {}".format(*target, res), level="debug")
             onmatch(target, res)
         else:
-            module.log('{}:{} - Does not match'.format(*target), level='info')
-            module.log('{}:{} - Does not match with: {}'.format(*target, res), level='debug')
+            module.log("{}:{} - Does not match".format(*target), level="info")
+            module.log(
+                "{}:{} - Does not match with: {}".format(*target, res), level="debug"
+            )
 
 
 class Scan:
@@ -38,7 +54,7 @@ class Scan:
         for r in runs:
             f = asyncio.ensure_future(r)
             args = r.cr_frame.f_locals
-            target = (args['host'], args['port'])
+            target = (args["host"], args["port"])
             f.add_done_callback(functools.partial(self.__queue_result, target))
 
     def __queue_result(self, target, f):
@@ -69,11 +85,11 @@ async def probe_host(host, port, payload, connect_timeout, read_timeout):
     try:
         async with timeout(connect_timeout):
             r, w = await asyncio.open_connection(host, port)
-            remote = w.get_extra_info('peername')
+            remote = w.get_extra_info("peername")
             if remote[0] == host:
-                module.log('{}:{} - Connected'.format(host, port), level='debug')
+                module.log("{}:{} - Connected".format(host, port), level="debug")
             else:
-                module.log('{}({}):{} - Connected'.format(host, *remote), level='debug')
+                module.log("{}({}):{} - Connected".format(host, *remote), level="debug")
             w.write(payload)
             await w.drain()
 
@@ -81,7 +97,10 @@ async def probe_host(host, port, payload, connect_timeout, read_timeout):
             while len(buf) < 4096:
                 data = await r.read(4096)
                 if data:
-                    module.log('{}:{} - Received {} bytes'.format(host, port, len(data)), level='debug')
+                    module.log(
+                        "{}:{} - Received {} bytes".format(host, port, len(data)),
+                        level="debug",
+                    )
                     buf.extend(data)
                 else:
                     break

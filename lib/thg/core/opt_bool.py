@@ -3,6 +3,7 @@
 # Current source: https://github.com/darkcode357/thg-framework
 ##
 
+
 class OptBool:
     def __init__(self, value):
         """

@@ -3,6 +3,7 @@
 # Current source: https://github.com/darkcode357/thg-framework
 ##
 
+
 class OptString:
     def __init__(self, string):
         self.string = string
@@ -11,4 +12,4 @@ class OptString:
         if type(self.string) == str:
             return self.string
         else:
-            return 'is not string'
+            return "is not string"
