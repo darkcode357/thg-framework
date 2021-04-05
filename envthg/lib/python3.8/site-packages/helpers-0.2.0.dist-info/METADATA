@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: helpers
+Version: 0.2.0
+Summary: Improved developer experience, accumulated.
+Home-page: https://github.com/infosmith/helpers
+Author: David S.
+Author-email: infosmith@prontonmail.com
+License: MIT license
+Keywords: helpers
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: License :: OSI Approved :: MIT License
+
+UNKNOWN
+
+
