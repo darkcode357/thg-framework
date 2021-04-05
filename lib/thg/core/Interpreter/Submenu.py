@@ -47,7 +47,7 @@ class AddSubmenu(object):
         shared_attributes=None,
         require_predefined_shares=True,
         create_subclass=False,
-        preserve_shares=False,
+        preserve_shares=True,
         persistent_history_file=None,
     ):
         """Set up the class decorator

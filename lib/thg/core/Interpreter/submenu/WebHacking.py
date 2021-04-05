@@ -33,11 +33,11 @@ class WebHackingLevel(Cmd):
         self.second_level_attr = 987654321
         self.prompt = self.console_prompt + self.console_prompt_end
 
-    def thg_say(self, line):
+    def thg_sayd(self, line):
         print(
             "You called a command in SecondLevel with '%s'. "
             "It has access to top_level_attr: %s" % (line, self.top_level_attr)
         )
 
-    def complete_say(self, text, line, begidx, endidx):
+    def complete_sayd(self, text, line, begidx, endidx):
         return [s for s in ["qwe", "asd", "zxc"] if s.startswith(text)]

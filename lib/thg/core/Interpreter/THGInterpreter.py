@@ -4,13 +4,14 @@ import time
 from importlib import import_module, reload
 from pathlib import Path
 from queue import Queue
+
 from colorama import Style
 from tabulate import tabulate
-import dill
+
 from lib.thg.core.BaseXmodeClass.BaseOption import BaseOption
 from lib.thg.core.Interpreter.Submenu import AddSubmenu
 from lib.thg.core.Interpreter.submenu.Crypto import CryptoLevel
-from lib.thg.core.Interpreter.submenu.Exploitation import ExploitationLevel
+from lib.thg.core.Interpreter.submenu.Exploitation import Exploitation
 from lib.thg.core.Interpreter.submenu.Forensics import ForensicLevel
 from lib.thg.core.Interpreter.submenu.Miscellaneous import MiscellaneousLevel
 from lib.thg.core.Interpreter.submenu.Networking import NetworkingLevel
@@ -24,7 +25,6 @@ from lib.thg.core.Interpreter.thgcmd.thgcmd import Cmd, with_category, with_argp
 from lib.thg.core.constants import *
 from lib.thg.core_import import ModuleNotUseException
 from utils import module
-from utils.utils import *
 
 
 @AddSubmenu(
@@ -71,7 +71,7 @@ from utils.utils import *
 )
 @AddSubmenu(CryptoLevel(), command="Crypto",
             shared_attributes=dict(second_level_attr="second_level_attr", top_level_attr="top_level_attr"), )
-@AddSubmenu(ExploitationLevel(), command="ExploitationLevel",
+@AddSubmenu(Exploitation(), command="ExploitationLevel",
             shared_attributes=dict(second_level_attr="second_level_attr", top_level_attr="top_level_attr"), )
 class ThgInterpreter(Cmd, Database):
     colors = "Always"
@@ -79,7 +79,7 @@ class ThgInterpreter(Cmd, Database):
     console_prompt = "{COLOR_START}THG{COLOR_END}".format(
         COLOR_START=Fore.BLUE, COLOR_END=Fore.RESET
     )
-    doc_header = "lib COMMAND HELP"
+    doc_header = "PRIME COMMAND HELP"
     doc_leader = ""
     intro = None
     lastcmd = ""
@@ -101,7 +101,7 @@ class ThgInterpreter(Cmd, Database):
         super(ThgInterpreter, self).__init__()
         Database.__init__(self)
         self.prompt = self.console_prompt + self.console_prompt_end
-        self.top_level_attr = None
+        self.top_level_attr = 123456789
         self.second_level_attr = 987654321
 
     @with_category(CMD_CORE)
@@ -167,41 +167,8 @@ class ThgInterpreter(Cmd, Database):
     )
     set_parser.add_argument("value", help="The value of the field you want to set")
 
-    #############
-    @with_category(Data_format)
-    def thg_dump(self, args):
-        arg = args.split(" ")
-        if arg[0] == "":
-            print(
-                "dump mod[hex,hex_file] tab[int]\ndump hex string\ndump hex_file file"
-            )
-        elif arg[0] == "hex":
-            if arg[1] == "help":
-                print(
-                    """{YELLOW}hex{YELLOW}{BLUE} =>{BLUE}{RED} text for hex.""".format(
-                        YELLOW=Fore.YELLOW, BLUE=Fore.BLUE, RED=Fore.RED
-                    )
-                )
-            else:
-                print(hexdump(src=arg[1], length=int(arg[2])))
-        elif arg[0] == "hex_file":
-            if arg[1] == "help":
-                print(
-                    """{YELLOW}hex_file{YELLOW}{BLUE} =>{BLUE}{RED} file for hex.""".format(
-                        YELLOW=Fore.YELLOW, BLUE=Fore.BLUE, RED=Fore.RED
-                    )
-                )
-            else:
-                try:
-                    with (open(arg[1], "br")) as file:
-                        data = file.read()
-                        hexdump_file(data)
-                except FileNotFoundError:
-                    print("esse comando requer um arquivo e não uma string")
 
-    #############
 
-    ################################### thg_encode thg_decode
 
     #####################################
     @with_argparser(set_parser)
