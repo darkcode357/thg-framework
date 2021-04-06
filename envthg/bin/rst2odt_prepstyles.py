@@ -1,4 +1,4 @@
-#!/home/darkcode0x00/Projetos/thg-framework/envthg/bin/python
+#!/home/darkcode0x00/PycharmProjects/thg-framework/envthg/bin/python
 
 # $Id: rst2odt_prepstyles.py 8346 2019-08-26 12:11:32Z milde $
 # Author: Dave Kuhlman <dkuhlman@rexx.com>

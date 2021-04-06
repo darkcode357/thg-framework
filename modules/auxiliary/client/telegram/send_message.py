@@ -5,7 +5,7 @@
 from lib.thg.core.BaseXmodeClass.BaseMod import BaseMod
 from lib.thg.core.BaseXmodeClass.BaseOption import BaseOption
 import requests
-from lib.thg.core.auxiliary.Web import Url
+from lib.thg.core.Mods.auxiliary.Web import Url
 
 
 class Exploit(BaseMod):
@@ -64,39 +64,3 @@ class Exploit(BaseMod):
         print(f"mensagem envida =>[{MSG}]")
 
 
-"""
-
-
-    register_options(
-      [
-        
-      ], self.class
-    )
-  end
-
-  def message
-    datastore['MSG']
-  end
-
-  def formatting
-    datastore['FORMATTING']
-  end
-
-  def bot_token
-    datastore['BOT_TOKEN']
-  end
-
-  def run
-    params = { chat_id: datastore['CHAT_ID'], parse_mode: formatting, text: message }
-    uri.query = URI.encode_www_form(params)
-    res = Net::HTTP.get_response(uri)
-
-    if res.is_a?(Net::HTTPSuccess)
-      print_good('Message sent!')
-    else
-      print_error('Unable to send the message!')
-      print_error("API Status: #{res.code}")
-    end
-  end
-end
-"""

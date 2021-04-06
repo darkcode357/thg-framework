@@ -53,7 +53,7 @@ source envthg/bin/activate.csh
 source envthg/bin/activate.xsh
 # para ps1
 source envthg/bin/activate.ps1
-pip install -r requirements.txt
+pip --use-deprecated=legacy-resolver install -r requirements.txt
 python3 thg.py 
 ```
 

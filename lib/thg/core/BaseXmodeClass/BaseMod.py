@@ -6,7 +6,6 @@
 from lib.thg.core.BaseXmodeClass.BaseOption import BaseOption
 from lib.thg.core.BaseXmodeClass.BaseOptions import BaseOptions
 from lib.thg.core.BaseXmodeClass.BaseResult import BaseResult
-from lib.thg.core_import import constants
 
 
 class BaseMod:
@@ -71,10 +70,10 @@ class BaseMod:
     @property
     def get_info(self):
         """função recebe informações dos modulos"""
-        info = {}
-        for field_name in self.info_fields:
-            info[field_name] = getattr(self, field_name)
-        return info
+        return {
+            field_name: getattr(self, field_name)
+            for field_name in self.info_fields
+        }
 
     from lib.thg.core.BaseXmodeClass.BaseOption import BaseOption
 

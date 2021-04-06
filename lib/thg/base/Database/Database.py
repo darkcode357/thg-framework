@@ -56,8 +56,8 @@ class Database:
         self.cursor.execute(init_table_sql)
 
     def delete_table(self):
-        delete_table_sql = "delete from modules;"
         with self.connection:
+            delete_table_sql = "delete from modules;"
             self.connection.execute(delete_table_sql)
 
     def insert_module(self, info):
@@ -81,6 +81,7 @@ class Database:
             )
 
     def db_rebuild(self, debug):
+        global module_instance
         self.delete_table()
         self.create_table()
         erro = []

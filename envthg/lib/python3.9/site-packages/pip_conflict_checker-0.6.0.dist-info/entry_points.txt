@@ -1,0 +1,3 @@
+[console_scripts]
+pipconflictchecker = pipconflictchecker.checker:main
+

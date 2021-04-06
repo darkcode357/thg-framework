@@ -18,11 +18,9 @@ todo:dsadsa
 
 def name_convert(name):
     if name.find(".py") != -1:
-        module_name = name.replace("modules/", "").replace(".py", "")
-        return module_name
+        return name.replace("modules/", "").replace(".py", "")
     else:
-        full_name = "{ROOT}/modules/{MODULE}.py".format(ROOT=ROOT_PATH, MODULE=name)
-        return full_name
+        return "{ROOT}/modules/{MODULE}.py".format(ROOT=ROOT_PATH, MODULE=name)
 
 
 def get_local_modules():

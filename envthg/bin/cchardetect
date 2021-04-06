@@ -1,4 +1,4 @@
-#!/home/darkcode0x00/Projetos/thg-framework/envthg/bin/python
+#!/home/darkcode0x00/PycharmProjects/thg-framework/envthg/bin/python
 from __future__ import print_function, unicode_literals
 import argparse
 import sys

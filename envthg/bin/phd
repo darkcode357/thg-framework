@@ -1,4 +1,4 @@
-#!/home/darkcode0x00/Projetos/thg-framework/envthg/bin/python
+#!/home/darkcode0x00/PycharmProjects/thg-framework/envthg/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

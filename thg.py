@@ -1,4 +1,4 @@
-from lib.thg.core.Interpreter.THGInterpreter import ThgInterpreter
+from lib.thg.base.Interpreter.THGInterpreter import ThgInterpreter
 
 import argparse
 

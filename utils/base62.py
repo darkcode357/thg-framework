@@ -59,7 +59,7 @@ def encode(n, minlen=1, charset=CHARSET_DEFAULT):
 
         chs.append(charset[r])
 
-    if len(chs) > 0:
+    if chs:
         chs.reverse()
     else:
         chs.append("0")

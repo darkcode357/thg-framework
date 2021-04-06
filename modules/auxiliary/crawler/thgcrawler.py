@@ -24,7 +24,7 @@
 from lib.thg.core.BaseXmodeClass.BaseMod import BaseMod
 
 # class aux
-from lib.thg.core.auxiliary.Web import Url
+from lib.thg.core.Mods.auxiliary.Web import Url
 
 # imports extra
 from time import sleep
