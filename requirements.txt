@@ -50,7 +50,7 @@ Jinja2==2.11.3
 keyring==23.0.1
 lazy-object-proxy==1.4.3
 lxml==4.5.2
-Mako==1.1.4
+Mako==1.2.2
 MarkupSafe==1.1.1
 mccabe==0.6.1
 more-itertools==8.7.0
