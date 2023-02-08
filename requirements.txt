@@ -25,7 +25,7 @@ colorama==0.4.1
 config==0.5.0.post0
 contextlib2==0.6.0.post1
 coverage==5.2.1
-cryptography==3.4.7
+cryptography==39.0.1
 decorator==5.0.3
 dill==0.3.3
 distlib==0.3.1
